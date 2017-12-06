@@ -1,4 +1,4 @@
-# GoWebApi
+# Achievers server
 
 Achievers Web API in Go
 
