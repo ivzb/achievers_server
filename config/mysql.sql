@@ -50,7 +50,43 @@ CREATE TABLE user (
     deleted_at TIMESTAMP DEFAULT 0,
     
     UNIQUE KEY (email),
-    CONSTRAINT `f_user_status` FOREIGN KEY (`status_id`) REFERENCES `user_status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `f_user_status` FOREIGN KEY (`status_id`)
+        REFERENCES `user_status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE involvement (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    name VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE achievement (
+    id VARCHAR(36) NOT NULL,
+    
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    picture_url VARCHAR(100) NOT NULL,
+    
+    involvement_id TINYINT(1) UNSIGNED NOT NULL,
+    author_id      VARCHAR(36) NOT NULL,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    CONSTRAINT `f_achievement_involvement` FOREIGN KEY (`involvement_id`) 
+        REFERENCES `involvement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_achievement_user` FOREIGN KEY (`author_id`) 
+        REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
     PRIMARY KEY (id)
 );
@@ -58,3 +94,10 @@ CREATE TABLE user (
 INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
 (1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+
+INSERT INTO `involvement` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'bronze',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'silver', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(3, 'gold', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(4, 'platinum', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(5, 'diamond', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);

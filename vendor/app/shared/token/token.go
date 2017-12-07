@@ -1,30 +1,29 @@
 package token
 
 import (
-    "fmt"
-    "os"
-    "crypto/rsa"
+	"crypto/rsa"
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 
-    "app/shared/crypto"
+	"app/shared/crypto"
 )
 
 var (
-    ti TokenInfo
+	ti TokenInfo
 )
 
 type TokenInfo struct {
-	File  string `json:"File"`
-	Priv  *rsa.PrivateKey
+	File string `json:"File"`
+	Priv *rsa.PrivateKey
 }
 
 // Configure adds the settings for the SMTP server
 func Configure(tokenInfo TokenInfo) {
-    ti = tokenInfo
+	ti = tokenInfo
 
-    var err error
+	var err error
 	var input = io.ReadCloser(os.Stdin)
 
 	if input, err = os.Open(ti.File); err != nil {
@@ -39,11 +38,11 @@ func Configure(tokenInfo TokenInfo) {
 		log.Fatalln(err)
 	}
 
-    ti.Priv, err = crypto.ImportPrivatePem(pem)
+	ti.Priv, err = crypto.ImportPrivatePem(pem)
 
-    if err != nil {
+	if err != nil {
 		log.Fatalln(err)
-    }
+	}
 }
 
 // ReadConfig returns the token information
@@ -51,14 +50,12 @@ func ReadConfig() TokenInfo {
 	return ti
 }
 
-func Validate(t []byte) bool {
-    text, err := crypto.Decrypt(t, ti.Priv)
+func Extract(t []byte) ([]byte, error) {
+	r, err := crypto.Decrypt(t, ti.Priv)
 
-    if err != nil {
-        return false
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    fmt.Printf("decrypted: %s\n", text)
-    
-    return true
+	return r, nil
 }

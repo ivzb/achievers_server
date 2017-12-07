@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
-    
+
 	"app/shared/database"
 )
 
@@ -121,6 +121,23 @@ func readAllByField(name string, value string) (Group, error) {
 	var result Group
 	err := database.SQL.Select(&result, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", tableName, name), value)
 	return result, err
+}
+
+// *****************************************************************************
+// Exist
+// *****************************************************************************
+
+// Read returns one entity with the matching ID
+// If no result, it will return sql.ErrNoRows
+func Exist(id string) (bool, error) {
+	// return existOneByField("id", ID)
+	u, err := readOneByField("id", id)
+
+	if err != nil {
+		return false, err
+	}
+
+	return u != nil, nil
 }
 
 // *****************************************************************************

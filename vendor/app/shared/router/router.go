@@ -5,8 +5,8 @@ import (
 
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
-
 	"github.com/justinas/alice"
+
 	hr "app/route/middleware/httprouterwrapper"
 )
 
@@ -16,7 +16,7 @@ var (
 
 const (
 	authorize = "authorize"
-	params = "params"
+	params    = "params"
 )
 
 // RouteInfo is the details

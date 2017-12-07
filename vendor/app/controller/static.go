@@ -4,7 +4,10 @@ import (
 	"net/http"
 	"strings"
 
+	mauth "app/route/middleware/auth"
 	"app/shared/router"
+
+	"github.com/justinas/alice"
 )
 
 func init() {
@@ -12,7 +15,9 @@ func init() {
 	router.Instance().RedirectTrailingSlash = false
 
 	// Serve static files, no directory browsing
-	router.GetAuth("/static/*filepath", Static)
+	router.Get("/static/*filepath", alice.
+		New(mauth.Handler).
+		ThenFunc(Static))
 }
 
 // Static maps static files

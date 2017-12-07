@@ -29,7 +29,7 @@ func init() {
 
 func main() {
 	// Load the configuration file
-	jsonconfig.Load("config" + string(os.PathSeparator) + "config.json", config)
+	jsonconfig.Load("config"+string(os.PathSeparator)+"config.json", config)
 
 	// Configure the email settings
 	email.Configure(config.Email)

@@ -1,5 +1,8 @@
 # Achievers server
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/ivzb/achievers_server)](https://goreportcard.com/report/github.com/ivzb/achievers_server)
+[![GoDoc](https://godoc.org/github.com/ivzb/achievers_server?status.svg)](https://godoc.org/github.com/ivzb/achievers_server) 
+
 Achievers Web API in Go
 
 To download, run the following command:

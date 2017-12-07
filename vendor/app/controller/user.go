@@ -1,39 +1,43 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"app/model/user"
+	mauth "app/route/middleware/auth"
 	"app/shared/form"
 	"app/shared/response"
 	"app/shared/router"
+
+	"github.com/justinas/alice"
 )
 
 // Routes
 func init() {
-	router.PostAuth("/users", UserOnePOST)
-	router.GetAuth("/users/:id", UserOneGET)
-	router.GetAuth("/users", UserAllGET)
-	router.PutAuth("/users/:id", UserOnePUT)
-	router.DeleteAuth("/users/:id", UserOneDELETE)
-	router.DeleteAuth("/users", UserAllDELETE)
+	router.Post("/users", alice.
+		New().
+		ThenFunc(UserOnePOST))
+
+	router.Get("/users/:id", alice.
+		New(mauth.Handler).
+		ThenFunc(UserOneGET))
+
+	router.Get("/users", alice.
+		New(mauth.Handler).
+		ThenFunc(UserAllGET))
+
+	router.Put("/users/:id", alice.
+		New(mauth.Handler).
+		ThenFunc(UserOnePUT))
+
+	router.Delete("/users/:id", alice.
+		New(mauth.Handler).
+		ThenFunc(UserOneDELETE))
+
+	router.Delete("/users", alice.
+		New(mauth.Handler).
+		ThenFunc(UserAllDELETE))
 }
-
-const (
-	ItemCreated      = "item created"
-	ItemExists       = "item already exists"
-	ItemNotFound     = "item not found"
-	ItemFound        = "item found"
-	ItemsFound       = "items found"
-	ItemsFindEmpty   = "no items to find"
-	ItemUpdated      = "item updated"
-	ItemDeleted      = "item deleted"
-	ItemsDeleted     = "items deleted"
-	ItemsDeleteEmpty = "no items to delete"
-
-	FriendlyError = "an error occurred, please try again later"
-)
 
 // *****************************************************************************
 // Create
@@ -41,7 +45,6 @@ const (
 func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 	m, err := user.New()
 	if err != nil {
-		log.Println("UUID Error", err)
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -51,8 +54,9 @@ func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 	if err == form.ErrRequiredMissing || err == form.ErrWrongContentType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
-	} else if err == form.ErrBadStruct || err == form.ErrNotStruct {
-		log.Println(errMsg)
+	}
+
+	if err == form.ErrBadStruct || err == form.ErrNotStruct {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -62,8 +66,9 @@ func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 	if err == form.ErrWrongType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
-	} else if err == form.ErrNotSupported || err == form.ErrNotStruct {
-		log.Println(errMsg)
+	}
+
+	if err == form.ErrNotSupported || err == form.ErrNotStruct {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -73,8 +78,9 @@ func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 	if err == user.ErrExists {
 		response.SendError(w, http.StatusBadRequest, ItemExists)
 		return
-	} else if err != nil {
-		log.Println(err)
+	}
+
+	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -96,8 +102,9 @@ func UserOneGET(w http.ResponseWriter, r *http.Request) {
 	if err == user.ErrNoResult {
 		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
 		return
-	} else if err != nil {
-		log.Println(err)
+	}
+
+	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -109,10 +116,11 @@ func UserAllGET(w http.ResponseWriter, r *http.Request) {
 	// Get all items
 	group, err := user.ReadAll()
 	if err != nil {
-		log.Println(err)
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
-	} else if len(group) < 1 {
+	}
+
+	if len(group) < 1 {
 		response.Send(w, http.StatusOK, ItemsFindEmpty, len(group), nil)
 		return
 	}
@@ -134,8 +142,9 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	if err == user.ErrNoResult {
 		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
 		return
-	} else if err != nil {
-		log.Println(err)
+	}
+
+	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -145,8 +154,9 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	if err == form.ErrRequiredMissing {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
-	} else if err == form.ErrBadStruct || err == form.ErrNotStruct {
-		log.Println(errMsg)
+	}
+
+	if err == form.ErrBadStruct || err == form.ErrNotStruct {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -156,8 +166,9 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	if err == form.ErrWrongType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
-	} else if err == form.ErrNotSupported || err == form.ErrNotStruct {
-		log.Println(errMsg)
+	}
+
+	if err == form.ErrNotSupported || err == form.ErrNotStruct {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -167,8 +178,9 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	if err == user.ErrNotExist {
 		response.SendError(w, http.StatusBadRequest, ItemNotFound)
 		return
-	} else if err != nil {
-		log.Println(err)
+	}
+
+	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
@@ -188,10 +200,11 @@ func UserOneDELETE(w http.ResponseWriter, r *http.Request) {
 	// Delete an item
 	count, err := user.Delete(ID)
 	if err != nil {
-		log.Println(err)
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
-	} else if count < 1 {
+	}
+
+	if count < 1 {
 		response.Send(w, http.StatusOK, ItemNotFound, count, nil)
 		return
 	}
@@ -203,10 +216,11 @@ func UserAllDELETE(w http.ResponseWriter, r *http.Request) {
 	// Delete all items
 	count, err := user.DeleteAll()
 	if err != nil {
-		log.Println(err)
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
-	} else if count < 1 {
+	}
+
+	if count < 1 {
 		response.Send(w, http.StatusOK, ItemsDeleteEmpty, count, nil)
 		return
 	}

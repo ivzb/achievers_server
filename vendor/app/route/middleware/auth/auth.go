@@ -1,17 +1,20 @@
 package auth
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
-	mtoken "app/model/token"
+	mt "app/model/token"
+	"app/model/user"
 	"app/shared/response"
 	"app/shared/token"
+
+	"github.com/gorilla/context"
 )
 
 const (
-	authorize = "authorize"
-	authToken = "auth_token"
+	authorize        = "authorize"
+	authToken        = "auth_token"
 	authTokenMissing = "auth_token is missing"
 	authTokenInvalid = "auth_token is invalid"
 )
@@ -27,19 +30,28 @@ func Handler(next http.Handler) http.Handler {
 		}
 
 		s := `{"auth_token":"` + at + `"}`
-		var t mtoken.Entity
+		var t mt.Entity
 
 		if err := json.Unmarshal([]byte(s), &t); err != nil {
 			response.Send(w, http.StatusUnauthorized, authTokenInvalid, 0, nil)
 			return
 		}
 
-		v := token.Validate(t.AuthToken)
+		v, err := token.Extract(t.AuthToken)
 
-		if v == false {
+		if err != nil {
 			response.Send(w, http.StatusUnauthorized, authTokenInvalid, 0, nil)
 			return
 		}
+
+		uID := string(v)
+		u, err := user.Exist(uID)
+		if err != nil || u == false {
+			response.Send(w, http.StatusUnauthorized, authTokenInvalid, 0, nil)
+			return
+		}
+
+		context.Set(r, "userID", uID)
 
 		next.ServeHTTP(w, r)
 	})

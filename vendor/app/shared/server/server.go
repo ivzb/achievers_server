@@ -9,13 +9,13 @@ import (
 
 // Server stores the hostname and port number
 type Server struct {
-	Hostname  string `json:"Hostname"`  	  // Server name
-	UseHTTP   bool   `json:"UseHTTP"`   	  // Listen on HTTP
-	UseHTTPS  bool   `json:"UseHTTPS"` 	  // Listen on HTTPS
-	HTTPPort  int    `json:"HTTPPort"`  	  // HTTP port
-	HTTPSPort int    `json:"HTTPSPort"`	  // HTTPS port
-	CertFile  string `json:"CertFile"` 	  // HTTPS certificate
-	KeyFile   string `json:"KeyFile"`      // HTTPS private key
+	Hostname  string `json:"Hostname"`  // Server name
+	UseHTTP   bool   `json:"UseHTTP"`   // Listen on HTTP
+	UseHTTPS  bool   `json:"UseHTTPS"`  // Listen on HTTPS
+	HTTPPort  int    `json:"HTTPPort"`  // HTTP port
+	HTTPSPort int    `json:"HTTPSPort"` // HTTPS port
+	CertFile  string `json:"CertFile"`  // HTTPS certificate
+	KeyFile   string `json:"KeyFile"`   // HTTPS private key
 }
 
 // Run starts the HTTP and/or HTTPS listener
@@ -37,7 +37,7 @@ func Run(httpHandlers http.Handler, httpsHandlers http.Handler, s Server) {
 
 // startHTTP starts the HTTP listener
 func startHTTP(handlers http.Handler, s Server) {
-	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTP " + httpAddress(s))
+	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTP "+httpAddress(s))
 
 	// Start the HTTP listener
 	log.Fatal(http.ListenAndServe(httpAddress(s), handlers))
@@ -45,7 +45,7 @@ func startHTTP(handlers http.Handler, s Server) {
 
 // startHTTPs starts the HTTPS listener
 func startHTTPS(handlers http.Handler, s Server) {
-	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTPS " + httpsAddress(s))
+	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTPS "+httpsAddress(s))
 
 	// Start the HTTPS listener
 	log.Fatal(http.ListenAndServeTLS(httpsAddress(s), s.CertFile, s.KeyFile, handlers))
