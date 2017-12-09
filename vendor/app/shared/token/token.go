@@ -2,12 +2,12 @@ package token
 
 import (
 	"crypto/rsa"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"encoding/json"
-	
+
 	"app/shared/crypto"
 )
 
@@ -67,6 +67,6 @@ func Decrypt(at string) ([]byte, error) {
 	if err := json.Unmarshal([]byte(j), &t); err != nil {
 		return nil, err
 	}
-	
+
 	return crypto.Decrypt([]byte(t.AuthToken), ti.Priv)
 }

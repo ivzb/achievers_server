@@ -57,6 +57,6 @@ func tokenFromHeader(r *http.Request, header string) (string, error) {
 	if l == 0 {
 		return "", errors.New("Missing or invalid token in the request header")
 	}
-	
+
 	return token, nil
 }

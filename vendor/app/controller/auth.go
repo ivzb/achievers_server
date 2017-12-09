@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"app/model/auth"
-	"app/shared/token"
 	"app/shared/form"
 	"app/shared/response"
 	"app/shared/router"
+	"app/shared/token"
 
 	"github.com/justinas/alice"
 )

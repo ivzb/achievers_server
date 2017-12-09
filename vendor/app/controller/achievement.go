@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"strconv"
 	"net/http"
+	"strconv"
 
 	"app/model/achievement"
 	"app/model/involvement"
@@ -19,7 +19,7 @@ import (
 
 const (
 	InvolvementNotFound = "involvement not found"
-	InvalidPage = "invalid page"
+	InvalidPage         = "invalid page"
 )
 
 // Routes
@@ -65,14 +65,12 @@ func GetAchievementsByPage(w http.ResponseWriter, r *http.Request) {
 	// Get the parameter id
 	params := router.Params(r)
 
-	page64, err := strconv.ParseInt(params.ByName("page"), 0, 32)
-	
-	if err != nil || page64 < 0 {
+	page, err := strconv.Atoi(params.ByName("page"))
+
+	if err != nil || page < 0 {
 		response.SendError(w, http.StatusBadRequest, InvalidPage)
 		return
 	}
-
-	page := int(page64)
 
 	// Get all items
 	group, err := achievement.Load(page)
