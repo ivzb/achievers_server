@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"app/model/user"
-	mauth "app/route/middleware/auth"
+	"app/route/middleware/auth"
 	"app/shared/form"
 	"app/shared/response"
 	"app/shared/router"
@@ -19,23 +19,23 @@ func init() {
 		ThenFunc(UserOnePOST))
 
 	router.Get("/users/:id", alice.
-		New(mauth.Handler).
+		New(auth.Handler).
 		ThenFunc(UserOneGET))
 
 	router.Get("/users", alice.
-		New(mauth.Handler).
+		New(auth.Handler).
 		ThenFunc(UserAllGET))
 
 	router.Put("/users/:id", alice.
-		New(mauth.Handler).
+		New(auth.Handler).
 		ThenFunc(UserOnePUT))
 
 	router.Delete("/users/:id", alice.
-		New(mauth.Handler).
+		New(auth.Handler).
 		ThenFunc(UserOneDELETE))
 
 	router.Delete("/users", alice.
-		New(mauth.Handler).
+		New(auth.Handler).
 		ThenFunc(UserAllDELETE))
 }
 

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"strconv"
 	"net/http"
 
 	"app/model/achievement"
@@ -18,19 +19,80 @@ import (
 
 const (
 	InvolvementNotFound = "involvement not found"
+	InvalidPage = "invalid page"
 )
 
 // Routes
 func init() {
-	router.Post("/achievements", alice.
+	router.Post("/achievement", alice.
 		New(auth.Handler).
-		ThenFunc(AchievementOnePOST))
+		ThenFunc(PostAchievement))
+
+	router.Get("/achievement/:id", alice.
+		New(auth.Handler).
+		ThenFunc(GetAchievementById))
+
+	router.Get("/achievements/:page", alice.
+		New(auth.Handler).
+		ThenFunc(GetAchievementsByPage))
+}
+
+// *****************************************************************************
+// Read
+// *****************************************************************************
+
+func GetAchievementById(w http.ResponseWriter, r *http.Request) {
+	// Get the parameter id
+	params := router.Params(r)
+	ID := params.ByName("id")
+
+	// Get an item
+	entity, err := achievement.Get(ID)
+	if err == achievement.ErrNoResult {
+		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
+		return
+	}
+
+	if err != nil {
+		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		return
+	}
+
+	response.Send(w, http.StatusOK, ItemFound, 1, entity)
+}
+
+func GetAchievementsByPage(w http.ResponseWriter, r *http.Request) {
+	// Get the parameter id
+	params := router.Params(r)
+
+	page64, err := strconv.ParseInt(params.ByName("page"), 0, 32)
+	
+	if err != nil || page64 < 0 {
+		response.SendError(w, http.StatusBadRequest, InvalidPage)
+		return
+	}
+
+	page := int(page64)
+
+	// Get all items
+	group, err := achievement.Load(page)
+	if err != nil {
+		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		return
+	}
+
+	if len(group) < 1 {
+		response.Send(w, http.StatusNotFound, ItemsFindEmpty, len(group), nil)
+		return
+	}
+
+	response.Send(w, http.StatusOK, ItemsFound, len(group), group)
 }
 
 // *****************************************************************************
 // Create
 // *****************************************************************************
-func AchievementOnePOST(w http.ResponseWriter, r *http.Request) {
+func PostAchievement(w http.ResponseWriter, r *http.Request) {
 	m, err := achievement.New()
 	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
@@ -77,5 +139,5 @@ func AchievementOnePOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Send(w, http.StatusCreated, ItemCreated, count, nil)
+	response.Send(w, http.StatusCreated, ItemCreated, count, m.ID)
 }

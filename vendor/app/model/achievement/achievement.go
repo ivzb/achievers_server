@@ -25,6 +25,7 @@ type Entity struct {
 	Description   string    `db:"description" json:"description" require:"true"`
 	PictureUrl    string    `db:"picture_url" json:"picture_url" require:"true"`
 	InvolvementID string    `db:"involvement_id" json:"involvement_id" require:"true"`
+	AuthorId	  string    `db:"author_id" json:"author_id" require:"true"`
 	CreatedAt     time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt     time.Time `db:"updated_at" json:"updated_at"`
 	DeletedAt     time.Time `db:"deleted_at" json:"deleted_at"`
@@ -82,14 +83,19 @@ func (a *Entity) Create(uID string) (int, error) {
 
 // Read returns one entity with the matching ID
 // If no result, it will return sql.ErrNoRows
-func Read(ID string) (*Entity, error) {
+func Get(ID string) (*Entity, error) {
 	return readOneByField("id", ID)
 }
 
 // ReadAll returns all entities
-func ReadAll() (Group, error) {
+func Load(page int) (Group, error) {
 	var result Group
-	err := database.SQL.Select(&result, fmt.Sprintf("SELECT * FROM %v", tableName))
+
+	pageSize := 9
+	start := pageSize * page
+	end := start + pageSize
+	
+	err := database.SQL.Select(&result, fmt.Sprintf("SELECT * FROM %v ORDER BY `updated_at` DESC LIMIT %v, %v", tableName, start, end))
 	return result, err
 }
 

@@ -4,12 +4,10 @@ import (
 	"net/http"
 
 	"app/model/auth"
-	"app/model/token"
-	"app/shared/crypto"
+	"app/shared/token"
 	"app/shared/form"
 	"app/shared/response"
 	"app/shared/router"
-	mtoken "app/shared/token"
 
 	"github.com/justinas/alice"
 )
@@ -62,16 +60,12 @@ func AuthPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	priv := mtoken.ReadConfig().Priv
-
-	t, err := crypto.Encrypt([]byte(user.ID), priv.PublicKey)
+	t, err := token.Encrypt(user.ID)
 
 	if err != nil {
 		response.Send(w, http.StatusInternalServerError, FriendlyError, 0, nil)
 		return
 	}
 
-	tr := &token.Entity{AuthToken: t}
-
-	response.Send(w, http.StatusOK, Authorized, 1, tr)
+	response.Send(w, http.StatusOK, Authorized, 1, t)
 }

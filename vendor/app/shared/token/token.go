@@ -6,7 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
+	"encoding/json"
+	
 	"app/shared/crypto"
 )
 
@@ -17,6 +18,10 @@ var (
 type TokenInfo struct {
 	File string `json:"File"`
 	Priv *rsa.PrivateKey
+}
+
+type Token struct {
+	AuthToken []byte `json:"auth_token"`
 }
 
 // Configure adds the settings for the SMTP server
@@ -45,17 +50,23 @@ func Configure(tokenInfo TokenInfo) {
 	}
 }
 
-// ReadConfig returns the token information
-func ReadConfig() TokenInfo {
-	return ti
-}
-
-func Extract(t []byte) ([]byte, error) {
-	r, err := crypto.Decrypt(t, ti.Priv)
+func Encrypt(s string) (*Token, error) {
+	at, err := crypto.Encrypt([]byte(s), ti.Priv.PublicKey)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return r, nil
+	return &Token{AuthToken: at}, nil
+}
+
+func Decrypt(at string) ([]byte, error) {
+	j := `{"auth_token":"` + at + `"}`
+	var t Token
+
+	if err := json.Unmarshal([]byte(j), &t); err != nil {
+		return nil, err
+	}
+	
+	return crypto.Decrypt([]byte(t.AuthToken), ti.Priv)
 }
