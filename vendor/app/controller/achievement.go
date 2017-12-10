@@ -1,141 +1,135 @@
 package controller
 
 import (
+	"app/model"
+	"encoding/json"
+	"log"
 	"net/http"
-	"strconv"
-
-	"app/model/achievement"
-	"app/model/involvement"
-
-	"app/route/middleware/auth"
-
-	"app/shared/form"
-	"app/shared/response"
-	"app/shared/router"
-
-	"github.com/gorilla/context"
-	"github.com/justinas/alice"
 )
 
-const (
-	InvolvementNotFound = "involvement not found"
-	InvalidPage         = "invalid page"
-)
+func AchievementsIndex(env *model.Env) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("/achievements")
 
-// Routes
-func init() {
-	router.Post("/achievement", alice.
-		New(auth.Handler).
-		ThenFunc(PostAchievement))
+		if r.Method != "GET" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
 
-	router.Get("/achievement/:id", alice.
-		New(auth.Handler).
-		ThenFunc(GetAchievementById))
+		achs, err := env.DB.AllAchievements()
+		if err != nil {
+			http.Error(w, http.StatusText(500), 500)
+			return
+		}
 
-	router.Get("/achievements/:page", alice.
-		New(auth.Handler).
-		ThenFunc(GetAchievementsByPage))
+		js, err := json.Marshal(achs)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	})
 }
 
-// *****************************************************************************
-// Read
-// *****************************************************************************
+// func showAchievement(w http.ResponseWriter, r *http.Request) {
+//   if r.Method != "GET" {
+//     http.Error(w, http.StatusText(405), 405)
+//     return
+//   }
 
-func GetAchievementById(w http.ResponseWriter, r *http.Request) {
-	// Get the parameter id
-	params := router.Params(r)
-	ID := params.ByName("id")
+//   id := r.FormValue("id")
+//   if id == "" {
+//     http.Error(w, http.StatusText(400), 400)
+//     return
+//   }
 
-	// Get an item
-	entity, err := achievement.Get(ID)
-	if err == achievement.ErrNoResult {
-		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
-		return
-	}
+//   row := db.QueryRow("SELECT * FROM achievement WHERE id = ?", id)
 
-	if err != nil {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
+//   ach := new(Achievement)
+//   err := row.Scan(
+// 			&ach.id,
+// 			&ach.title,
+// 			&ach.description,
+// 			&ach.picture_url,
+// 			&ach.involvement_id,
+// 			&ach.author_id,
+// 			&ach.created_at,
+// 			&ach.updated_at,
+// 			&ach.deleted_at)
 
-	response.Send(w, http.StatusOK, ItemFound, 1, entity)
-}
+//   if err == sql.ErrNoRows {
+//     http.NotFound(w, r)
+//     return
+//   }
 
-func GetAchievementsByPage(w http.ResponseWriter, r *http.Request) {
-	// Get the parameter id
-	params := router.Params(r)
+//   if err != nil {
+//     http.Error(w, http.StatusText(500), 500)
+//     return
+//   }
 
-	page, err := strconv.Atoi(params.ByName("page"))
+//   fmt.Fprintf(w, "%s, %s, %s, %s, %s, %s, %s, %s, %s\n",
+//       ach.id,
+// 			ach.title,
+// 			ach.description,
+// 			ach.picture_url,
+// 			ach.involvement_id,
+// 			ach.author_id,
+// 			ach.created_at,
+// 			ach.updated_at,
+// 			ach.deleted_at)
+// }
 
-	if err != nil || page < 0 {
-		response.SendError(w, http.StatusBadRequest, InvalidPage)
-		return
-	}
+// func createAchievement(w http.ResponseWriter, r *http.Request) {
+//   if r.Method != "POST" {
+//     http.Error(w, http.StatusText(405), 405)
+//     return
+//   }
 
-	// Get all items
-	group, err := achievement.Load(page)
-	if err != nil {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
+//   title := r.FormValue("title")
+//   description := r.FormValue("description")
+//   picture_url := r.FormValue("picture_url")
+//   involvement_id := r.FormValue("involvement_id")
+//   author_id := r.FormValue("author_id")
 
-	if len(group) < 1 {
-		response.Send(w, http.StatusNotFound, ItemsFindEmpty, len(group), nil)
-		return
-	}
+//   if title == "" || description == "" || picture_url == "" || involvement_id == "" || author_id == "" {
+//     http.Error(w, http.StatusText(400), 400)
+//     return
+//   }
 
-	response.Send(w, http.StatusOK, ItemsFound, len(group), group)
-}
+//   id, err := uuid()
+// 	// If error on UUID generation
+// 	if err != nil {
+// 		http.Error(w, http.StatusText(500), 500)
+//     return
+// 	}
 
-// *****************************************************************************
-// Create
-// *****************************************************************************
-func PostAchievement(w http.ResponseWriter, r *http.Request) {
-	m, err := achievement.New()
-	if err != nil {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
+//   result, err := db.Exec(`INSERT INTO achievement (id, title, description, picture_url, involvement_id, author_id)
+//      VALUES(?, ?, ?, ?, ?, ?)`,
+//      id, title, description, picture_url, involvement_id, author_id)
 
-	// Validate the required fields are present
-	err, errMsg := form.Validate(r, m)
-	if err == form.ErrRequiredMissing || err == form.ErrWrongContentType {
-		response.SendError(w, http.StatusBadRequest, errMsg)
-		return
-	}
+//   if err != nil {
+//     log.Println(err)
+//     http.Error(w, http.StatusText(500), 500)
+//     return
+//   }
 
-	if err == form.ErrBadStruct || err == form.ErrNotStruct {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
+//   rowsAffected, err := result.RowsAffected()
+//   if err != nil {
+//     http.Error(w, http.StatusText(500), 500)
+//     return
+//   }
 
-	// Validate value types and copy values to struct
-	err, errMsg = form.StructCopy(r, m)
-	if err == form.ErrWrongType {
-		response.SendError(w, http.StatusBadRequest, errMsg)
-		return
-	}
+//   fmt.Fprintf(w, "Achievement %s created successfully (%d row affected)\n", id, rowsAffected)
+// }
 
-	if err == form.ErrNotSupported || err == form.ErrNotStruct {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
+// func uuid() (string, error) {
+// 	b := make([]byte, 16)
+// 	_, err := rand.Read(b)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	i, err := involvement.Exist(m.InvolvementID)
-
-	if err != nil || i != true {
-		response.SendError(w, http.StatusBadRequest, InvolvementNotFound)
-		return
-	}
-
-	// Create item
-	uID := context.Get(r, "userID").(string)
-
-	count, err := m.Create(uID)
-	if err != nil {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
-		return
-	}
-
-	response.Send(w, http.StatusCreated, ItemCreated, count, m.ID)
-}
+// 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+// }
