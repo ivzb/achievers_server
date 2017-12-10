@@ -6,7 +6,8 @@ import (
 )
 
 type Datasource interface {
-	AllAchievements() ([]*Achievement, error)
+	AchievementsAll() ([]*Achievement, error)
+	UserCreate(string, string, string, string) (string, error)
 }
 
 type DB struct {

@@ -3,10 +3,14 @@ package main
 import (
 	"app/controller"
 	"app/model"
-	"github.com/justinas/alice"
 	"log"
 	"net/http"
+	"runtime"
 )
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	db, err := model.NewDB("root:@/achievers?parseTime=true")
@@ -16,12 +20,13 @@ func main() {
 
 	env := &model.Env{db}
 
-	stdChain := alice.New( /*myLoggingHandler, authHandler, enforceJSONHandler*/ )
-
 	log.Println("started@:8080")
 
-	http.Handle("/achievements", stdChain.Then(controller.AchievementsIndex(env)))
+	http.Handle("/achievements", controller.AchievementsIndex(env))
 	// http.HandleFunc("/achievements/show", showAchievement)
 	// http.HandleFunc("/achievements/create", createAchievement)
+
+	http.Handle("/users/create", controller.UserCreate(env))
+
 	http.ListenAndServe(":8080", nil)
 }

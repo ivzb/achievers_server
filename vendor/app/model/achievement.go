@@ -16,7 +16,7 @@ type Achievement struct {
 	DeletedAt     time.Time `json:"deleted_at"`
 }
 
-func (db *DB) AllAchievements() ([]*Achievement, error) {
+func (db *DB) AchievementsAll() ([]*Achievement, error) {
 	rows, err := db.Query("SELECT * FROM achievement")
 	if err != nil {
 		return nil, err

@@ -16,7 +16,7 @@ func AchievementsIndex(env *model.Env) http.Handler {
 			return
 		}
 
-		achs, err := env.DB.AllAchievements()
+		achs, err := env.DB.AchievementsAll()
 		if err != nil {
 			http.Error(w, http.StatusText(500), 500)
 			return
