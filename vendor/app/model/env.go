@@ -1,5 +1,6 @@
 package model
 
 type Env struct {
-	DB Datasource
+	DB      Datasource
+	Context Contextsource
 }

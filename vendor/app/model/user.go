@@ -25,21 +25,34 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func (db *DB) UserCreate(first_name string, last_name string, email string, password string) (string, error) {
-	stmt, err := db.Prepare("SELECT COUNT(id) FROM user WHERE email = ? LIMIT 1")
+func (db *DB) UserAuth(email string, password string) (string, error) {
+	stmt, err := db.Prepare("SELECT id FROM user WHERE email = ? AND password = ? LIMIT 1")
 	if err != nil {
 		return "", err
 	}
+
+	var uID string
+	err = stmt.QueryRow(email, password).Scan(&uID)
+
+	return uID, err
+}
+
+func (db *DB) UserExist(column string, value string) (bool, error) {
+	stmt, err := db.Prepare("SELECT COUNT(id) FROM user WHERE " + column + " = ? LIMIT 1")
+	if err != nil {
+		return false, err
+	}
+
 	var count int
-	err = stmt.QueryRow(email).Scan(&count)
+	err = stmt.QueryRow(value).Scan(&count)
 	if err != nil {
-		return "", err
+		return false, err
 	}
 
-	if count == 1 {
-		return "", ErrExists
-	}
+	return count != 0, nil
+}
 
+func (db *DB) UserCreate(first_name string, last_name string, email string, password string) (string, error) {
 	id, err := uuid()
 
 	if err != nil {

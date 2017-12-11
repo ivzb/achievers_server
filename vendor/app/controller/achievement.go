@@ -1,35 +1,44 @@
 package controller
 
 import (
-	"app/model"
-	"encoding/json"
 	"log"
 	"net/http"
+
+	"app/model"
+	"app/shared/response"
+)
+
+const (
+	ItemCreated      = "item created"
+	ItemExists       = "item already exists"
+	ItemNotFound     = "item not found"
+	ItemFound        = "item found"
+	ItemsFound       = "items found"
+	ItemsFindEmpty   = "no items to find"
+	ItemUpdated      = "item updated"
+	ItemDeleted      = "item deleted"
+	ItemsDeleted     = "items deleted"
+	ItemsDeleteEmpty = "no items to delete"
+
+	FriendlyError = "an error occurred, please try again later"
 )
 
 func AchievementsIndex(env *model.Env) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("/achievements")
+		log.Println(env.Context.UserId())
 
 		if r.Method != "GET" {
-			http.Error(w, http.StatusText(405), 405)
+			response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
 			return
 		}
 
 		achs, err := env.DB.AchievementsAll()
 		if err != nil {
-			http.Error(w, http.StatusText(500), 500)
+			response.SendError(w, http.StatusInternalServerError, FriendlyError)
 			return
 		}
 
-		js, err := json.Marshal(achs)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+		response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
 	})
 }
 
