@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"app/model"
@@ -25,12 +24,12 @@ const (
 
 func AchievementsIndex(env *model.Env) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(env.Context.UserId())
-
 		if r.Method != "GET" {
 			response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
 			return
 		}
+
+		_ = env.Store["user_id"]
 
 		achs, err := env.DB.AchievementsAll()
 		if err != nil {

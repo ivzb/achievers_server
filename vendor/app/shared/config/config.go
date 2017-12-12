@@ -20,7 +20,7 @@ type Config struct {
 	Database database.Info `json:"Database"`
 	// Email    email.SMTPInfo  `json:"Email"`
 	// Server   server.Server   `json:"Server"`
-	Token token.TokenInfo `json:"Token"`
+	Token token.Info `json:"Token"`
 }
 
 // ParseJSON unmarshals bytes to structs

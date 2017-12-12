@@ -6,14 +6,12 @@ import (
 	"app/middleware/logger"
 	"app/model"
 	"app/shared/config"
-	"app/shared/token"
+	// "app/shared/token"
 
 	"log"
 	"net/http"
 	"os"
 	"runtime"
-
-	"github.com/justinas/alice"
 )
 
 func init() {
@@ -33,25 +31,36 @@ func main() {
 		log.Panic(err)
 	}
 
-	ctx := model.NewContext()
+	store := make(map[string]string)
 
-	env := &model.Env{db, ctx}
+	token, err := model.NewToken(conf.Token)
 
-	// Load token key
-	// todo: move token to model and put it inside env.Context
-	token.Configure(conf.Token)
+	if err != nil {
+		log.Panic(err)
+	}
 
-	// authChain := alice.New(logger.Handler, auth.Handler)
-	anonChain := alice.New(logger.Handler)
+	env := &model.Env{
+		DB:    db,
+		Store: store,
+		Token: token,
+	}
 
 	log.Println("started@:8080")
 
-	http.Handle("/achievements", logger.Handler(auth.Handler(env, controller.AchievementsIndex(env)))) //authChain.Then(controller.AchievementsIndex(env)))
+	http.Handle("/achievements", authChain(env, controller.AchievementsIndex(env))) //authChain.Then(controller.AchievementsIndex(env)))
 	// http.HandleFunc("/achievements/show", showAchievement)
 	// http.HandleFunc("/achievements/create", createAchievement)
 
-	http.Handle("/users/create", anonChain.Then(controller.UserCreate(env)))
-	http.Handle("/users/auth", anonChain.Then(controller.UserAuth(env)))
+	http.Handle("/users/create", anonChain(controller.UserCreate(env)))
+	http.Handle("/users/auth", anonChain(controller.UserAuth(env)))
 
 	http.ListenAndServe(":8080", nil)
+}
+
+func authChain(env *model.Env, next http.Handler) http.Handler {
+	return anonChain(auth.Handler(env, next))
+}
+
+func anonChain(next http.Handler) http.Handler {
+	return logger.Handler(next)
 }

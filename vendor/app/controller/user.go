@@ -36,14 +36,14 @@ func UserAuth(env *model.Env) http.Handler {
 			return
 		}
 
-		t, err := token.Encrypt(uID)
+		t, err := token.Encrypt(env.Token.GetPublicKey(), uID)
 
 		if err != nil {
 			response.SendError(w, http.StatusInternalServerError, FriendlyError)
 			return
 		}
 
-		response.Send(w, http.StatusOK, "authorized", 1, t.AuthToken)
+		response.Send(w, http.StatusOK, "authorized", 1, t)
 	})
 }
 
@@ -79,7 +79,7 @@ func UserCreate(env *model.Env) http.Handler {
 			return
 		}
 
-		exist, err := env.DB.UserExist("email", email)
+		exist, err := env.DB.Exist("user", "email", email)
 
 		if err != nil {
 			response.SendError(w, http.StatusInternalServerError, FriendlyError)

@@ -7,10 +7,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Datasource interface {
+type DBSource interface {
+	Exist(table string, column string, value string) (bool, error)
+
 	AchievementsAll() ([]*Achievement, error)
 	UserCreate(string, string, string, string) (string, error)
-	UserExist(string, string) (bool, error)
 	UserAuth(string, string) (string, error)
 }
 
@@ -33,4 +34,19 @@ func NewDB(d database.Info) (*DB, error) {
 	default:
 		return nil, errors.New("No registered database in config")
 	}
+}
+
+func (db *DB) Exist(table string, column string, value string) (bool, error) {
+	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = stmt.QueryRow(value).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	return count != 0, nil
 }

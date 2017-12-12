@@ -1,6 +1,7 @@
 package model
 
 type Env struct {
-	DB      Datasource
-	Context Contextsource
+	DB    DBSource
+	Store map[string]string
+	Token TokenSource
 }

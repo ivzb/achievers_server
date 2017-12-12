@@ -1,72 +1,54 @@
 package token
 
 import (
-	"crypto/rsa"
-	"encoding/json"
-	"io"
-	"io/ioutil"
 	"log"
-	"os"
-
+	"encoding/json"
+	"crypto/rsa"
 	"app/shared/crypto"
 )
 
-var (
-	ti TokenInfo
-)
-
-type TokenInfo struct {
+type Info struct {
 	File string `json:"File"`
-	Priv *rsa.PrivateKey
+	// Priv *rsa.PrivateKey
 }
 
-type Token struct {
-	AuthToken []byte `json:"auth_token"`
-}
+// type Token struct {
+// 	AuthToken []byte `json:"auth_token"`
+// }
 
-// Configure adds the settings for the SMTP server
-func Configure(tokenInfo TokenInfo) {
-	ti = tokenInfo
+func Encrypt(pub *rsa.PublicKey, s string) ([]byte, error) {
+	at, err := crypto.Encrypt([]byte(s), pub)
 
-	var err error
-	var input = io.ReadCloser(os.Stdin)
+	log.Println(at)
+	log.Println(string(at))
 
-	if input, err = os.Open(ti.File); err != nil {
-		log.Fatalln(err)
-	}
+	r, err := json.Marshal(at)
 
-	// Read the config file
-	pem, err := ioutil.ReadAll(input)
-	input.Close()
+	log.Println(r)
+	log.Println(string(r))
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	var js []byte
+	err = json.Unmarshal([]byte(r), &js)
 
-	ti.Priv, err = crypto.ImportPrivatePem(pem)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func Encrypt(s string) (*Token, error) {
-	at, err := crypto.Encrypt([]byte(s), &ti.Priv.PublicKey)
+	log.Println(js)
+	log.Println(string(js))
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &Token{AuthToken: at}, nil
+	return at, nil
 }
 
-func Decrypt(at string) ([]byte, error) {
-	j := `{"auth_token":"` + at + `"}`
-	var t Token
+func Decrypt(priv *rsa.PrivateKey, at string) ([]byte, error) {
+	// j := `{"auth_token":"` + at + `"}`
+	var r []byte
 
-	if err := json.Unmarshal([]byte(j), &t); err != nil {
+	if err := json.Unmarshal([]byte(at), &r); err != nil {
 		return nil, err
 	}
 
-	return crypto.Decrypt([]byte(t.AuthToken), ti.Priv)
+    d, err := crypto.Decrypt(r, priv)
+
+	return d, err
 }

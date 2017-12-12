@@ -3,14 +3,15 @@ package auth
 import (
 	"errors"
 	"net/http"
+	// "crypto/rsa"
 
 	"app/model"
 	"app/shared/response"
 	"app/shared/token"
-	// "github.com/gorilla/context"
 )
 
 const (
+	headerMissing    = "header is missing"
 	authorize        = "authorize"
 	authTokenHeader  = "auth_token"
 	authToken        = "auth_token"
@@ -21,14 +22,14 @@ const (
 // Handler will authorize HTTP requests
 func Handler(env *model.Env, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		at, err := tokenFromHeader(r, authTokenHeader)
+		at, err := valueFromHeader(r, authTokenHeader)
 
 		if err != nil {
-			response.SendError(w, http.StatusUnauthorized, err.Error())
+			response.SendError(w, http.StatusUnauthorized, authTokenMissing)
 			return
 		}
 
-		t, err := token.Decrypt(at)
+		t, err := token.Decrypt(env.Token.GetPrivateKey(), at)
 
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
@@ -36,7 +37,7 @@ func Handler(env *model.Env, next http.Handler) http.Handler {
 		}
 
 		uID := string(t)
-		u, err := env.DB.UserExist("id", uID)
+		u, err := env.DB.Exist("user", "id", uID)
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, err.Error())
 			return
@@ -47,21 +48,20 @@ func Handler(env *model.Env, next http.Handler) http.Handler {
 			return
 		}
 
-		// todo: add to context
-		//context.Set(r, "userID", uID)
+		env.Store["user_id"] = uID
 
 		next.ServeHTTP(w, r)
 	})
 }
 
-func tokenFromHeader(r *http.Request, header string) (string, error) {
-	token := r.Header.Get(header)
+func valueFromHeader(r *http.Request, key string) (string, error) {
+	value := r.Header.Get(key)
 
-	l := len(token)
+	l := len(value)
 
 	if l == 0 {
-		return "", errors.New(authTokenMissing)
+		return "", errors.New(headerMissing)
 	}
 
-	return token, nil
+	return value, nil
 }
