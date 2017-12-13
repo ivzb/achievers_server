@@ -6,7 +6,6 @@ import (
 
 	"app/model"
 	"app/shared/response"
-	"app/shared/token"
 )
 
 func UserAuth(env *model.Env) http.Handler {
@@ -36,9 +35,10 @@ func UserAuth(env *model.Env) http.Handler {
 			return
 		}
 
-		t, err := token.Encrypt(env.Token.GetPublicKey(), uID)
+		t, err := env.Token.Encrypt(uID)
 
 		if err != nil {
+			log.Println(err)
 			response.SendError(w, http.StatusInternalServerError, FriendlyError)
 			return
 		}

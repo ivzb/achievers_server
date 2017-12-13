@@ -7,23 +7,13 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"encoding/base64"
 )
 
 type TokenSource interface {
-    GetPrivateKey() (*rsa.PrivateKey)
-    GetPublicKey() (*rsa.PublicKey)
-	// Encrypt(string) ([]byte, error)
-	// Decrypt(string) ([]byte, error)
+	Encrypt(string) (string, error)
+	Decrypt(string) (string, error)
 }
-
-
-// type DBSource interface {
-// 	Exist(table string, column string, value string) (bool, error)
-
-// 	AchievementsAll() ([]*Achievement, error)
-// 	UserCreate(string, string, string, string) (string, error)
-// 	UserAuth(string, string) (string, error)
-// }
 
 type Token struct {
     t *rsa.PrivateKey
@@ -54,10 +44,26 @@ func NewToken(t token.Info /*value string*/) (*Token, error) {
 	return &Token{priv}, nil
 }
 
-func (tk *Token) GetPrivateKey() (*rsa.PrivateKey) {
-	return tk.t
+func (tk *Token) Encrypt(token string) (string, error) {
+	encrypted, err := crypto.Encrypt([]byte(token), &tk.t.PublicKey)
+
+	encoded := base64.StdEncoding.EncodeToString(encrypted)
+
+	if (err != nil) {
+		return "", err
+	}
+
+	return encoded, nil
 }
 
-func (tk *Token) GetPublicKey() (*rsa.PublicKey) {
-	return &tk.t.PublicKey
+func (tk *Token) Decrypt(encoded string) (string, error) {
+	decoded, err := base64.StdEncoding.DecodeString(encoded)
+
+	decrypted, err := crypto.Decrypt([]byte(decoded), tk.t)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(decrypted), err
 }

@@ -3,11 +3,9 @@ package auth
 import (
 	"errors"
 	"net/http"
-	// "crypto/rsa"
 
 	"app/model"
 	"app/shared/response"
-	"app/shared/token"
 )
 
 const (
@@ -29,7 +27,7 @@ func Handler(env *model.Env, next http.Handler) http.Handler {
 			return
 		}
 
-		t, err := token.Decrypt(env.Token.GetPrivateKey(), at)
+		t, err := env.Token.Decrypt(at)
 
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
@@ -48,7 +46,7 @@ func Handler(env *model.Env, next http.Handler) http.Handler {
 			return
 		}
 
-		env.Store["user_id"] = uID
+		env.UserId = uID
 
 		next.ServeHTTP(w, r)
 	})

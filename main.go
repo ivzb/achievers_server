@@ -18,6 +18,16 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
+type Handler struct {
+	*model.Env
+	H func(e *model.Env, w http.ResponseWriter, r *http.Request)
+}
+
+// ServeHTTP allows our Handler type to satisfy http.Handler.
+func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h.H(h.Env, w, r)
+}
+
 func main() {
 	conf, err := config.Load("config" + string(os.PathSeparator) + "config.json")
 
@@ -31,8 +41,6 @@ func main() {
 		log.Panic(err)
 	}
 
-	store := make(map[string]string)
-
 	token, err := model.NewToken(conf.Token)
 
 	if err != nil {
@@ -41,13 +49,14 @@ func main() {
 
 	env := &model.Env{
 		DB:    db,
-		Store: store,
 		Token: token,
 	}
 
 	log.Println("started@:8080")
 
-	http.Handle("/achievements", authChain(env, controller.AchievementsIndex(env))) //authChain.Then(controller.AchievementsIndex(env)))
+	// handl := authChain(env, controller.AchievementsIndex(env))
+
+	http.Handle("/achievements", authChain(env, controller.AchievementsIndex(env)))
 	// http.HandleFunc("/achievements/show", showAchievement)
 	// http.HandleFunc("/achievements/create", createAchievement)
 

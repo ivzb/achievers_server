@@ -2,6 +2,6 @@ package model
 
 type Env struct {
 	DB    DBSource
-	Store map[string]string
+	UserId string
 	Token TokenSource
 }

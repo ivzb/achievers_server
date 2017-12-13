@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"app/model"
@@ -22,6 +23,7 @@ const (
 	FriendlyError = "an error occurred, please try again later"
 )
 
+// func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
 func AchievementsIndex(env *model.Env) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
@@ -29,7 +31,8 @@ func AchievementsIndex(env *model.Env) http.Handler {
 			return
 		}
 
-		_ = env.Store["user_id"]
+		uId := env.UserId
+		log.Println(uId)
 
 		achs, err := env.DB.AchievementsAll()
 		if err != nil {
@@ -40,6 +43,26 @@ func AchievementsIndex(env *model.Env) http.Handler {
 		response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
 	})
 }
+
+// func AchievementsIndex(env *model.Env) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		if r.Method != "GET" {
+// 			response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
+// 			return
+// 		}
+
+// 		uId := env.UserId
+// 		log.Println(uId)
+
+// 		achs, err := env.DB.AchievementsAll()
+// 		if err != nil {
+// 			response.SendError(w, http.StatusInternalServerError, FriendlyError)
+// 			return
+// 		}
+
+// 		response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
+// 	})
+// }
 
 // func showAchievement(w http.ResponseWriter, r *http.Request) {
 //   if r.Method != "GET" {

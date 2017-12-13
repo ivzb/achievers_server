@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
+	"crypto/rand"
+	"fmt"
 )
 
 type DBSource interface {
@@ -49,4 +51,16 @@ func (db *DB) Exist(table string, column string, value string) (bool, error) {
 	}
 
 	return count != 0, nil
+}
+
+
+// UUID generates UUID for use as an ID
+func (db *DB) UUID() (string, error) {
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
 }

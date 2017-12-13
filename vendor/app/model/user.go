@@ -1,7 +1,6 @@
 package model
 
 import (
-	"app/shared/database"
 	"errors"
 	"time"
 )
@@ -37,7 +36,7 @@ func (db *DB) UserAuth(email string, password string) (string, error) {
 }
 
 func (db *DB) UserCreate(first_name string, last_name string, email string, password string) (string, error) {
-	id, err := database.UUID()
+	id, err := db.UUID()
 
 	if err != nil {
 		return "", err
