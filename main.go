@@ -43,7 +43,7 @@ func main() {
 
 	log.Println("started@:8080")
 
-	http.Handle("/achievements", middleware.Handler{env, controller.AchievementsIndex})//authChain(env, controller.AchievementsIndex(env)))
+	http.Handle("/achievements", middleware.AuthHandler(env, middleware.Handler{env, controller.AchievementsIndex}))//authChain(env, controller.AchievementsIndex(env)))
 	// http.HandleFunc("/achievements/show", showAchievement)
 	// http.HandleFunc("/achievements/create", createAchievement)
 
