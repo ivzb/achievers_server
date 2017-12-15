@@ -35,7 +35,7 @@ func Handler(handler app.Handler) http.Handler {
 
 		exists, err := handler.Env.DB.Exists("user", "id", uID)
 		if err != nil {
-			response.SendError(w, http.StatusUnauthorized, err.Error())
+			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
 			return
 		}
 
@@ -50,6 +50,7 @@ func Handler(handler app.Handler) http.Handler {
 	})
 }
 
+// todo: extract in request extender and test it
 func valueFromHeader(r *http.Request, key string) (string, error) {
 
 	value := r.Header.Get(key)
