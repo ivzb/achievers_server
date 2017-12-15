@@ -3,10 +3,11 @@ package crypto
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+
+	"github.com/minio/sha256-simd"
 )
 
 func Generate() (*rsa.PrivateKey, error) {

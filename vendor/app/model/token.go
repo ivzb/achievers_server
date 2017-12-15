@@ -1,13 +1,13 @@
 package model
 
 import (
+	"app/shared/crypto"
+	"app/shared/token"
 	"crypto/rsa"
-    "app/shared/token"
-    "app/shared/crypto"
+	"encoding/base64"
 	"io"
 	"io/ioutil"
 	"os"
-	"encoding/base64"
 )
 
 type TokenSource interface {
@@ -16,11 +16,11 @@ type TokenSource interface {
 }
 
 type Token struct {
-    t *rsa.PrivateKey
+	t *rsa.PrivateKey
 }
 
 func NewToken(t token.Info /*value string*/) (*Token, error) {
-    var err error
+	var err error
 	var input = io.ReadCloser(os.Stdin)
 
 	if input, err = os.Open(t.File); err != nil {
@@ -49,7 +49,7 @@ func (tk *Token) Encrypt(token string) (string, error) {
 
 	encoded := base64.StdEncoding.EncodeToString(encrypted)
 
-	if (err != nil) {
+	if err != nil {
 		return "", err
 	}
 

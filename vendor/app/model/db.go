@@ -2,15 +2,16 @@ package model
 
 import (
 	"app/shared/database"
+	"crypto/rand"
 	"database/sql"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
-	"crypto/rand"
 	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type DBSource interface {
-	Exist(table string, column string, value string) (bool, error)
+	Exists(table string, column string, value string) (bool, error)
 
 	AchievementsAll() ([]*Achievement, error)
 	UserCreate(string, string, string, string) (string, error)
@@ -52,7 +53,6 @@ func (db *DB) Exist(table string, column string, value string) (bool, error) {
 
 	return count != 0, nil
 }
-
 
 // UUID generates UUID for use as an ID
 func (db *DB) UUID() (string, error) {

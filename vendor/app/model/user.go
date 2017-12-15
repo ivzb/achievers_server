@@ -35,7 +35,7 @@ func (db *DB) UserAuth(email string, password string) (string, error) {
 	return uID, err
 }
 
-func (db *DB) UserCreate(first_name string, last_name string, email string, password string) (string, error) {
+func (db *DB) UserCreate(firstName string, lastName string, email string, password string) (string, error) {
 	id, err := db.UUID()
 
 	if err != nil {
@@ -44,7 +44,7 @@ func (db *DB) UserCreate(first_name string, last_name string, email string, pass
 
 	result, err := db.Exec(`INSERT INTO user (id, first_name, last_name, email, password)
         VALUES(?, ?, ?, ?, ?)`,
-		id, first_name, last_name, email, password)
+		id, firstName, lastName, email, password)
 
 	if err != nil {
 		return "", err
