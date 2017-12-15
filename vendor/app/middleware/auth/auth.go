@@ -2,13 +2,12 @@ package auth
 
 import (
 	"app/middleware/app"
+	"app/shared/request"
 	"app/shared/response"
-	"errors"
 	"net/http"
 )
 
 const (
-	headerMissing    = "header is missing"
 	authorize        = "authorize"
 	authTokenHeader  = "auth_token"
 	authToken        = "auth_token"
@@ -19,7 +18,7 @@ const (
 // Handler will authorize HTTP requests
 func Handler(handler app.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		at, err := valueFromHeader(r, authTokenHeader)
+		at, err := request.GetHeader(r, authTokenHeader)
 
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, authTokenMissing)
@@ -48,18 +47,4 @@ func Handler(handler app.Handler) http.Handler {
 
 		handler.ServeHTTP(w, r)
 	})
-}
-
-// todo: extract in request extender and test it
-func valueFromHeader(r *http.Request, key string) (string, error) {
-
-	value := r.Header.Get(key)
-
-	l := len(value)
-
-	if l == 0 {
-		return "", errors.New(headerMissing)
-	}
-
-	return value, nil
 }

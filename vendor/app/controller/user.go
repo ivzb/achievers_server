@@ -76,14 +76,14 @@ func UserCreate(env *model.Env, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exist, err := env.DB.Exist("user", "email", email)
+	exists, err := env.DB.Exists("user", "email", email)
 
 	if err != nil {
 		response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		return
 	}
 
-	if exist {
+	if exists {
 		response.SendError(w, http.StatusBadRequest, "email already exists")
 		return
 	}

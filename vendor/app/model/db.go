@@ -39,7 +39,7 @@ func NewDB(d database.Info) (*DB, error) {
 	}
 }
 
-func (db *DB) Exist(table string, column string, value string) (bool, error) {
+func (db *DB) Exists(table string, column string, value string) (bool, error) {
 	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
 	if err != nil {
 		return false, err
