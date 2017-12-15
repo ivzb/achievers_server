@@ -1,11 +1,9 @@
 package middleware
 
 import (
+	"app/shared/response"
 	"errors"
 	"net/http"
-
-	"app/model"
-	"app/shared/response"
 )
 
 const (
@@ -17,8 +15,8 @@ const (
 	authTokenInvalid = "auth_token is invalid"
 )
 
-// Handler will authorize HTTP requests
-func AuthHandler(env *model.Env, next http.Handler) http.Handler {
+// AuthHandler will authorize HTTP requests
+func AuthHandler(h AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		at, err := valueFromHeader(r, authTokenHeader)
 
@@ -27,7 +25,7 @@ func AuthHandler(env *model.Env, next http.Handler) http.Handler {
 			return
 		}
 
-		t, err := env.Token.Decrypt(at)
+		t, err := h.Env.Token.Decrypt(at)
 
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
@@ -35,7 +33,7 @@ func AuthHandler(env *model.Env, next http.Handler) http.Handler {
 		}
 
 		uID := string(t)
-		u, err := env.DB.Exist("user", "id", uID)
+		u, err := h.Env.DB.Exist("user", "id", uID)
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, err.Error())
 			return
@@ -46,9 +44,9 @@ func AuthHandler(env *model.Env, next http.Handler) http.Handler {
 			return
 		}
 
-		env.UserId = uID
+		h.Env.UserId = uID
 
-		next.ServeHTTP(w, r)
+		h.ServeHTTP(w, r)
 	})
 }
 

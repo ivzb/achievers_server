@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"log"
-	"net/http"
-
 	"app/model"
 	"app/shared/response"
+	"log"
+	"net/http"
 )
 
 const (
@@ -24,13 +23,13 @@ const (
 )
 
 func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
-    if r.Method != "GET" {
+	if r.Method != "GET" {
 		response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
 		return
 	}
 
-	uId := env.UserId
-	log.Println(uId)
+	uID := env.UserId
+	log.Println(uID)
 
 	achs, err := env.DB.AchievementsAll()
 	if err != nil {
@@ -40,47 +39,6 @@ func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
 
 	response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
 }
-
-//// func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
-// func AchievementsIndex(env *model.Env) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		if r.Method != "GET" {
-// 			response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
-// 			return
-// 		}
-
-// 		uId := env.UserId
-// 		log.Println(uId)
-
-// 		achs, err := env.DB.AchievementsAll()
-// 		if err != nil {
-// 			response.SendError(w, http.StatusInternalServerError, FriendlyError)
-// 			return
-// 		}
-
-// 		response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
-// 	})
-// }
-
-// func AchievementsIndex(env *model.Env) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		if r.Method != "GET" {
-// 			response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
-// 			return
-// 		}
-
-// 		uId := env.UserId
-// 		log.Println(uId)
-
-// 		achs, err := env.DB.AchievementsAll()
-// 		if err != nil {
-// 			response.SendError(w, http.StatusInternalServerError, FriendlyError)
-// 			return
-// 		}
-
-// 		response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
-// 	})
-// }
 
 // func showAchievement(w http.ResponseWriter, r *http.Request) {
 //   if r.Method != "GET" {

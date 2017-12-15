@@ -5,7 +5,6 @@ import (
 	"app/middleware"
 	"app/model"
 	"app/shared/config"
-	// "app/shared/token"
 
 	"log"
 	"net/http"
@@ -43,7 +42,11 @@ func main() {
 
 	log.Println("started@:8080")
 
-	http.Handle("/achievements", middleware.AuthHandler(env, middleware.Handler{env, controller.AchievementsIndex}))//authChain(env, controller.AchievementsIndex(env)))
+	http.Handle("/achievements", use(middleware.AppHandler{env, controller.AchievementsIndex}, middleware.AuthHandler))
+	// lastly used
+	// http.Handle("/achievements", use(middleware.Handler{env, controller.AchievementsIndex}, middleware.AuthHandler))
+
+	// http.Handle("/achievements", middleware.Handler{env, middleware.AuthHandler(controller.AchievementsIndex)}))//authChain(env, controller.AchievementsIndex(env)))
 	// http.HandleFunc("/achievements/show", showAchievement)
 	// http.HandleFunc("/achievements/create", createAchievement)
 
@@ -59,4 +62,13 @@ func main() {
 
 func anonChain(next http.Handler) http.Handler {
 	return middleware.LoggerHandler(next)
+}
+
+func use(appHandler middleware.AppHandler, middlewares ...func(middleware.AppHandler) http.Handler) http.Handler {
+	var handler http.Handler = appHandler
+	for _, middleware := range middlewares {
+		handler = middleware(appHandler)
+	}
+
+	return handler
 }
