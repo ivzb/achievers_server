@@ -3,15 +3,30 @@ package logger
 import (
 	"app/middleware/app"
 	"app/model"
+	"app/shared/response"
 	"fmt"
 	"net/http"
-	"time"
+)
+
+const (
+	FriendlyError = "an error occurred, please try again later"
 )
 
 // Handler will log the HTTP requests
-func Handler(handler app.Handler) http.Handler {
-	return app.Handler{handler.Env, func(env *model.Env, w http.ResponseWriter, r *http.Request) {
-		fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), r.RemoteAddr, r.Method, r.URL)
-		handler.ServeHTTP(w, r)
-	}}
+func Handler(handler app.Handler) app.Handler {
+	prevH := handler.H
+
+	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) {
+		log := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+		err := handler.Env.Logger.Log(log)
+
+		if err != nil {
+			response.SendError(w, http.StatusInternalServerError, FriendlyError)
+			return
+		}
+
+		prevH(env, w, r)
+	}
+
+	return handler
 }

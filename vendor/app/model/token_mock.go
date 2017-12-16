@@ -10,15 +10,15 @@ type DecryptedMock struct {
 	E error
 }
 
-type TokenMock struct {
+type TokenerMock struct {
 	EncryptedMock EncryptedMock
 	DecryptedMock DecryptedMock
 }
 
-func (mock *TokenMock) Encrypt(string) (string, error) {
+func (mock *TokenerMock) Encrypt(string) (string, error) {
 	return mock.EncryptedMock.S, mock.EncryptedMock.E
 }
 
-func (mock *TokenMock) Decrypt(string) (string, error) {
+func (mock *TokenerMock) Decrypt(string) (string, error) {
 	return mock.DecryptedMock.S, mock.DecryptedMock.E
 }

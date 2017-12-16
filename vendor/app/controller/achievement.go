@@ -3,7 +3,6 @@ package controller
 import (
 	"app/model"
 	"app/shared/response"
-	"log"
 	"net/http"
 )
 
@@ -29,7 +28,7 @@ func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
 	}
 
 	uID := env.UserId
-	log.Println(uID)
+	env.Logger.Log(uID)
 
 	achs, err := env.DB.AchievementsAll()
 	if err != nil {

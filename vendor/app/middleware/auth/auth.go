@@ -2,6 +2,7 @@ package auth
 
 import (
 	"app/middleware/app"
+	"app/model"
 	"app/shared/request"
 	"app/shared/response"
 	"net/http"
@@ -16,8 +17,10 @@ const (
 )
 
 // Handler will authorize HTTP requests
-func Handler(handler app.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func Handler(handler app.Handler) app.Handler {
+	prevH := handler.H
+
+	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) {
 		at, err := request.GetHeader(r, authTokenHeader)
 
 		if err != nil {
@@ -25,7 +28,7 @@ func Handler(handler app.Handler) http.Handler {
 			return
 		}
 
-		uID, err := handler.Env.Token.Decrypt(at)
+		uID, err := handler.Env.Tokener.Decrypt(at)
 
 		if err != nil {
 			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
@@ -45,6 +48,8 @@ func Handler(handler app.Handler) http.Handler {
 
 		handler.Env.UserId = uID
 
-		handler.ServeHTTP(w, r)
-	})
+		prevH(env, w, r)
+	}
+
+	return handler
 }

@@ -1,7 +1,8 @@
 package model
 
 type Env struct {
-	DB     DBSource
-	UserId string
-	Token  TokenSource
+	DB      DBSource
+	UserId  string
+	Tokener Tokener
+	Logger  Logger
 }

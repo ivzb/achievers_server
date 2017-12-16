@@ -7,8 +7,8 @@ import (
 	"app/middleware/logger"
 	"app/model"
 	"app/shared/config"
-
 	"log"
+
 	"net/http"
 	"os"
 	"runtime"
@@ -31,20 +31,23 @@ func main() {
 		log.Panic(err)
 	}
 
-	token, err := model.NewToken(conf.Token)
+	token, err := model.NewTokener(conf.Token)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
+	log := model.NewLogger()
+
 	env := &model.Env{
-		DB:    db,
-		Token: token,
+		DB:      db,
+		Tokener: token,
+		Logger:  log,
 	}
 
-	log.Println("started@:8080")
+	log.Log("started@:8080")
 
-	http.Handle("/achievements", use(app.Handler{env, controller.AchievementsIndex}, logger.Handler, auth.Handler))
+	http.Handle("/achievements", use(app.Handler{env, controller.AchievementsIndex}, auth.Handler, logger.Handler))
 
 	http.Handle("/users/create", use(app.Handler{env, controller.UserCreate}, logger.Handler))
 	http.Handle("/users/auth", use(app.Handler{env, controller.UserAuth}, logger.Handler))
@@ -52,14 +55,11 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// todo: fix chain - currenly it only chains last one because of design
-func use(appHandler app.Handler, middlewares ...func(app.Handler) http.Handler) http.Handler {
-	var handler http.Handler = appHandler
-	for i, middleware := range middlewares {
-		log.Println("middle: ", i)
-
-		handler = middleware(appHandler)
+func use(appHandler app.Handler, middlewares ...func(app.Handler) app.Handler) http.Handler {
+	for _, middleware := range middlewares {
+		appHandler = middleware(appHandler)
 	}
+	var handler http.Handler = appHandler
 
 	return handler
 }

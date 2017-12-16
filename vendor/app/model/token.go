@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-type TokenSource interface {
+type Tokener interface {
 	Encrypt(string) (string, error)
 	Decrypt(string) (string, error)
 }
@@ -19,7 +19,7 @@ type Token struct {
 	t *rsa.PrivateKey
 }
 
-func NewToken(t token.Info /*value string*/) (*Token, error) {
+func NewTokener(t token.Info) (*Token, error) {
 	var err error
 	var input = io.ReadCloser(os.Stdin)
 

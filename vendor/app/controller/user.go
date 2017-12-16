@@ -34,7 +34,7 @@ func UserAuth(env *model.Env, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := env.Token.Encrypt(uID)
+	t, err := env.Tokener.Encrypt(uID)
 
 	if err != nil {
 		log.Println(err)
