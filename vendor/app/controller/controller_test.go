@@ -1,0 +1,54 @@
+package controller
+
+import (
+	"app/middleware/app"
+	"app/model"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func testInvalidMethod(t *testing.T, method string, url string, handle app.Handle) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest(method, url, nil)
+
+	appHandler := app.Handler{nil, handle}
+
+	appHandler.ServeHTTP(rec, req)
+
+	// Check the status code is what we expect.
+	if status := rec.Code; status != http.StatusMethodNotAllowed {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusMethodNotAllowed)
+	}
+
+	// Check the response body is what we expect.
+	expected := `{"status":405,"message":"` + MethodNotAllowedErrorMessage + `"}`
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func testStatusCode(t *testing.T, rec *httptest.ResponseRecorder, expectedStatusCode int) {
+	// Check the status code is what we expect.
+	if actualStatusCode := rec.Code; actualStatusCode != expectedStatusCode {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			actualStatusCode, expectedStatusCode)
+	}
+}
+
+func testHandler(
+	t *testing.T,
+	rec *httptest.ResponseRecorder,
+	req *http.Request,
+	env *model.Env,
+	handle app.Handle,
+	statusCode int) {
+
+	appHandler := app.Handler{env, handle}
+
+	appHandler.ServeHTTP(rec, req)
+
+	testStatusCode(t, rec, statusCode)
+}

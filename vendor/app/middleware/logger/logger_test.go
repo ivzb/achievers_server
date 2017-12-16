@@ -17,7 +17,7 @@ func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) {
 func TestLoggerHandler_Log(t *testing.T) {
 	req := httptest.NewRequest("GET", "/logger", nil)
 
-	rr := httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 
 	env := &model.Env{
 		Logger: &model.LoggerMock{
@@ -29,26 +29,26 @@ func TestLoggerHandler_Log(t *testing.T) {
 
 	var handler http.Handler = Handler(appHandler)
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rec, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusOK {
+	if status := rec.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
 
 	// Check the response body is what we expect.
 	expected := `{"status":200,"message":"ok","count":1,"results":"OK"}`
-	if rr.Body.String() != expected {
+	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			rec.Body.String(), expected)
 	}
 }
 
 func TestLoggerHandler_Error(t *testing.T) {
 	req := httptest.NewRequest("GET", "/logger", nil)
 
-	rr := httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 
 	env := &model.Env{
 		Logger: &model.LoggerMock{
@@ -60,18 +60,18 @@ func TestLoggerHandler_Error(t *testing.T) {
 
 	var handler http.Handler = Handler(appHandler)
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rec, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusInternalServerError {
+	if status := rec.Code; status != http.StatusInternalServerError {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusInternalServerError)
 	}
 
 	// Check the response body is what we expect.
 	expected := `{"status":500,"message":"an error occurred, please try again later"}`
-	if rr.Body.String() != expected {
+	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			rec.Body.String(), expected)
 	}
 }

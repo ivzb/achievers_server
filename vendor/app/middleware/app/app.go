@@ -5,9 +5,11 @@ import (
 	"net/http"
 )
 
+type Handle func(env *model.Env, w http.ResponseWriter, r *http.Request)
+
 type Handler struct {
 	Env *model.Env
-	H   func(env *model.Env, w http.ResponseWriter, r *http.Request)
+	H   Handle
 }
 
 func (fn Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

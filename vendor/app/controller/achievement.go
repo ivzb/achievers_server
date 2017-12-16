@@ -6,24 +6,9 @@ import (
 	"net/http"
 )
 
-const (
-	ItemCreated      = "item created"
-	ItemExists       = "item already exists"
-	ItemNotFound     = "item not found"
-	ItemFound        = "item found"
-	ItemsFound       = "items found"
-	ItemsFindEmpty   = "no items to find"
-	ItemUpdated      = "item updated"
-	ItemDeleted      = "item deleted"
-	ItemsDeleted     = "items deleted"
-	ItemsDeleteEmpty = "no items to delete"
-
-	FriendlyError = "an error occurred, please try again later"
-)
-
 func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
-		response.SendError(w, http.StatusMethodNotAllowed, FriendlyError)
+		response.SendError(w, http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
 		return
 	}
 
@@ -32,7 +17,7 @@ func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) {
 
 	achs, err := env.DB.AchievementsAll()
 	if err != nil {
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, FriendlyErrorMessage)
 		return
 	}
 

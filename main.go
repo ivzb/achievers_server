@@ -49,12 +49,13 @@ func main() {
 
 	http.Handle("/achievements", use(app.Handler{env, controller.AchievementsIndex}, auth.Handler, logger.Handler))
 
-	http.Handle("/users/create", use(app.Handler{env, controller.UserCreate}, logger.Handler))
 	http.Handle("/users/auth", use(app.Handler{env, controller.UserAuth}, logger.Handler))
+	http.Handle("/users/create", use(app.Handler{env, controller.UserCreate}, logger.Handler))
 
 	http.ListenAndServe(":8080", nil)
 }
 
+// specify middlewares in reverse order since it is chaining them recursively
 func use(appHandler app.Handler, middlewares ...func(app.Handler) app.Handler) http.Handler {
 	for _, middleware := range middlewares {
 		appHandler = middleware(appHandler)

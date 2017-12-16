@@ -2,15 +2,16 @@ package controller
 
 import (
 	"app/model"
+	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 )
 
-type mockDB struct{}
-
-func (mdb *mockDB) AllAchievements() ([]*model.Achievement, error) {
+func MockAchievements() []*model.Achievement {
 	achs := make([]*model.Achievement, 0)
 
 	achs = append(achs, &model.Achievement{
@@ -37,19 +38,58 @@ func (mdb *mockDB) AllAchievements() ([]*model.Achievement, error) {
 		time.Date(0, 1, 1, 0, 0, 0, 0, time.UTC),
 	})
 
-	return achs, nil
+	return achs
 }
 
-func TestAchievementsIndex(t *testing.T) {
+func TestAchievementsIndex_ValidAchievements(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/achievements", nil)
 
-	env := model.Env{DB: &mockDB{}}
-	http.Handler(AchievementsIndex(&env)).ServeHTTP(rec, req)
+	env := model.Env{
+		DB: &model.DBMock{
+			AchievementsAllMock: model.AchievementsAllMock{MockAchievements(), nil},
+		},
+		Logger: &model.LoggerMock{},
+	}
 
-	expected := `[{"id":"fb7691eb-ea1d-b20f-edee-9cadcf23181f","title":"title","description":"desc","picture_url":"http://picture.jpg","involvement_id":"3","author_id":"4e69c9ba-719c-ca7c-fb66-80ab235c8e39","created_at":"2017-12-09T15:04:23Z","updated_at":"2017-12-09T15:04:23Z","deleted_at":"0000-01-01T00:00:00Z"},{"id":"93821a67-9c82-96e4-dc3c-423e5581d036","title":"another title","description":"another desc","picture_url":"http://another-picture.jpg","involvement_id":"1","author_id":"4e69c9ba-719c-ca7c-fb66-80ab235c8e39","created_at":"2017-12-09T15:04:23Z","updated_at":"2017-12-09T15:04:23Z","deleted_at":"0000-01-01T00:00:00Z"}]`
+	handle := AchievementsIndex
+	statusCode := http.StatusOK
 
-	if expected != rec.Body.String() {
-		t.Errorf("\n...expected = %v\n...obtained = %v", expected, rec.Body.String())
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	marshalled, _ := json.Marshal(MockAchievements())
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"item found","count":2,"results":` + string(marshalled) + `}`
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestAchievementsIndex_InvalidMethod(t *testing.T) {
+	testInvalidMethod(t, "POST", "/achievements", AchievementsIndex)
+}
+
+func TestAchievementsIndex_DBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/achievements", nil)
+
+	env := model.Env{
+		DB: &model.DBMock{
+			AchievementsAllMock: model.AchievementsAllMock{nil, errors.New("db error")},
+		},
+		Logger: &model.LoggerMock{},
+	}
+
+	handle := AchievementsIndex
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + FriendlyErrorMessage + `"}`
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
 	}
 }

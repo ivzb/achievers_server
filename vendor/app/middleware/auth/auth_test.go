@@ -83,7 +83,7 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 	req := httptest.NewRequest("GET", "/auth", nil)
 	req.Header.Add("auth_token", "asdf")
 
-	rr := httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 
 	env := &model.Env{
 		DB: &model.DBMock{},
@@ -96,19 +96,19 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 
 	var handler http.Handler = Handler(appHandler)
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rec, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusUnauthorized {
+	if status := rec.Code; status != http.StatusUnauthorized {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusUnauthorized)
 	}
 
 	// Check the response body is what we expect.
 	expected := `{"status":401,"message":"auth_token is invalid"}`
-	if rr.Body.String() != expected {
+	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			rec.Body.String(), expected)
 	}
 }
 
@@ -116,7 +116,7 @@ func TestAuthHandler_DBError(t *testing.T) {
 	req := httptest.NewRequest("GET", "/auth", nil)
 	req.Header.Add("auth_token", "asdf")
 
-	rr := httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 
 	env := &model.Env{
 		DB: &model.DBMock{
@@ -131,19 +131,19 @@ func TestAuthHandler_DBError(t *testing.T) {
 
 	var handler http.Handler = Handler(appHandler)
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rec, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusUnauthorized {
+	if status := rec.Code; status != http.StatusUnauthorized {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusUnauthorized)
 	}
 
 	// Check the response body is what we expect.
 	expected := `{"status":401,"message":"auth_token is invalid"}`
-	if rr.Body.String() != expected {
+	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			rec.Body.String(), expected)
 	}
 }
 
@@ -151,7 +151,7 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 	req := httptest.NewRequest("GET", "/auth", nil)
 	req.Header.Add("auth_token", "asdf")
 
-	rr := httptest.NewRecorder()
+	rec := httptest.NewRecorder()
 
 	env := &model.Env{
 		DB: &model.DBMock{
@@ -166,18 +166,18 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 
 	var handler http.Handler = Handler(appHandler)
 
-	handler.ServeHTTP(rr, req)
+	handler.ServeHTTP(rec, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusUnauthorized {
+	if status := rec.Code; status != http.StatusUnauthorized {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusUnauthorized)
 	}
 
 	// Check the response body is what we expect.
 	expected := `{"status":401,"message":"auth_token is invalid"}`
-	if rr.Body.String() != expected {
+	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+			rec.Body.String(), expected)
 	}
 }

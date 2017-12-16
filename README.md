@@ -70,3 +70,23 @@ Rules for messages:
 * 401 - unauthorized
 * 500 - an error occurred, please try again later (should also log error because it's a programming or server issue)
 ```
+
+## Tests
+
+Run all tests
+
+```
+go test ./vendor/app/...
+```
+
+Run specific package tests with coverage
+
+```
+go test ./vendor/app/controller -coverprofile=coverage.out
+```
+
+View coverage result in html
+
+```
+go tool cover -html=coverage.out
+```
