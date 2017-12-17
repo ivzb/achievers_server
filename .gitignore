@@ -78,4 +78,6 @@ doc/codelab/wiki/*.bin
 /pkg/
 
 /rsa/*
-coverage.out
+*.out
+.vscode
+.vscode/*
