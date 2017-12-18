@@ -10,8 +10,8 @@ import (
 	"testing"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) {
-	response.Send(w, http.StatusOK, "ok", 1, "OK")
+func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
+	return response.Send(w, http.StatusOK, "ok", 1, "OK")
 }
 
 func TestLoggerHandler_Log(t *testing.T) {

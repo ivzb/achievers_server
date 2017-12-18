@@ -20,35 +20,31 @@ const (
 func Handler(handler app.Handler) app.Handler {
 	prevH := handler.H
 
-	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) {
+	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
 		at, err := request.GetHeader(r, authTokenHeader)
 
 		if err != nil {
-			response.SendError(w, http.StatusUnauthorized, authTokenMissing)
-			return
+			return response.SendError(w, http.StatusUnauthorized, authTokenMissing)
 		}
 
 		uID, err := handler.Env.Tokener.Decrypt(at)
 
 		if err != nil {
-			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
-			return
+			return response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
 		}
 
 		exists, err := handler.Env.DB.Exists("user", "id", uID)
 		if err != nil {
-			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
-			return
+			return response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
 		}
 
 		if exists == false {
-			response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
-			return
+			return response.SendError(w, http.StatusUnauthorized, authTokenInvalid)
 		}
 
 		handler.Env.UserId = uID
 
-		prevH(env, w, r)
+		return prevH(env, w, r)
 	}
 
 	return handler

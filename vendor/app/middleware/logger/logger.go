@@ -16,16 +16,15 @@ const (
 func Handler(handler app.Handler) app.Handler {
 	prevH := handler.H
 
-	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) {
+	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
 		log := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
 		err := handler.Env.Logger.Log(log)
 
 		if err != nil {
-			response.SendError(w, http.StatusInternalServerError, FriendlyError)
-			return
+			return response.SendError(w, http.StatusInternalServerError, FriendlyError)
 		}
 
-		prevH(env, w, r)
+		return prevH(env, w, r)
 	}
 
 	return handler
