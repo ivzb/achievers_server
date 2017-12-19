@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// Message is the return type of all handlers
 type Message struct {
 	StatusCode int
 	Result     interface{}
@@ -31,13 +32,12 @@ type Retrieve struct {
 }
 
 // SendError calls Send by without a count or results
-func SendError(w http.ResponseWriter, status http.ConnState, message string) Message {
-	return Send(w, status, message, 0, nil)
+func SendError(status http.ConnState, message string) Message {
+	return Send(status, message, 0, nil)
 }
 
 // Send writes struct to the writer using a format
 func Send(
-	w http.ResponseWriter,
 	status http.ConnState,
 	message string,
 	count int,
@@ -68,9 +68,7 @@ func Send(
 
 	statusCode := int(status)
 
-	return Message{
-		StatusCode: statusCode,
-		Result:     result}
+	return Message{statusCode, result}
 }
 
 // SendJSON writes a struct to the writer

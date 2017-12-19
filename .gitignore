@@ -81,3 +81,4 @@ doc/codelab/wiki/*.bin
 *.out
 .vscode
 .vscode/*
+achievers_server

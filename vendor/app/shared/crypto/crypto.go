@@ -25,7 +25,7 @@ func Decrypt(ciphertext []byte, priv *rsa.PrivateKey) ([]byte, error) {
 	return rsa.DecryptOAEP(sha256.New(), rand.Reader, priv, ciphertext, nil)
 }
 
-func ExportPrivatePem(privkey *rsa.PrivateKey) string {
+func ExportPrivatePem(privkey *rsa.PrivateKey) []byte {
 	privkey_bytes := x509.MarshalPKCS1PrivateKey(privkey)
 	privkey_pem := pem.EncodeToMemory(
 		&pem.Block{
@@ -33,7 +33,7 @@ func ExportPrivatePem(privkey *rsa.PrivateKey) string {
 			Bytes: privkey_bytes,
 		},
 	)
-	return string(privkey_pem)
+	return privkey_pem
 }
 
 func ImportPrivatePem(privPEM []byte) (*rsa.PrivateKey, error) {

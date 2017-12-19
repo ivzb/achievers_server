@@ -20,38 +20,38 @@ const (
 
 func UserAuth(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
 	if r.Method != "POST" {
-		return response.SendError(w, http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
 	}
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
 	if email == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingEmailErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingEmailErrorMessage)
 	}
 
 	if password == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingPasswordErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingPasswordErrorMessage)
 	}
 
 	uID, err := env.DB.UserAuth(email, password)
 
 	if err != nil {
-		return response.SendError(w, http.StatusUnauthorized, Unauthorized)
+		return response.SendError(http.StatusUnauthorized, Unauthorized)
 	}
 
 	token, err := env.Tokener.Encrypt(uID)
 
 	if err != nil {
-		return response.SendError(w, http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
 	}
 
-	return response.Send(w, http.StatusOK, "authorized", 1, token)
+	return response.Send(http.StatusOK, "authorized", 1, token)
 }
 
 func UserCreate(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
 	if r.Method != "POST" {
-		return response.SendError(w, http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
 	}
 
 	first_name := r.FormValue("first_name")
@@ -60,36 +60,36 @@ func UserCreate(env *model.Env, w http.ResponseWriter, r *http.Request) response
 	password := r.FormValue("password")
 
 	if first_name == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingFirstNameErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingFirstNameErrorMessage)
 	}
 
 	if last_name == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingLastNameErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingLastNameErrorMessage)
 	}
 
 	if email == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingEmailErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingEmailErrorMessage)
 	}
 
 	if password == "" {
-		return response.SendError(w, http.StatusBadRequest, MissingPasswordErrorMessage)
+		return response.SendError(http.StatusBadRequest, MissingPasswordErrorMessage)
 	}
 
 	exists, err := env.DB.Exists("user", "email", email)
 
 	if err != nil {
-		return response.SendError(w, http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
 	}
 
 	if exists {
-		return response.SendError(w, http.StatusBadRequest, EmailAlreadyExistsErrorMessage)
+		return response.SendError(http.StatusBadRequest, EmailAlreadyExistsErrorMessage)
 	}
 
 	id, err := env.DB.UserCreate(first_name, last_name, email, password)
 
 	if err != nil {
-		return response.SendError(w, http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
 	}
 
-	return response.Send(w, http.StatusCreated, UserCreated, 1, id)
+	return response.Send(http.StatusCreated, UserCreated, 1, id)
 }

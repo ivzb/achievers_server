@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -20,7 +21,8 @@ type Token struct {
 }
 
 func NewTokener(t token.Info) (*Token, error) {
-	var err error
+	err := t.EnsureExists()
+
 	var input = io.ReadCloser(os.Stdin)
 
 	if input, err = os.Open(t.File); err != nil {
@@ -32,6 +34,7 @@ func NewTokener(t token.Info) (*Token, error) {
 	input.Close()
 
 	if err != nil {
+		log.Panic(123)
 		return nil, err
 	}
 

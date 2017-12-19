@@ -8,7 +8,7 @@ import (
 
 func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
 	if r.Method != "GET" {
-		return response.SendError(w, http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
 	}
 
 	uID := env.UserId
@@ -16,10 +16,10 @@ func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) r
 
 	achs, err := env.DB.AchievementsAll()
 	if err != nil {
-		return response.SendError(w, http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
 	}
 
-	return response.Send(w, http.StatusOK, ItemFound, len(achs), achs)
+	return response.Send(http.StatusOK, ItemFound, len(achs), achs)
 }
 
 // func showAchievement(w http.ResponseWriter, r *http.Request) {
