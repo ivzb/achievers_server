@@ -90,3 +90,16 @@ View coverage result in html
 ```
 go tool cover -html=coverage.out
 ```
+
+## DB
+
+Create database via executing sql script in mysql
+It is localted in /config/mysql.sql
+
+```
+source {path_to_sql_script}
+```
+
+## Token
+
+// todo
