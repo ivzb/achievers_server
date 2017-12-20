@@ -99,7 +99,3 @@ It is localted in /config/mysql.sql
 ```
 source {path_to_sql_script}
 ```
-
-## Token
-
-// todo
