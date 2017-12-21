@@ -8,7 +8,7 @@ import (
 )
 
 type mock struct {
-	Id    string `json:"id"`
+	ID    string `json:"id"`
 	Title string `json:"title"`
 }
 
@@ -28,12 +28,12 @@ func mocks() []*mock {
 	return mocks
 }
 
-func fail(t *testing.T, value string, expected interface{}, actual interface{}) {
-	t.Fatalf("Send returned unexpected %v:\nexpected %#v,\nactual %#v",
-		value, expected, actual)
+func fail(t *testing.T, method string, expected interface{}, actual interface{}) {
+	t.Fatalf("%v returned unexpected value:\nexpected %#v,\nactual %#v",
+		method, expected, actual)
 }
 
-func TestSendMultipleResults(t *testing.T) {
+func TestSend_MultipleResults(t *testing.T) {
 	status := http.StatusOK
 	message := "response_message"
 	results := mocks()
@@ -50,25 +50,23 @@ func TestSendMultipleResults(t *testing.T) {
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
-		t.Fatalf("Send returned wrong value: expected %v, actual %v",
-			status, response.StatusCode)
+		fail(t, "Send", status, response.StatusCode)
 	}
 
 	switch actualResult := response.Result.(type) {
 	case *Retrieve:
 		if !cmp.Equal(expectedResult, actualResult) {
-			fail(t, "Results", expectedResult, actualResult)
+			fail(t, "Send", expectedResult, actualResult)
 		}
 	default:
-		t.Fatalf("Send returned unexpected type: expected %v, actual %v",
-			"Retrive", actualResult)
+		fail(t, "Send", "Retrive", actualResult)
 	}
 }
 
-func TestSendNoResults(t *testing.T) {
+func TestSend_NoResults(t *testing.T) {
 	status := http.StatusOK
 	message := "response_message"
-	var results interface{} = nil
+	var results interface{}
 	length := 5
 
 	expectedResult := &Change{
@@ -81,17 +79,69 @@ func TestSendNoResults(t *testing.T) {
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
-		t.Fatalf("Send returned wrong value: expected %v, actual %v",
-			status, response.StatusCode)
+		fail(t, "Send", status, response.StatusCode)
 	}
 
 	switch actualResult := response.Result.(type) {
 	case *Change:
 		if !cmp.Equal(expectedResult, actualResult) {
-			fail(t, "Results", expectedResult, actualResult)
+			fail(t, "Send", expectedResult, actualResult)
 		}
 	default:
-		t.Fatalf("Send returned unexpected type: expected %v, actual %v",
-			"Retrive", actualResult)
+		fail(t, "Send", "Change", actualResult)
+	}
+}
+
+func TestSend_ZeroLength(t *testing.T) {
+	status := http.StatusOK
+	message := "response_message"
+	var results interface{}
+	length := 0
+
+	expectedResult := &Core{
+		Status:  status,
+		Message: message,
+	}
+
+	response := Send(status, message, length, results)
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "Send", status, response.StatusCode)
+	}
+
+	switch actualResult := response.Result.(type) {
+	case *Core:
+		if !cmp.Equal(expectedResult, actualResult) {
+			fail(t, "Send", expectedResult, actualResult)
+		}
+	default:
+		fail(t, "Send", "Core", actualResult)
+	}
+}
+
+func TestSendError(t *testing.T) {
+	status := http.StatusOK
+	message := "response_message"
+
+	expectedResult := &Core{
+		Status:  status,
+		Message: message,
+	}
+
+	response := SendError(status, message)
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "Send", status, response.StatusCode)
+	}
+
+	switch actualResult := response.Result.(type) {
+	case *Core:
+		if !cmp.Equal(expectedResult, actualResult) {
+			fail(t, "Send", expectedResult, actualResult)
+		}
+	default:
+		fail(t, "Send", "Core", actualResult)
 	}
 }
