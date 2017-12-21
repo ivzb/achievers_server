@@ -1,9 +1,5 @@
 package response
 
-import (
-	"net/http"
-)
-
 // Message is the return type of all handlers
 type Message struct {
 	StatusCode int
@@ -12,41 +8,41 @@ type Message struct {
 
 // Core Response
 type Core struct {
-	Status  http.ConnState `json:"status"`
-	Message string         `json:"message"`
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
 // Change Response
 type Change struct {
-	Status   http.ConnState `json:"status"`
-	Message  string         `json:"message"`
-	Affected int            `json:"affected"`
+	Status   int    `json:"status"`
+	Message  string `json:"message"`
+	Affected int    `json:"affected"`
 }
 
 // Retrieve Response
 type Retrieve struct {
-	Status  http.ConnState `json:"status"`
-	Message string         `json:"message"`
-	Count   int            `json:"count"`
-	Results interface{}    `json:"results"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Length  int         `json:"length"`
+	Results interface{} `json:"results"`
 }
 
 // SendError calls Send by without a count or results
-func SendError(status http.ConnState, message string) Message {
+func SendError(status int, message string) Message {
 	return Send(status, message, 0, nil)
 }
 
 // Send writes struct to the writer using a format
 func Send(
-	status http.ConnState,
+	status int,
 	message string,
-	count int,
+	length int,
 	results interface{}) Message {
 
 	var result interface{}
 
 	// Determine the best format
-	if count < 1 {
+	if length < 1 {
 		result = &Core{
 			Status:  status,
 			Message: message,
@@ -55,13 +51,13 @@ func Send(
 		result = &Change{
 			Status:   status,
 			Message:  message,
-			Affected: count,
+			Affected: length,
 		}
 	} else {
 		result = &Retrieve{
 			Status:  status,
 			Message: message,
-			Count:   count,
+			Length:  length,
 			Results: results,
 		}
 	}
