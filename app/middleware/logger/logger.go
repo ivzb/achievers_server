@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	FriendlyError = "an error occurred, please try again later"
+	friendlyError = "an error occurred, please try again later"
 )
 
 // Handler will log the HTTP requests
@@ -22,7 +22,7 @@ func Handler(handler app.Handler) app.Handler {
 		err := handler.Env.Logger.Log(log)
 
 		if err != nil {
-			return response.SendError(http.StatusInternalServerError, FriendlyError)
+			return response.SendError(http.StatusInternalServerError, friendlyError)
 		}
 
 		return prevH(env, w, r)

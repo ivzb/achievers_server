@@ -1,5 +1,6 @@
 # Achievers server
 
+[![Build Status](https://travis-ci.org/ivzb/achievers_server.svg?branch=master)](https://travis-ci.org/ivzb/achievers_server)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ivzb/achievers_server)](https://goreportcard.com/report/github.com/ivzb/achievers_server)
 [![GoDoc](https://godoc.org/github.com/ivzb/achievers_server?status.svg)](https://godoc.org/github.com/ivzb/achievers_server) 
 

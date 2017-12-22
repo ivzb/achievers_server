@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -45,9 +44,10 @@ func Load(file string) (*Config, error) {
 	}
 
 	conf := &Config{}
+
 	// Parse the config
 	if err := conf.ParseJSON(jsonBytes); err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not parse %q: %v", file, err))
+		return nil, fmt.Errorf("Could not parse %q: %v", file, err)
 	}
 
 	return conf, nil

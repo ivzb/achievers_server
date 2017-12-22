@@ -23,8 +23,8 @@ func (info *Info) EnsureExists() error {
 
 		// Generate and write key to file if doesn't already exist
 		priv, err := crypto.Generate()
-		output := crypto.ExportPrivatePem(priv)
-		err = ioutil.WriteFile(info.File, output, 0600)
+		pem := crypto.Export(priv)
+		err = ioutil.WriteFile(info.File, pem, 0600)
 
 		if err != nil {
 			return err

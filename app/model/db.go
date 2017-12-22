@@ -12,6 +12,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// DBSource contains all available DAO functions
 type DBSource interface {
 	Exists(table string, column string, value string) (bool, error)
 
@@ -20,11 +21,12 @@ type DBSource interface {
 	UserAuth(string, string) (string, error)
 }
 
+// DB struct holds the connection to DB
 type DB struct {
 	*sql.DB
 }
 
-// Connect to the database
+// NewDB creates connection to the database
 func NewDB(d database.Info) (*DB, error) {
 	switch d.Type {
 	case database.TypeMySQL:
@@ -41,6 +43,7 @@ func NewDB(d database.Info) (*DB, error) {
 	}
 }
 
+// Exists checks whether row in specified table exists by column and value
 func (db *DB) Exists(table string, column string, value string) (bool, error) {
 	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
 	if err != nil {

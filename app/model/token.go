@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/ivzb/achievers_server/app/shared/crypto"
@@ -35,11 +34,10 @@ func NewTokener(t token.Info) (*Token, error) {
 	input.Close()
 
 	if err != nil {
-		log.Panic(123)
 		return nil, err
 	}
 
-	priv, err := crypto.ImportPrivatePem(pem)
+	priv, err := crypto.Import(pem)
 
 	if err != nil {
 		return nil, err
