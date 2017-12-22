@@ -1,14 +1,15 @@
 package model
 
 import (
-	"app/shared/crypto"
-	"app/shared/token"
 	"crypto/rsa"
 	"encoding/base64"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/ivzb/achievers_server/app/shared/crypto"
+	"github.com/ivzb/achievers_server/app/shared/token"
 )
 
 type Tokener interface {

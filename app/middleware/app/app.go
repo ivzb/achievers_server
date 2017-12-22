@@ -1,10 +1,11 @@
 package app
 
 import (
-	"app/model"
-	"app/shared/response"
 	"encoding/json"
 	"net/http"
+
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 type Handle func(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message

@@ -1,10 +1,11 @@
 package token
 
 import (
-	"app/shared/crypto"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/ivzb/achievers_server/app/shared/crypto"
 )
 
 type Info struct {

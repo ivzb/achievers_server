@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"app/middleware/app"
-	"app/model"
-	"app/shared/request"
-	"app/shared/response"
 	"net/http"
+
+	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/request"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 const (

@@ -1,21 +1,22 @@
 package config
 
 import (
-	"app/shared/database"
-	"app/shared/token"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+
+	"github.com/ivzb/achievers_server/app/shared/database"
+	"github.com/ivzb/achievers_server/app/shared/token"
 )
 
 // *****************************************************************************
 // Application Settings
 // *****************************************************************************
 
-// configuration contains the application settings
+// Config contains the application settings
 type Config struct {
 	Database database.Info `json:"Database"`
 	// Email    email.SMTPInfo  `json:"Email"`

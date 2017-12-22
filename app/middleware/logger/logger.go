@@ -1,11 +1,12 @@
 package logger
 
 import (
-	"app/middleware/app"
-	"app/model"
-	"app/shared/response"
 	"fmt"
 	"net/http"
+
+	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 const (

@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"app/model"
-	"app/shared/response"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 const (

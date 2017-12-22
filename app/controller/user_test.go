@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"app/model"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"testing"
+
+	"github.com/ivzb/achievers_server/app/model"
 )
 
 var (
@@ -43,7 +44,7 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"authorized","count":1,"results":"` + mockToken + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"authorized","length":1,"results":"` + mockToken + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -179,7 +180,7 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + UserCreated + `","count":1,"results":"` + mockId + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + UserCreated + `","length":1,"results":"` + mockId + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

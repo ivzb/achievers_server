@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"app/model"
-	"app/shared/response"
 	"net/http"
+
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {

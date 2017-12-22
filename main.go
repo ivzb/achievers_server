@@ -1,13 +1,14 @@
 package main
 
 import (
-	"app/controller"
-	"app/middleware/app"
-	"app/middleware/auth"
-	"app/middleware/logger"
-	"app/model"
-	"app/shared/config"
 	"log"
+
+	"github.com/ivzb/achievers_server/app/controller"
+	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/middleware/auth"
+	"github.com/ivzb/achievers_server/app/middleware/logger"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/config"
 
 	"net/http"
 	"os"

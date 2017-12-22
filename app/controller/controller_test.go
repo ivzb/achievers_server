@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"app/middleware/app"
-	"app/model"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/model"
 )
 
 func testInvalidMethod(t *testing.T, method string, url string, handle app.Handle) {

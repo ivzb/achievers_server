@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"app/model"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -9,6 +8,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/ivzb/achievers_server/app/model"
 )
 
 func MockAchievements() []*model.Achievement {
@@ -59,7 +60,7 @@ func TestAchievementsIndex_ValidAchievements(t *testing.T) {
 
 	// Check the response body is what we expect.
 	marshalled, _ := json.Marshal(MockAchievements())
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"item found","count":2,"results":` + string(marshalled) + `}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"item found","length":2,"results":` + string(marshalled) + `}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

@@ -1,13 +1,14 @@
 package auth
 
 import (
-	"app/middleware/app"
-	"app/model"
-	"app/shared/response"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
@@ -42,7 +43,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok","count":1,"results":"OK"}`
+	expected := `{"status":200,"message":"ok","length":1,"results":"OK"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)

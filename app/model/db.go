@@ -1,12 +1,14 @@
 package model
 
 import (
-	"app/shared/database"
 	"crypto/rand"
 	"database/sql"
 	"errors"
 	"fmt"
 
+	"github.com/ivzb/achievers_server/app/shared/database"
+
+	// MySQL DB driver
 	_ "github.com/go-sql-driver/mysql"
 )
 
