@@ -9,6 +9,7 @@ import (
 	"github.com/ivzb/achievers_server/app/middleware/logger"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/config"
+	"github.com/ivzb/achievers_server/app/shared/file"
 
 	"net/http"
 	"os"
@@ -20,7 +21,13 @@ func init() {
 }
 
 func main() {
-	conf, err := config.Load("config" + string(os.PathSeparator) + "config.json")
+	confBytes, err := file.Read("config" + string(os.PathSeparator) + "config.json")
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	conf, err := config.New(confBytes)
 
 	if err != nil {
 		log.Panic(err)

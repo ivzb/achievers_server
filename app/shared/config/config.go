@@ -3,9 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"os"
 
 	"github.com/ivzb/achievers_server/app/shared/database"
 	"github.com/ivzb/achievers_server/app/shared/token"
@@ -23,31 +20,12 @@ type Config struct {
 	Token token.Info `json:"Token"`
 }
 
-// ParseJSON unmarshals bytes to structs
-func (c *Config) ParseJSON(b []byte) error {
-	return json.Unmarshal(b, &c)
-}
-
-// Load the JSON config file
-func Load(file string) (*Config, error) {
-	var err error
-	var input = io.ReadCloser(os.Stdin)
-	if input, err = os.Open(file); err != nil {
-		return nil, err
-	}
-
-	// Read the config file
-	jsonBytes, err := ioutil.ReadAll(input)
-	input.Close()
-	if err != nil {
-		return nil, err
-	}
-
+// New config instance
+func New(bytes []byte) (*Config, error) {
 	conf := &Config{}
 
-	// Parse the config
-	if err := conf.ParseJSON(jsonBytes); err != nil {
-		return nil, fmt.Errorf("Could not parse %q: %v", file, err)
+	if err := json.Unmarshal(bytes, &conf); err != nil {
+		return nil, fmt.Errorf("Could not parse config: %v", err)
 	}
 
 	return conf, nil
