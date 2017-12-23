@@ -7,11 +7,11 @@ import (
 )
 
 // Read file bytes
-func Read(filePath string) ([]byte, error) {
+func Read(path string) ([]byte, error) {
 	var err error
 	input := io.ReadCloser(os.Stdin)
 
-	if input, err = os.Open(filePath); err != nil {
+	if input, err = os.Open(path); err != nil {
 		return nil, err
 	}
 
@@ -20,4 +20,13 @@ func Read(filePath string) ([]byte, error) {
 	input.Close()
 
 	return bytes, err
+}
+
+// Exist file
+func Exist(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+
+	return true
 }

@@ -29,8 +29,8 @@ func Decrypt(ciphertext []byte, priv *rsa.PrivateKey) ([]byte, error) {
 }
 
 // Export rsa private key
-func Export(privatekey *rsa.PrivateKey) []byte {
-	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privatekey)
+func Export(privateKey *rsa.PrivateKey) []byte {
+	privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
 	privateKeyPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "RSA PRIVATE KEY",
@@ -49,10 +49,5 @@ func Import(privateKeyPEM []byte) (*rsa.PrivateKey, error) {
 		return nil, errors.New("failed to parse PEM block containing the key")
 	}
 
-	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return priv, nil
+	return x509.ParsePKCS1PrivateKey(block.Bytes)
 }

@@ -6,25 +6,22 @@ import (
 	"path"
 
 	"github.com/ivzb/achievers_server/app/shared/crypto"
+	"github.com/ivzb/achievers_server/app/shared/file"
 )
 
 type Info struct {
-	File string `json:"File"`
+	Path string `json:"Path"`
 }
 
 func (info *Info) EnsureExists() error {
-	if _, err := os.Stat(info.File); os.IsNotExist(err) {
-		dirs := path.Dir(info.File)
-		err = os.MkdirAll(dirs, 0777)
-
-		if err != nil {
-			return err
-		}
+	if !file.Exist(info.Path) {
+		dirs := path.Dir(info.Path)
+		os.MkdirAll(dirs, 0777)
 
 		// Generate and write key to file if doesn't already exist
 		priv, err := crypto.Generate()
 		pem := crypto.Export(priv)
-		err = ioutil.WriteFile(info.File, pem, 0600)
+		err = ioutil.WriteFile(info.Path, pem, 0600)
 
 		if err != nil {
 			return err

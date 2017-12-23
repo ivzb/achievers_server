@@ -23,9 +23,13 @@ type Token struct {
 func NewTokener(t token.Info) (*Token, error) {
 	err := t.EnsureExists()
 
+	if err != nil {
+		return nil, err
+	}
+
 	var input = io.ReadCloser(os.Stdin)
 
-	if input, err = os.Open(t.File); err != nil {
+	if input, err = os.Open(t.Path); err != nil {
 		return nil, err
 	}
 

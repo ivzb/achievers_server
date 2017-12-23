@@ -23,7 +23,7 @@ func TestNewConfig_ValidBytes(t *testing.T) {
 			},
 		},
 		Token: token.Info{
-			File: "rsa/token.pem",
+			Path: "rsa/token.pem",
 		},
 	}
 

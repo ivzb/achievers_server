@@ -31,15 +31,15 @@ type MySQLInfo struct {
 }
 
 // DSN returns the Data Source Name
-func DSN(ci MySQLInfo) string {
-	// Example: root:@tcp(localhost:3306)/test
+// Example: root:123@tcp(localhost:3306)/test?parseTime=true
+func DSN(mi MySQLInfo) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s%s",
-		ci.Username,
-		ci.Password,
-		ci.Hostname,
-		ci.Port,
-		ci.Name,
-		ci.Parameter)
+		mi.Username,
+		mi.Password,
+		mi.Hostname,
+		mi.Port,
+		mi.Name,
+		mi.Parameter)
 }
 
 // AffectedRows returns the number of rows affected by the query

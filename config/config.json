@@ -27,6 +27,6 @@
 		"KeyFile":   "tls/server.key"
 	},
 	"Token": {
-		"File": "rsa/token.pem"
+		"Path": "rsa/token.pem"
 	}
 }
