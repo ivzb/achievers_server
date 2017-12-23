@@ -19,6 +19,7 @@ func (fn Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	response := fn.H(fn.Env, w, r)
 
 	js, err := json.Marshal(response.Result)
+
 	if err != nil {
 		http.Error(w, "JSON Error: "+err.Error(), http.StatusInternalServerError)
 		return
