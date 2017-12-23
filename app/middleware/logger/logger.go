@@ -22,7 +22,7 @@ func Handler(handler app.Handler) app.Handler {
 		err := handler.Env.Logger.Log(log)
 
 		if err != nil {
-			return response.SendError(http.StatusInternalServerError, friendlyError)
+			return response.InternalServerError(friendlyError)
 		}
 
 		return prevH(env, w, r)

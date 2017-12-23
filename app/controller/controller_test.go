@@ -24,7 +24,7 @@ func testInvalidMethod(t *testing.T, method string, url string, handle app.Handl
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":405,"message":"` + MethodNotAllowedErrorMessage + `"}`
+	expected := `{"status":405,"message":"` + methodNotAllowed + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

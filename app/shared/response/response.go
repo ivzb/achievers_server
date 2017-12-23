@@ -1,5 +1,7 @@
 package response
 
+import "net/http"
+
 // Message is the return type of all handlers
 type Message struct {
 	StatusCode int
@@ -27,13 +29,50 @@ type Retrieve struct {
 	Results interface{} `json:"results"`
 }
 
-// SendError calls Send by without a count or results
-func SendError(status int, message string) Message {
-	return Send(status, message, 0, nil)
+// Ok sends response with status code 200
+func Ok(
+	message string,
+	length int,
+	results interface{}) Message {
+
+	return send(http.StatusOK, message, length, results)
 }
 
-// Send writes struct to the writer using a format
-func Send(
+// Created sends response with status code 201
+func Created(
+	message string,
+	results interface{}) Message {
+
+	return send(http.StatusCreated, message, 1, results)
+}
+
+// BadRequest sends response with status code 400
+func BadRequest(message string) Message {
+	return sendError(http.StatusBadRequest, message)
+}
+
+// Unauthorized sends response with status code 401
+func Unauthorized(message string) Message {
+	return sendError(http.StatusUnauthorized, message)
+}
+
+// MethodNotAllowed sends response with status code 405
+func MethodNotAllowed(message string) Message {
+	return sendError(http.StatusMethodNotAllowed, message)
+}
+
+// InternalServerError sends response with status code 500
+func InternalServerError(message string) Message {
+	return sendError(http.StatusInternalServerError, message)
+}
+
+// sendError calls Send by without a count or results
+func sendError(status int, message string) Message {
+	return send(status, message, 0, nil)
+}
+
+// send writes struct to the writer using a format
+func send(
 	status int,
 	message string,
 	length int,

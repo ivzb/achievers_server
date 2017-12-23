@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -39,7 +40,7 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 	}
 
 	handle := UserAuth
-	statusCode := http.StatusOK
+	statusCode := http.StatusCreated
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
@@ -69,7 +70,7 @@ func TestUserAuth_MissingEmail(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingEmailErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, email) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -90,7 +91,7 @@ func TestUserAuth_MissingPassword(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingPasswordErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, password) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -118,7 +119,7 @@ func TestUserAuth_DBError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + Unauthorized + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + unauthorized + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -149,7 +150,7 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + FriendlyErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + friendlyErrorMessage + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -180,7 +181,7 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + UserCreated + `","length":1,"results":"` + mockId + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatCreated, user) + `","length":1,"results":"` + mockId + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -207,7 +208,7 @@ func TestUserCreate_MissingFirstName(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingFirstNameErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, firstName) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -230,7 +231,7 @@ func TestUserCreate_MissingLastName(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingLastNameErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, lastName) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -253,7 +254,7 @@ func TestUserCreate_MissingEmail(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingEmailErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, email) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -276,7 +277,7 @@ func TestUserCreate_MissingPassword(t *testing.T) {
 	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + MissingPasswordErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, password) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -306,7 +307,7 @@ func TestUserCreate_ExistDBError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + FriendlyErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + friendlyErrorMessage + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -336,7 +337,7 @@ func TestUserCreate_UserExist(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + EmailAlreadyExistsErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatAlreadyExists, email) + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -367,7 +368,7 @@ func TestUserCreate_UserCreateDBError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + FriendlyErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + friendlyErrorMessage + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

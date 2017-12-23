@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -8,88 +9,94 @@ import (
 )
 
 const (
-	UserCreated = "user created"
+	user = "user"
 
-	MissingFirstNameErrorMessage = "missing first_name"
-	MissingLastNameErrorMessage  = "missing last_name"
-	MissingEmailErrorMessage     = "missing email"
-	MissingPasswordErrorMessage  = "missing password"
-
-	EmailAlreadyExistsErrorMessage = "email already exists"
+	firstName = "first_name"
+	lastName  = "last_name"
+	email     = "email"
+	password  = "password"
 )
 
-func UserAuth(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
+func UserAuth(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
 	if r.Method != "POST" {
-		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	eml := r.FormValue("email")
+	pwd := r.FormValue("password")
 
-	if email == "" {
-		return response.SendError(http.StatusBadRequest, MissingEmailErrorMessage)
+	if eml == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, email))
 	}
 
-	if password == "" {
-		return response.SendError(http.StatusBadRequest, MissingPasswordErrorMessage)
+	if pwd == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
-	uID, err := env.DB.UserAuth(email, password)
+	uID, err := env.DB.UserAuth(eml, pwd)
 
 	if err != nil {
-		return response.SendError(http.StatusUnauthorized, Unauthorized)
+		return response.Unauthorized(unauthorized)
 	}
 
 	token, err := env.Tokener.Encrypt(uID)
 
 	if err != nil {
-		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	return response.Send(http.StatusOK, "authorized", 1, token)
+	return response.Created(authorized, token)
 }
 
-func UserCreate(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
+func UserCreate(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
 	if r.Method != "POST" {
-		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	first_name := r.FormValue("first_name")
-	last_name := r.FormValue("last_name")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
+	fnm := r.FormValue("first_name")
+	lnm := r.FormValue("last_name")
+	eml := r.FormValue("email")
+	pwd := r.FormValue("password")
 
-	if first_name == "" {
-		return response.SendError(http.StatusBadRequest, MissingFirstNameErrorMessage)
+	if fnm == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, firstName))
 	}
 
-	if last_name == "" {
-		return response.SendError(http.StatusBadRequest, MissingLastNameErrorMessage)
+	if lnm == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, lastName))
 	}
 
-	if email == "" {
-		return response.SendError(http.StatusBadRequest, MissingEmailErrorMessage)
+	if eml == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, email))
 	}
 
-	if password == "" {
-		return response.SendError(http.StatusBadRequest, MissingPasswordErrorMessage)
+	if pwd == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
 	exists, err := env.DB.Exists("user", "email", email)
 
 	if err != nil {
-		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	if exists {
-		return response.SendError(http.StatusBadRequest, EmailAlreadyExistsErrorMessage)
+		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, email))
 	}
 
-	id, err := env.DB.UserCreate(first_name, last_name, email, password)
+	id, err := env.DB.UserCreate(fnm, lnm, eml, pwd)
 
 	if err != nil {
-		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	return response.Send(http.StatusCreated, UserCreated, 1, id)
+	return response.Created(fmt.Sprintf(formatCreated, user), id)
 }

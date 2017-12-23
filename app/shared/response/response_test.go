@@ -46,7 +46,7 @@ func TestSend_MultipleResults(t *testing.T) {
 		Results: results,
 	}
 
-	response := Send(status, message, length, results)
+	response := send(status, message, length, results)
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
@@ -75,7 +75,7 @@ func TestSend_NoResults(t *testing.T) {
 		Affected: length,
 	}
 
-	response := Send(status, message, length, results)
+	response := send(status, message, length, results)
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
@@ -103,7 +103,7 @@ func TestSend_ZeroLength(t *testing.T) {
 		Message: message,
 	}
 
-	response := Send(status, message, length, results)
+	response := send(status, message, length, results)
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
@@ -121,7 +121,7 @@ func TestSend_ZeroLength(t *testing.T) {
 }
 
 func TestSendError(t *testing.T) {
-	status := http.StatusOK
+	status := http.StatusBadRequest
 	message := "response_message"
 
 	expectedResult := &Core{
@@ -129,7 +129,7 @@ func TestSendError(t *testing.T) {
 		Message: message,
 	}
 
-	response := SendError(status, message)
+	response := sendError(status, message)
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
@@ -143,5 +143,71 @@ func TestSendError(t *testing.T) {
 		}
 	default:
 		fail(t, "Send", "Core", actualResult)
+	}
+}
+
+func TestOk(t *testing.T) {
+	status := http.StatusOK
+
+	response := Ok("", 0, nil)
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "OK", status, response.StatusCode)
+	}
+}
+
+func TestCreated(t *testing.T) {
+	status := http.StatusCreated
+
+	response := Created("", nil)
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "Created", status, response.StatusCode)
+	}
+}
+
+func TestBadRequest(t *testing.T) {
+	status := http.StatusBadRequest
+
+	response := BadRequest("")
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "BadRequest", status, response.StatusCode)
+	}
+}
+
+func TestUnauthorized(t *testing.T) {
+	status := http.StatusUnauthorized
+
+	response := Unauthorized("")
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "Unauthorized", status, response.StatusCode)
+	}
+}
+
+func TestMethodNotAllowed(t *testing.T) {
+	status := http.StatusMethodNotAllowed
+
+	response := MethodNotAllowed("")
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "MethodNotAllowed", status, response.StatusCode)
+	}
+}
+
+func TestInternalServerError(t *testing.T) {
+	status := http.StatusInternalServerError
+
+	response := InternalServerError("")
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "InternalServerError", status, response.StatusCode)
 	}
 }

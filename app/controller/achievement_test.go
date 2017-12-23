@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -48,7 +49,7 @@ func TestAchievementsIndex_ValidAchievements(t *testing.T) {
 
 	env := model.Env{
 		DB: &model.DBMock{
-			AchievementsAllMock: model.AchievementsAllMock{MockAchievements(), nil},
+			AchievementsAllMock: model.AchievementsAllMock{A: MockAchievements(), E: nil},
 		},
 		Logger: &model.LoggerMock{},
 	}
@@ -60,7 +61,7 @@ func TestAchievementsIndex_ValidAchievements(t *testing.T) {
 
 	// Check the response body is what we expect.
 	marshalled, _ := json.Marshal(MockAchievements())
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"item found","length":2,"results":` + string(marshalled) + `}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatFound, achievement) + `","length":2,"results":` + string(marshalled) + `}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -88,7 +89,7 @@ func TestAchievementsIndex_DBError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + FriendlyErrorMessage + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + friendlyErrorMessage + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

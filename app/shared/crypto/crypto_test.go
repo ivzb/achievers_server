@@ -33,6 +33,11 @@ func TestEncrypt_ValidMessage(t *testing.T) {
 	}
 
 	decryptedMessage, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, priv, encryptedMessage, nil)
+
+	if err != nil {
+		t.Fatalf("DecryptOAEP returned error: %v", err)
+	}
+
 	actual := string(decryptedMessage)
 
 	if expected != actual {
@@ -65,6 +70,11 @@ func TestDecrypt_ValidMessage(t *testing.T) {
 	}
 
 	decryptedMessage, err := Decrypt(encryptedMessage, priv)
+
+	if err != nil {
+		t.Fatalf("Decrypt returned error: %v", err)
+	}
+
 	actual := string(decryptedMessage)
 
 	if expected != actual {

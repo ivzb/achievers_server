@@ -1,26 +1,39 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func AchievementsIndex(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
+const (
+	achievement = "achievement"
+)
+
+func AchievementsIndex(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
 	if r.Method != "GET" {
-		return response.SendError(http.StatusMethodNotAllowed, MethodNotAllowedErrorMessage)
+		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
 	uID := env.UserId
 	env.Logger.Log(uID)
 
 	achs, err := env.DB.AchievementsAll()
+
 	if err != nil {
-		return response.SendError(http.StatusInternalServerError, FriendlyErrorMessage)
+		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	return response.Send(http.StatusOK, ItemFound, len(achs), achs)
+	return response.Ok(
+		fmt.Sprintf(formatFound, achievement),
+		len(achs),
+		achs)
 }
 
 // func showAchievement(w http.ResponseWriter, r *http.Request) {

@@ -25,22 +25,22 @@ func Handler(handler app.Handler) app.Handler {
 		at, err := request.GetHeader(r, authTokenHeader)
 
 		if err != nil {
-			return response.SendError(http.StatusUnauthorized, authTokenMissing)
+			return response.Unauthorized(authTokenMissing)
 		}
 
 		uID, err := handler.Env.Tokener.Decrypt(at)
 
 		if err != nil {
-			return response.SendError(http.StatusUnauthorized, authTokenInvalid)
+			return response.Unauthorized(authTokenInvalid)
 		}
 
 		exists, err := handler.Env.DB.Exists("user", "id", uID)
 		if err != nil {
-			return response.SendError(http.StatusUnauthorized, authTokenInvalid)
+			return response.Unauthorized(authTokenInvalid)
 		}
 
 		if exists == false {
-			return response.SendError(http.StatusUnauthorized, authTokenInvalid)
+			return response.Unauthorized(authTokenInvalid)
 		}
 
 		handler.Env.UserId = uID

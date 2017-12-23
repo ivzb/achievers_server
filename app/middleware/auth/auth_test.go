@@ -12,7 +12,7 @@ import (
 )
 
 func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
-	return response.Send(http.StatusOK, "ok", 1, "OK")
+	return response.Created("authorized", "auth token here")
 }
 
 func TestAuthHandler_ValidAuthToken(t *testing.T) {
@@ -37,15 +37,15 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusOK {
+	if status := rr.Code; status != http.StatusCreated {
 		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
+			status, http.StatusCreated)
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok","length":1,"results":"OK"}`
+	expected := `{"status":201,"message":"authorized","length":1,"results":"auth token here"}`
 	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rr.Body.String(), expected)
 	}
 }

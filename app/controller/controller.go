@@ -1,19 +1,13 @@
 package controller
 
 const (
-	ItemCreated      = "item created"
-	ItemExists       = "item already exists"
-	ItemNotFound     = "item not found"
-	ItemFound        = "item found"
-	ItemsFound       = "items found"
-	ItemsFindEmpty   = "no items to find"
-	ItemUpdated      = "item updated"
-	ItemDeleted      = "item deleted"
-	ItemsDeleted     = "items deleted"
-	ItemsDeleteEmpty = "no items to delete"
+	formatCreated       = "%s created"
+	formatFound         = "%s found"
+	formatMissing       = "missing %s"
+	formatAlreadyExists = "%s already exists"
 
-	Unauthorized = "unauthorized"
-
-	MethodNotAllowedErrorMessage = "method not allowed"
-	FriendlyErrorMessage         = "an error occurred, please try again later"
+	authorized           = "authorized"
+	unauthorized         = "unauthorized"
+	methodNotAllowed     = "method not allowed"
+	friendlyErrorMessage = "an error occurred, please try again later"
 )

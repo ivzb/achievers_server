@@ -10,7 +10,7 @@ import (
 )
 
 func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
-	return response.Send(http.StatusOK, "ok", 1, "OK")
+	return response.Ok("ok", 1, "OK")
 }
 
 func jsonErrorHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
