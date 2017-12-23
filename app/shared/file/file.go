@@ -15,7 +15,7 @@ func Read(filePath string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Read the config file
+	// Read the file
 	bytes, err := ioutil.ReadAll(input)
 	input.Close()
 
