@@ -8,6 +8,7 @@ import (
 
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/model/mock"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -21,8 +22,8 @@ func TestLoggerHandler_Log(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		Logger: &model.LoggerMock{
-			LogMock: model.LogMock{nil},
+		Logger: &mock.Logger{
+			LogMock: mock.Log{nil},
 		},
 	}
 
@@ -52,8 +53,8 @@ func TestLoggerHandler_Error(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		Logger: &model.LoggerMock{
-			LogMock: model.LogMock{errors.New("logger error")},
+		Logger: &mock.Logger{
+			LogMock: mock.Log{errors.New("logger error")},
 		},
 	}
 

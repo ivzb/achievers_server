@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
 var (
@@ -31,11 +32,11 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 	req.Form.Add("password", mockPassword)
 
 	env := model.Env{
-		DB: &model.DBMock{
-			UserAuthMock: model.UserAuthMock{"454562", nil},
+		DB: &mock.DB{
+			UserAuthMock: mock.UserAuth{"454562", nil},
 		},
-		Tokener: &model.TokenMock{
-			EncryptedMock: model.EncryptedMock{mockToken, nil},
+		Tokener: &mock.Token{
+			EncryptedMock: mock.Encrypted{mockToken, nil},
 		},
 	}
 
@@ -108,8 +109,8 @@ func TestUserAuth_DBError(t *testing.T) {
 	req.Form.Add("password", "P@$$")
 
 	env := model.Env{
-		DB: &model.DBMock{
-			UserAuthMock: model.UserAuthMock{"", errors.New("db error")},
+		DB: &mock.DB{
+			UserAuthMock: mock.UserAuth{"", errors.New("db error")},
 		},
 	}
 
@@ -136,11 +137,11 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 	req.Form.Add("password", "P@$$")
 
 	env := model.Env{
-		DB: &model.DBMock{
-			UserAuthMock: model.UserAuthMock{"454562", nil},
+		DB: &mock.DB{
+			UserAuthMock: mock.UserAuth{"454562", nil},
 		},
-		Tokener: &model.TokenMock{
-			EncryptedMock: model.EncryptedMock{"", errors.New("encryption error")},
+		Tokener: &mock.Token{
+			EncryptedMock: mock.Encrypted{"", errors.New("encryption error")},
 		},
 	}
 
@@ -169,9 +170,9 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	req.Form.Add("password", mockPassword)
 
 	env := model.Env{
-		DB: &model.DBMock{
-			ExistsMock:     model.ExistsMock{false, nil},
-			UserCreateMock: model.UserCreateMock{mockId, nil},
+		DB: &mock.DB{
+			ExistsMock:     mock.Exists{false, nil},
+			UserCreateMock: mock.UserCreate{mockId, nil},
 		},
 	}
 
@@ -296,8 +297,8 @@ func TestUserCreate_ExistDBError(t *testing.T) {
 	req.Form.Add("password", mockPassword)
 
 	env := model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{false, errors.New("db error")},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{false, errors.New("db error")},
 		},
 	}
 
@@ -326,8 +327,8 @@ func TestUserCreate_UserExist(t *testing.T) {
 	req.Form.Add("password", mockPassword)
 
 	env := model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{true, nil},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{true, nil},
 		},
 	}
 
@@ -356,9 +357,9 @@ func TestUserCreate_UserCreateDBError(t *testing.T) {
 	req.Form.Add("password", mockPassword)
 
 	env := model.Env{
-		DB: &model.DBMock{
-			ExistsMock:     model.ExistsMock{false, nil},
-			UserCreateMock: model.UserCreateMock{"", errors.New("db error")},
+		DB: &mock.DB{
+			ExistsMock:     mock.Exists{false, nil},
+			UserCreateMock: mock.UserCreate{"", errors.New("db error")},
 		},
 	}
 

@@ -12,11 +12,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const (
+	pageSize = 9
+)
+
 // DBSource contains all available DAO functions
 type DBSource interface {
 	Exists(table string, column string, value string) (bool, error)
 
-	AchievementsAll() ([]*Achievement, error)
+	AchievementsAll(page int) ([]*Achievement, error)
 	UserCreate(string, string, string, string) (string, error)
 	UserAuth(string, string) (string, error)
 }

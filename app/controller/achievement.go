@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
@@ -10,6 +11,7 @@ import (
 
 const (
 	achievement = "achievement"
+	page        = "page"
 )
 
 func AchievementsIndex(
@@ -21,10 +23,16 @@ func AchievementsIndex(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
+	pg, err := strconv.Atoi(r.FormValue("page"))
+
+	if err != nil {
+		return response.BadRequest(fmt.Sprintf(formatMissing, page))
+	}
+
 	uID := env.UserId
 	env.Logger.Log(uID)
 
-	achs, err := env.DB.AchievementsAll()
+	achs, err := env.DB.AchievementsAll(pg)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)

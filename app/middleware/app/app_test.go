@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/model/mock"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -22,11 +23,11 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{true, nil},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{true, nil},
 		},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"decrypted", nil},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
 	}
 
@@ -55,11 +56,11 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{true, nil},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{true, nil},
 		},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"decrypted", nil},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
 	}
 

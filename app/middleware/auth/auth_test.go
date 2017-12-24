@@ -8,6 +8,7 @@ import (
 
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/model/mock"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -22,11 +23,11 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{true, nil},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{true, nil},
 		},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"decrypted", nil},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
 	}
 
@@ -56,8 +57,8 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB:      &model.DBMock{},
-		Tokener: &model.TokenMock{},
+		DB:      &mock.DB{},
+		Tokener: &mock.Token{},
 	}
 
 	appHandler := app.Handler{env, testHandler}
@@ -87,9 +88,9 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"", errors.New("decryption error")},
+		DB: &mock.DB{},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"", errors.New("decryption error")},
 		},
 	}
 
@@ -120,11 +121,11 @@ func TestAuthHandler_DBError(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{false, errors.New("user does not exist")},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{false, errors.New("user does not exist")},
 		},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"decrypted", nil},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
 	}
 
@@ -155,11 +156,11 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &model.DBMock{
-			ExistsMock: model.ExistsMock{false, nil},
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{false, nil},
 		},
-		Tokener: &model.TokenMock{
-			DecryptedMock: model.DecryptedMock{"decrypted", nil},
+		Tokener: &mock.Token{
+			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
 	}
 

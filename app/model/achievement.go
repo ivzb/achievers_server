@@ -16,14 +16,19 @@ type Achievement struct {
 	DeletedAt     time.Time `json:"deleted_at"`
 }
 
-func (db *DB) AchievementsAll() ([]*Achievement, error) {
-	rows, err := db.Query("SELECT * FROM achievement")
+func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
+	start := pageSize * page
+	end := start + pageSize
+	rows, err := db.Query("SELECT * FROM achievement ORDER BY id DESC LIMIT ?, ?", start, end)
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	achs := make([]*Achievement, 0)
+
 	for rows.Next() {
 		ach := new(Achievement)
 		err := rows.Scan(
@@ -40,8 +45,10 @@ func (db *DB) AchievementsAll() ([]*Achievement, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		achs = append(achs, ach)
 	}
+
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
