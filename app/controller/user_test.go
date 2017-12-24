@@ -34,7 +34,7 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 		DB: &model.DBMock{
 			UserAuthMock: model.UserAuthMock{"454562", nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			EncryptedMock: model.EncryptedMock{mockToken, nil},
 		},
 	}
@@ -139,7 +139,7 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 		DB: &model.DBMock{
 			UserAuthMock: model.UserAuthMock{"454562", nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			EncryptedMock: model.EncryptedMock{"", errors.New("encryption error")},
 		},
 	}

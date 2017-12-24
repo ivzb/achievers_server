@@ -25,7 +25,7 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 		DB: &model.DBMock{
 			ExistsMock: model.ExistsMock{true, nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"decrypted", nil},
 		},
 	}
@@ -58,7 +58,7 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 		DB: &model.DBMock{
 			ExistsMock: model.ExistsMock{true, nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"decrypted", nil},
 		},
 	}

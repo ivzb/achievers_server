@@ -1,18 +1,11 @@
 package model
 
 import (
-	"errors"
 	"time"
 )
 
-var (
-	ErrNoResult = errors.New("no result")
-	ErrExists   = errors.New("already exists")
-	ErrNotExist = errors.New("does not exist")
-)
-
 type User struct {
-	Id        string    `json:"id"`
+	ID        string    `json:"id"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
 	Email     string    `json:"email"`

@@ -25,7 +25,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 		DB: &model.DBMock{
 			ExistsMock: model.ExistsMock{true, nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"decrypted", nil},
 		},
 	}
@@ -57,7 +57,7 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 
 	env := &model.Env{
 		DB:      &model.DBMock{},
-		Tokener: &model.TokenerMock{},
+		Tokener: &model.TokenMock{},
 	}
 
 	appHandler := app.Handler{env, testHandler}
@@ -88,7 +88,7 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 
 	env := &model.Env{
 		DB: &model.DBMock{},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"", errors.New("decryption error")},
 		},
 	}
@@ -123,7 +123,7 @@ func TestAuthHandler_DBError(t *testing.T) {
 		DB: &model.DBMock{
 			ExistsMock: model.ExistsMock{false, errors.New("user does not exist")},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"decrypted", nil},
 		},
 	}
@@ -158,7 +158,7 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 		DB: &model.DBMock{
 			ExistsMock: model.ExistsMock{false, nil},
 		},
-		Tokener: &model.TokenerMock{
+		Tokener: &model.TokenMock{
 			DecryptedMock: model.DecryptedMock{"decrypted", nil},
 		},
 	}
