@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strconv"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -19,9 +18,32 @@ import (
 // 1 -> 3 results - end
 // 2 -> 0 results - possibly 404
 
-// todo: implement generators as done in client
+func TestAchievementsIndex_FullPage(t *testing.T) {
+	statusCode := http.StatusOK
+	rec := requestAchievements(t, 9, statusCode)
+	verifyCorrectResult(t, rec, 9)
+}
 
-func TestAchievementsIndex_ValidAchievements(t *testing.T) {
+func TestAchievementsIndex_HalfPage(t *testing.T) {
+	statusCode := http.StatusOK
+	rec := requestAchievements(t, 4, statusCode)
+	verifyCorrectResult(t, rec, 4)
+}
+
+func TestAchievementsIndex_EmptyPage(t *testing.T) {
+	statusCode := http.StatusNotFound
+	rec := requestAchievements(t, 0, statusCode)
+
+	expectedMessage := fmt.Sprintf(formatNotFound, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func requestAchievements(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/achievements", nil)
 
@@ -30,21 +52,33 @@ func TestAchievementsIndex_ValidAchievements(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			AchievementsAllMock: mock.AchievementsAll{A: mock.Achievements(), E: nil},
+			AchievementsAllMock: mock.AchievementsAll{A: mock.Achievements(size), E: nil},
 		},
 		Logger: &mock.Logger{},
 	}
 
 	handle := AchievementsIndex
-	statusCode := http.StatusOK
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	marshalled, _ := json.Marshal(mock.Achievements())
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatFound, achievement) + `","length":2,"results":` + string(marshalled) + `}`
+	return rec
+}
+
+func verifyCorrectResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
+	expectedStatusCode := http.StatusOK
+	expectedMessage := fmt.Sprintf(formatFound, achievements)
+	mocks := mock.Achievements(size)
+	expectedLength := len(mocks)
+	marshalled, _ := json.Marshal(mocks)
+	expectedResults := marshalled
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
+		expectedStatusCode,
+		expectedMessage,
+		expectedLength,
+		expectedResults)
+
 	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rec.Body.String(), expected)
 	}
 }
@@ -60,20 +94,35 @@ func TestAchievementsIndex_MissingPage(t *testing.T) {
 	req.Form = url.Values{}
 	req.Form.Add("page", "")
 
-	env := model.Env{
-		DB: &mock.DB{
-			AchievementsAllMock: mock.AchievementsAll{nil, errors.New("db error")},
-		},
-		Logger: &mock.Logger{},
+	handle := AchievementsIndex
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, nil, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatMissing, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
 	}
+}
+
+func TestAchievementsIndex_InvalidPage(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/achievements", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add("page", "-1")
 
 	handle := AchievementsIndex
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, &env, handle, statusCode)
+	testHandler(t, rec, req, nil, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, page) + `"}`
+	expectedMessage := fmt.Sprintf(formatInvalid, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -100,7 +149,7 @@ func TestAchievementsIndex_DBError(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + friendlyErrorMessage + `"}`
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

@@ -5,6 +5,8 @@ const (
 	formatFound         = "%s found"
 	formatMissing       = "missing %s"
 	formatAlreadyExists = "%s already exists"
+	formatNotFound      = "%s not found"
+	formatInvalid       = "invalid %s"
 
 	authorized           = "authorized"
 	unauthorized         = "unauthorized"

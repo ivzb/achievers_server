@@ -190,6 +190,17 @@ func TestUnauthorized(t *testing.T) {
 	}
 }
 
+func TestNotFound(t *testing.T) {
+	status := http.StatusNotFound
+
+	response := NotFound("")
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "NotFound", status, response.StatusCode)
+	}
+}
+
 func TestMethodNotAllowed(t *testing.T) {
 	status := http.StatusMethodNotAllowed
 

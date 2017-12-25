@@ -56,6 +56,11 @@ func Unauthorized(message string) Message {
 	return sendError(http.StatusUnauthorized, message)
 }
 
+// NotFound sends response with status code 404
+func NotFound(message string) Message {
+	return sendError(http.StatusNotFound, message)
+}
+
 // MethodNotAllowed sends response with status code 405
 func MethodNotAllowed(message string) Message {
 	return sendError(http.StatusMethodNotAllowed, message)

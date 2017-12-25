@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	achievement = "achievement"
-	page        = "page"
+	achievements = "achievements"
+	page         = "page"
 )
 
 func AchievementsIndex(
@@ -29,6 +29,10 @@ func AchievementsIndex(
 		return response.BadRequest(fmt.Sprintf(formatMissing, page))
 	}
 
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+	}
+
 	uID := env.UserId
 	env.Logger.Log(uID)
 
@@ -38,8 +42,12 @@ func AchievementsIndex(
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
+	if len(achs) == 0 {
+		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+	}
+
 	return response.Ok(
-		fmt.Sprintf(formatFound, achievement),
+		fmt.Sprintf(formatFound, achievements),
 		len(achs),
 		achs)
 }
