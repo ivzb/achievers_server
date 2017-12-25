@@ -16,10 +16,40 @@ type Achievement struct {
 	DeletedAt     time.Time `json:"deleted_at"`
 }
 
+func (db *DB) AchievementSingle(id string) (*Achievement, error) {
+	ach := new(Achievement)
+
+	ach.Id = id
+
+	row := db.QueryRow("SELECT `title`, `description`, `picture_url`, `involvement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+		"FROM achievement "+
+		"WHERE id = ? "+
+		"LIMIT 1", id)
+
+	err := row.Scan(
+		&ach.Title,
+		&ach.Description,
+		&ach.PictureUrl,
+		&ach.InvolvementId,
+		&ach.AuthorId,
+		&ach.CreatedAt,
+		&ach.UpdatedAt,
+		&ach.DeletedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ach, nil
+}
+
 func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
 	start := pageSize * page
 	end := start + pageSize
-	rows, err := db.Query("SELECT * FROM achievement ORDER BY id DESC LIMIT ?, ?", start, end)
+	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `involvement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+		"FROM achievement "+
+		"ORDER BY id DESC "+
+		"LIMIT ?, ?", start, end)
 
 	if err != nil {
 		return nil, err

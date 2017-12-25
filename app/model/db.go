@@ -20,6 +20,7 @@ const (
 type DBSource interface {
 	Exists(table string, column string, value string) (bool, error)
 
+	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)
 	UserCreate(string, string, string, string) (string, error)
 	UserAuth(string, string) (string, error)

@@ -55,12 +55,21 @@ func main() {
 
 	log.Log("started@:8080")
 
-	http.Handle("/achievements", use(app.Handler{env, controller.AchievementsIndex}, auth.Handler, logger.Handler))
+	http.Handle("/achievement", authChain(env, controller.AchievementSingle))
+	http.Handle("/achievements", authChain(env, controller.AchievementsIndex))
 
-	http.Handle("/users/auth", use(app.Handler{env, controller.UserAuth}, logger.Handler))
-	http.Handle("/users/create", use(app.Handler{env, controller.UserCreate}, logger.Handler))
+	http.Handle("/users/auth", anonChain(env, controller.UserAuth))
+	http.Handle("/users/create", anonChain(env, controller.UserCreate))
 
 	http.ListenAndServe(":8080", nil)
+}
+
+func authChain(env *model.Env, handler app.Handle) http.Handler {
+	return use(app.Handler{env, handler}, auth.Handler, logger.Handler)
+}
+
+func anonChain(env *model.Env, handler app.Handle) http.Handler {
+	return use(app.Handler{env, handler}, logger.Handler)
 }
 
 // specify middlewares in reverse order since it is chaining them recursively

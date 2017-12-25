@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	id           = "id"
+	achievement  = "achievement"
 	achievements = "achievements"
 	page         = "page"
 )
@@ -52,53 +54,46 @@ func AchievementsIndex(
 		achs)
 }
 
-// func showAchievement(w http.ResponseWriter, r *http.Request) {
-//   if r.Method != "GET" {
-//     http.Error(w, http.StatusText(405), 405)
-//     return
-//   }
+func AchievementSingle(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
 
-//   id := r.FormValue("id")
-//   if id == "" {
-//     http.Error(w, http.StatusText(400), 400)
-//     return
-//   }
+	if r.Method != "GET" {
+		return response.MethodNotAllowed(methodNotAllowed)
+	}
 
-//   row := db.QueryRow("SELECT * FROM achievement WHERE id = ?", id)
+	achID := r.FormValue(id)
 
-//   ach := new(Achievement)
-//   err := row.Scan(
-// 			&ach.id,
-// 			&ach.title,
-// 			&ach.description,
-// 			&ach.picture_url,
-// 			&ach.involvement_id,
-// 			&ach.author_id,
-// 			&ach.created_at,
-// 			&ach.updated_at,
-// 			&ach.deleted_at)
+	if achID == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	}
 
-//   if err == sql.ErrNoRows {
-//     http.NotFound(w, r)
-//     return
-//   }
+	exists, err := env.DB.Exists(achievement, id, achID)
 
-//   if err != nil {
-//     http.Error(w, http.StatusText(500), 500)
-//     return
-//   }
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
 
-//   fmt.Fprintf(w, "%s, %s, %s, %s, %s, %s, %s, %s, %s\n",
-//       ach.id,
-// 			ach.title,
-// 			ach.description,
-// 			ach.picture_url,
-// 			ach.involvement_id,
-// 			ach.author_id,
-// 			ach.created_at,
-// 			ach.updated_at,
-// 			ach.deleted_at)
-// }
+	if !exists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
+	}
+
+	ach, err := env.DB.AchievementSingle(achID)
+
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if ach == nil {
+		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
+	}
+
+	return response.Ok(
+		fmt.Sprintf(formatFound, achievement),
+		1,
+		ach)
+}
 
 // func createAchievement(w http.ResponseWriter, r *http.Request) {
 //   if r.Method != "POST" {
