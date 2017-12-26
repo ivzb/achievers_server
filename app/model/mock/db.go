@@ -17,6 +17,11 @@ type AchievementsAll struct {
 	E error
 }
 
+type AchievementCreate struct {
+	A string
+	E error
+}
+
 type UserCreate struct {
 	S string
 	E error
@@ -31,6 +36,7 @@ type DB struct {
 	ExistsMock            Exists
 	AchievementSingleMock AchievementSingle
 	AchievementsAllMock   AchievementsAll
+	AchievementCreateMock AchievementCreate
 	UserCreateMock        UserCreate
 	UserAuthMock          UserAuth
 }
@@ -45,6 +51,10 @@ func (mock *DB) AchievementSingle(id string) (*model.Achievement, error) {
 
 func (mock *DB) AchievementsAll(page int) ([]*model.Achievement, error) {
 	return mock.AchievementsAllMock.A, mock.AchievementsAllMock.E
+}
+
+func (mock *DB) AchievementCreate(achievement *model.Achievement) (string, error) {
+	return mock.AchievementCreateMock.A, mock.AchievementCreateMock.E
 }
 
 func (mock *DB) UserCreate(string, string, string, string) (string, error) {

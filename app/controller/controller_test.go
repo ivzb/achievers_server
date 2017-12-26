@@ -9,6 +9,19 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
+var (
+	mockID            = "mock id"
+	mockTitle         = "mock title"
+	mockDescription   = "mock description"
+	mockPictureURL    = "mock picture_url"
+	mockInovlvementID = "mock involvement_id"
+	mockFirstName     = "mock first_name"
+	mockLastName      = "mock last_name"
+	mockEmail         = "mock email"
+	mockPassword      = "mock password"
+	mockToken         = "mock token"
+)
+
 func testInvalidMethod(t *testing.T, method string, url string, handle app.Handle) {
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(method, url, nil)

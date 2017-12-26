@@ -13,15 +13,6 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-var (
-	mockId        = "42"
-	mockFirstName = "John"
-	mockLastName  = "Doe"
-	mockEmail     = "email@gmail.com"
-	mockPassword  = "P@$$"
-	mockToken     = "34567899876543"
-)
-
 func TestUserAuth_ValidAuth(t *testing.T) {
 	rec := httptest.NewRecorder()
 
@@ -172,7 +163,7 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock:     mock.Exists{false, nil},
-			UserCreateMock: mock.UserCreate{mockId, nil},
+			UserCreateMock: mock.UserCreate{mockID, nil},
 		},
 	}
 
@@ -182,7 +173,7 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	testHandler(t, rec, req, &env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatCreated, user) + `","length":1,"results":"` + mockId + `"}`
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatCreated, user) + `","length":1,"results":"` + mockID + `"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

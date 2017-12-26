@@ -10,10 +10,16 @@ import (
 )
 
 const (
-	id           = "id"
-	achievement  = "achievement"
-	achievements = "achievements"
-	page         = "page"
+	id            = "id"
+	achievement   = "achievement"
+	achievements  = "achievements"
+	involvement   = "involvement"
+	page          = "page"
+	title         = "title"
+	description   = "description"
+	pictureURL    = "picture_url"
+	involvementID = "involvement_id"
+	authorID      = "author_id"
 )
 
 func AchievementsIndex(
@@ -34,9 +40,6 @@ func AchievementsIndex(
 	if pg < 0 {
 		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
 	}
-
-	uID := env.UserId
-	env.Logger.Log(uID)
 
 	achs, err := env.DB.AchievementsAll(pg)
 
@@ -95,55 +98,58 @@ func AchievementSingle(
 		ach)
 }
 
-// func createAchievement(w http.ResponseWriter, r *http.Request) {
-//   if r.Method != "POST" {
-//     http.Error(w, http.StatusText(405), 405)
-//     return
-//   }
+func AchievementCreate(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
 
-//   title := r.FormValue("title")
-//   description := r.FormValue("description")
-//   picture_url := r.FormValue("picture_url")
-//   involvement_id := r.FormValue("involvement_id")
-//   author_id := r.FormValue("author_id")
+	if r.Method != "POST" {
+		return response.MethodNotAllowed(methodNotAllowed)
+	}
 
-//   if title == "" || description == "" || picture_url == "" || involvement_id == "" || author_id == "" {
-//     http.Error(w, http.StatusText(400), 400)
-//     return
-//   }
+	ach := &model.Achievement{
+		Title:         r.FormValue("title"),
+		Description:   r.FormValue("description"),
+		PictureUrl:    r.FormValue("picture_url"),
+		InvolvementId: r.FormValue("involvement_id"),
+	}
 
-//   id, err := uuid()
-// 	// If error on UUID generation
-// 	if err != nil {
-// 		http.Error(w, http.StatusText(500), 500)
-//     return
-// 	}
+	if ach.Title == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, title))
+	}
 
-//   result, err := db.Exec(`INSERT INTO achievement (id, title, description, picture_url, involvement_id, author_id)
-//      VALUES(?, ?, ?, ?, ?, ?)`,
-//      id, title, description, picture_url, involvement_id, author_id)
+	if ach.Description == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, description))
+	}
 
-//   if err != nil {
-//     log.Println(err)
-//     http.Error(w, http.StatusText(500), 500)
-//     return
-//   }
+	if ach.PictureUrl == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, pictureURL))
+	}
 
-//   rowsAffected, err := result.RowsAffected()
-//   if err != nil {
-//     http.Error(w, http.StatusText(500), 500)
-//     return
-//   }
+	if ach.InvolvementId == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, involvementID))
+	}
 
-//   fmt.Fprintf(w, "Achievement %s created successfully (%d row affected)\n", id, rowsAffected)
-// }
+	involvementExists, err := env.DB.Exists("involvement", "id", ach.InvolvementId)
 
-// func uuid() (string, error) {
-// 	b := make([]byte, 16)
-// 	_, err := rand.Read(b)
-// 	if err != nil {
-// 		return "", err
-// 	}
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
 
-// 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
-// }
+	if !involvementExists {
+		return response.BadRequest(fmt.Sprintf(formatNotFound, involvement))
+	}
+
+	ach.AuthorId = env.UserId
+
+	id, err := env.DB.AchievementCreate(ach)
+
+	if err != nil || id == "" {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	return response.Ok(
+		fmt.Sprintf(formatFound, achievement),
+		1,
+		id)
+}

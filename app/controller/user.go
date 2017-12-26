@@ -82,7 +82,7 @@ func UserCreate(
 		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
-	exists, err := env.DB.Exists("user", "email", email)
+	exists, err := env.DB.Exists("user", "email", eml)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)

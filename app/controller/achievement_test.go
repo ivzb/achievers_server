@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -320,6 +321,192 @@ func TestAchievementSingle_AchievementSingle(t *testing.T) {
 
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestAchievementCreate_InvalidMethod(t *testing.T) {
+	testInvalidMethod(t, "GET", "/achievement/create", AchievementCreate)
+}
+
+func TestAchievementCreate_MissingTitle(t *testing.T) {
+	form := url.Values{}
+	form.Add("title", "")
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	testAchievementCreate_missingFormValue(t, form, title)
+}
+
+func TestAchievementCreate_MissingDescription(t *testing.T) {
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", "")
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	testAchievementCreate_missingFormValue(t, form, description)
+}
+
+func TestAchievementCreate_MissingPictureUrl(t *testing.T) {
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", "")
+	form.Add("involvement_id", mockInovlvementID)
+
+	testAchievementCreate_missingFormValue(t, form, pictureURL)
+}
+
+func TestAchievementCreate_MissingInvolvementId(t *testing.T) {
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", "")
+
+	testAchievementCreate_missingFormValue(t, form, involvementID)
+}
+
+func TestAchievementCreate_InvolvementIdExistDBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add("title", mockTitle)
+	req.Form.Add("description", mockDescription)
+	req.Form.Add("picture_url", mockPictureURL)
+	req.Form.Add("involvement_id", mockInovlvementID)
+
+	env := model.Env{
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{false, errors.New("db error")},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := AchievementCreate
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestAchievementCreate_InvolvementIdDoesNotExist(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add("title", mockTitle)
+	req.Form.Add("description", mockDescription)
+	req.Form.Add("picture_url", mockPictureURL)
+	req.Form.Add("involvement_id", mockInovlvementID)
+
+	env := model.Env{
+		DB: &mock.DB{
+			ExistsMock: mock.Exists{false, nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := AchievementCreate
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, fmt.Sprintf(formatNotFound, involvement))
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestAchievementCreate_AchievementCreateDBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add("title", mockTitle)
+	req.Form.Add("description", mockDescription)
+	req.Form.Add("picture_url", mockPictureURL)
+	req.Form.Add("involvement_id", mockInovlvementID)
+
+	env := model.Env{
+		DB: &mock.DB{
+			ExistsMock:            mock.Exists{true, nil},
+			AchievementCreateMock: mock.AchievementCreate{"", errors.New("db error")},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := AchievementCreate
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestAchievementCreate_ValidAchievement(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add("title", mockTitle)
+	req.Form.Add("description", mockDescription)
+	req.Form.Add("picture_url", mockPictureURL)
+	req.Form.Add("involvement_id", mockInovlvementID)
+
+	env := model.Env{
+		DB: &mock.DB{
+			ExistsMock:            mock.Exists{true, nil},
+			AchievementCreateMock: mock.AchievementCreate{mockID, nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := AchievementCreate
+	statusCode := http.StatusOK
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatFound, achievement) + `","length":1,"results":"` + mockID + `"}`
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func testAchievementCreate_missingFormValue(t *testing.T, form url.Values, expectedMissing string) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Form = form
+
+	handle := AchievementCreate
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, nil, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatMissing, expectedMissing)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
 	}
 }

@@ -57,6 +57,7 @@ func main() {
 
 	http.Handle("/achievement", authChain(env, controller.AchievementSingle))
 	http.Handle("/achievements", authChain(env, controller.AchievementsIndex))
+	http.Handle("/achievement/create", authChain(env, controller.AchievementCreate))
 
 	http.Handle("/users/auth", anonChain(env, controller.UserAuth))
 	http.Handle("/users/create", anonChain(env, controller.UserCreate))

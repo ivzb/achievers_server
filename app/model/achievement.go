@@ -44,12 +44,12 @@ func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 }
 
 func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
-	start := pageSize * page
-	end := start + pageSize
+	offset := limit * page
+
 	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `involvement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM achievement "+
-		"ORDER BY id DESC "+
-		"LIMIT ?, ?", start, end)
+		"ORDER BY `created_at` DESC "+
+		"LIMIT ? OFFSET ?", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -84,4 +84,31 @@ func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
 	}
 
 	return achs, nil
+}
+
+func (db *DB) AchievementCreate(achievement *Achievement) (string, error) {
+	id, err := db.UUID()
+
+	if err != nil {
+		return "", err
+	}
+
+	result, err := db.Exec(`INSERT INTO achievement (id, title, description, picture_url, involvement_id, author_id)
+        VALUES(?, ?, ?, ?, ?, ?)`,
+		id,
+		achievement.Title,
+		achievement.Description,
+		achievement.PictureUrl,
+		achievement.InvolvementId,
+		achievement.AuthorId)
+
+	if err != nil {
+		return "", err
+	}
+
+	if _, err = result.RowsAffected(); err != nil {
+		return "", err
+	}
+
+	return id, nil
 }

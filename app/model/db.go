@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	pageSize = 9
+	limit = 9
 )
 
 // DBSource contains all available DAO functions
@@ -22,6 +22,8 @@ type DBSource interface {
 
 	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)
+	AchievementCreate(achievement *Achievement) (string, error)
+
 	UserCreate(string, string, string, string) (string, error)
 	UserAuth(string, string) (string, error)
 }
