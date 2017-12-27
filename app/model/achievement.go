@@ -5,12 +5,12 @@ import (
 )
 
 type Achievement struct {
-	Id            string    `json:"id"`
+	ID            string    `json:"id"`
 	Title         string    `json:"title"`
 	Description   string    `json:"description"`
-	PictureUrl    string    `json:"picture_url"`
-	InvolvementId string    `json:"involvement_id"`
-	AuthorId      string    `json:"author_id"`
+	PictureURL    string    `json:"picture_url"`
+	InvolvementID string    `json:"involvement_id"`
+	AuthorID      string    `json:"author_id"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	DeletedAt     time.Time `json:"deleted_at"`
@@ -19,7 +19,7 @@ type Achievement struct {
 func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 	ach := new(Achievement)
 
-	ach.Id = id
+	ach.ID = id
 
 	row := db.QueryRow("SELECT `title`, `description`, `picture_url`, `involvement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM achievement "+
@@ -29,9 +29,9 @@ func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 	err := row.Scan(
 		&ach.Title,
 		&ach.Description,
-		&ach.PictureUrl,
-		&ach.InvolvementId,
-		&ach.AuthorId,
+		&ach.PictureURL,
+		&ach.InvolvementID,
+		&ach.AuthorID,
 		&ach.CreatedAt,
 		&ach.UpdatedAt,
 		&ach.DeletedAt)
@@ -62,12 +62,12 @@ func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
 	for rows.Next() {
 		ach := new(Achievement)
 		err := rows.Scan(
-			&ach.Id,
+			&ach.ID,
 			&ach.Title,
 			&ach.Description,
-			&ach.PictureUrl,
-			&ach.InvolvementId,
-			&ach.AuthorId,
+			&ach.PictureURL,
+			&ach.InvolvementID,
+			&ach.AuthorID,
 			&ach.CreatedAt,
 			&ach.UpdatedAt,
 			&ach.DeletedAt)
@@ -98,9 +98,9 @@ func (db *DB) AchievementCreate(achievement *Achievement) (string, error) {
 		id,
 		achievement.Title,
 		achievement.Description,
-		achievement.PictureUrl,
-		achievement.InvolvementId,
-		achievement.AuthorId)
+		achievement.PictureURL,
+		achievement.InvolvementID,
+		achievement.AuthorID)
 
 	if err != nil {
 		return "", err

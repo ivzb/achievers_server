@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -329,6 +330,36 @@ func TestAchievementCreate_InvalidMethod(t *testing.T) {
 	testInvalidMethod(t, "GET", "/achievement/create", AchievementCreate)
 }
 
+func TestAchievementCreate_FormMapError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	handle := AchievementCreate
+	statusCode := http.StatusBadRequest
+
+	mapError := "map error"
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{errors.New(mapError)},
+		},
+	}
+
+	testHandler(t, rec, req, env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := mapError
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+
+}
+
 func TestAchievementCreate_MissingTitle(t *testing.T) {
 	form := url.Values{}
 	form.Add("title", "")
@@ -371,19 +402,26 @@ func TestAchievementCreate_MissingInvolvementId(t *testing.T) {
 
 func TestAchievementCreate_InvolvementIdExistDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/achievement/create", nil)
 
-	req.Form = url.Values{}
-	req.Form.Add("title", mockTitle)
-	req.Form.Add("description", mockDescription)
-	req.Form.Add("picture_url", mockPictureURL)
-	req.Form.Add("involvement_id", mockInovlvementID)
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	req, _ := http.NewRequest("POST", "/achievement/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock: mock.Exists{false, errors.New("db error")},
 		},
 		Logger: &mock.Logger{},
+		Former: &mock.Former{
+			MapMock: mock.Map{E: nil},
+		},
 	}
 
 	handle := AchievementCreate
@@ -401,19 +439,26 @@ func TestAchievementCreate_InvolvementIdExistDBError(t *testing.T) {
 
 func TestAchievementCreate_InvolvementIdDoesNotExist(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/achievement/create", nil)
 
-	req.Form = url.Values{}
-	req.Form.Add("title", mockTitle)
-	req.Form.Add("description", mockDescription)
-	req.Form.Add("picture_url", mockPictureURL)
-	req.Form.Add("involvement_id", mockInovlvementID)
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	req, _ := http.NewRequest("POST", "/achievement/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock: mock.Exists{false, nil},
 		},
 		Logger: &mock.Logger{},
+		Former: &mock.Former{
+			MapMock: mock.Map{E: nil},
+		},
 	}
 
 	handle := AchievementCreate
@@ -431,13 +476,17 @@ func TestAchievementCreate_InvolvementIdDoesNotExist(t *testing.T) {
 
 func TestAchievementCreate_AchievementCreateDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/achievement/create", nil)
 
-	req.Form = url.Values{}
-	req.Form.Add("title", mockTitle)
-	req.Form.Add("description", mockDescription)
-	req.Form.Add("picture_url", mockPictureURL)
-	req.Form.Add("involvement_id", mockInovlvementID)
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	req, _ := http.NewRequest("POST", "/achievement/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -445,6 +494,9 @@ func TestAchievementCreate_AchievementCreateDBError(t *testing.T) {
 			AchievementCreateMock: mock.AchievementCreate{"", errors.New("db error")},
 		},
 		Logger: &mock.Logger{},
+		Former: &mock.Former{
+			MapMock: mock.Map{E: nil},
+		},
 	}
 
 	handle := AchievementCreate
@@ -462,13 +514,17 @@ func TestAchievementCreate_AchievementCreateDBError(t *testing.T) {
 
 func TestAchievementCreate_ValidAchievement(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/achievement/create", nil)
 
-	req.Form = url.Values{}
-	req.Form.Add("title", mockTitle)
-	req.Form.Add("description", mockDescription)
-	req.Form.Add("picture_url", mockPictureURL)
-	req.Form.Add("involvement_id", mockInovlvementID)
+	form := url.Values{}
+	form.Add("title", mockTitle)
+	form.Add("description", mockDescription)
+	form.Add("picture_url", mockPictureURL)
+	form.Add("involvement_id", mockInovlvementID)
+
+	req, _ := http.NewRequest("POST", "/achievement/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -476,6 +532,9 @@ func TestAchievementCreate_ValidAchievement(t *testing.T) {
 			AchievementCreateMock: mock.AchievementCreate{mockID, nil},
 		},
 		Logger: &mock.Logger{},
+		Former: &mock.Former{
+			MapMock: mock.Map{E: nil},
+		},
 	}
 
 	handle := AchievementCreate
@@ -493,14 +552,21 @@ func TestAchievementCreate_ValidAchievement(t *testing.T) {
 
 func testAchievementCreate_missingFormValue(t *testing.T, form url.Values, expectedMissing string) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/achievement/create", nil)
+	req, _ := http.NewRequest("POST", "/achievement/create", strings.NewReader(form.Encode()))
 
-	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	handle := AchievementCreate
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, nil, handle, statusCode)
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
+		},
+	}
+
+	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
 	expectedMessage := fmt.Sprintf(formatMissing, expectedMissing)

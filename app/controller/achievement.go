@@ -107,11 +107,11 @@ func AchievementCreate(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	ach := &model.Achievement{
-		Title:         r.FormValue("title"),
-		Description:   r.FormValue("description"),
-		PictureUrl:    r.FormValue("picture_url"),
-		InvolvementId: r.FormValue("involvement_id"),
+	ach := &model.Achievement{}
+	err := env.Former.Map(r, ach)
+
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	if ach.Title == "" {
@@ -122,15 +122,15 @@ func AchievementCreate(
 		return response.BadRequest(fmt.Sprintf(formatMissing, description))
 	}
 
-	if ach.PictureUrl == "" {
+	if ach.PictureURL == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, pictureURL))
 	}
 
-	if ach.InvolvementId == "" {
+	if ach.InvolvementID == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, involvementID))
 	}
 
-	involvementExists, err := env.DB.Exists("involvement", "id", ach.InvolvementId)
+	involvementExists, err := env.DB.Exists("involvement", "id", ach.InvolvementID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -140,7 +140,7 @@ func AchievementCreate(
 		return response.BadRequest(fmt.Sprintf(formatNotFound, involvement))
 	}
 
-	ach.AuthorId = env.UserId
+	ach.AuthorID = env.UserId
 
 	id, err := env.DB.AchievementCreate(ach)
 

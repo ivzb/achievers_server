@@ -5,4 +5,5 @@ type Env struct {
 	UserId  string
 	Tokener Tokener
 	Logger  Logger
+	Former  Former
 }
