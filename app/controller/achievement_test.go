@@ -49,7 +49,7 @@ func requestAchievements(t *testing.T, size int, statusCode int) *httptest.Respo
 
 	env := model.Env{
 		DB: &mock.DB{
-			AchievementsAllMock: mock.AchievementsAll{A: mock.Achievements(size), E: nil},
+			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(size), Err: nil},
 		},
 		Logger: &mock.Logger{},
 	}

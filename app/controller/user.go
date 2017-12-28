@@ -8,15 +8,6 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-const (
-	user = "user"
-
-	firstName = "first_name"
-	lastName  = "last_name"
-	email     = "email"
-	password  = "password"
-)
-
 func UserAuth(
 	env *model.Env,
 	w http.ResponseWriter,
@@ -61,28 +52,30 @@ func UserCreate(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	fnm := r.FormValue("first_name")
-	lnm := r.FormValue("last_name")
-	eml := r.FormValue("email")
-	pwd := r.FormValue("password")
+	usr := &model.User{}
+	err := env.Former.Map(r, usr)
 
-	if fnm == "" {
+	if err != nil {
+		return response.BadRequest(err.Error())
+	}
+
+	if usr.FirstName == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, firstName))
 	}
 
-	if lnm == "" {
+	if usr.LastName == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, lastName))
 	}
 
-	if eml == "" {
+	if usr.Email == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, email))
 	}
 
-	if pwd == "" {
+	if usr.Password == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
-	exists, err := env.DB.Exists("user", "email", eml)
+	exists, err := env.DB.Exists("user", "email", usr.Email)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -92,7 +85,7 @@ func UserCreate(
 		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, email))
 	}
 
-	id, err := env.DB.UserCreate(fnm, lnm, eml, pwd)
+	id, err := env.DB.UserCreate(usr)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)

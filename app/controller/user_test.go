@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -152,18 +153,24 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 func TestUserCreate_ValidUser(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock:     mock.Exists{false, nil},
 			UserCreateMock: mock.UserCreate{mockID, nil},
+		},
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
 		},
 	}
 
@@ -184,20 +191,60 @@ func TestUserCreate_InvalidMethod(t *testing.T) {
 	testInvalidMethod(t, "GET", "/users/create", UserCreate)
 }
 
-func TestUserCreate_MissingFirstName(t *testing.T) {
+func TestUserCreate_FormMapError(t *testing.T) {
 	rec := httptest.NewRecorder()
-
 	req, _ := http.NewRequest("POST", "/users/create", nil)
 
-	req.Form = url.Values{}
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	handle := UserCreate
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, nil, handle, statusCode)
+	mapError := "map error"
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{errors.New(mapError)},
+		},
+	}
+
+	testHandler(t, rec, req, env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := mapError
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+
+}
+
+func TestUserCreate_MissingFirstName(t *testing.T) {
+	rec := httptest.NewRecorder()
+
+	form := url.Values{}
+	form.Add("first_name", "")
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
+
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
+		},
+	}
+
+	handle := UserCreate
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
 	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, firstName) + `"}`
@@ -210,17 +257,27 @@ func TestUserCreate_MissingFirstName(t *testing.T) {
 func TestUserCreate_MissingLastName(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", "")
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
+		},
+	}
 
 	handle := UserCreate
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, nil, handle, statusCode)
+	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
 	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, lastName) + `"}`
@@ -233,17 +290,27 @@ func TestUserCreate_MissingLastName(t *testing.T) {
 func TestUserCreate_MissingEmail(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", "")
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
+		},
+	}
 
 	handle := UserCreate
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, nil, handle, statusCode)
+	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
 	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, email) + `"}`
@@ -256,17 +323,27 @@ func TestUserCreate_MissingEmail(t *testing.T) {
 func TestUserCreate_MissingPassword(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", "")
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	env := &model.Env{
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
+		},
+	}
 
 	handle := UserCreate
 	statusCode := http.StatusBadRequest
 
-	testHandler(t, rec, req, nil, handle, statusCode)
+	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
 	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatMissing, password) + `"}`
@@ -279,17 +356,23 @@ func TestUserCreate_MissingPassword(t *testing.T) {
 func TestUserCreate_ExistDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock: mock.Exists{false, errors.New("db error")},
+		},
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
 		},
 	}
 
@@ -309,17 +392,23 @@ func TestUserCreate_ExistDBError(t *testing.T) {
 func TestUserCreate_UserExist(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock: mock.Exists{true, nil},
+		},
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
 		},
 	}
 
@@ -339,18 +428,24 @@ func TestUserCreate_UserExist(t *testing.T) {
 func TestUserCreate_UserCreateDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("POST", "/users/create", nil)
+	form := url.Values{}
+	form.Add("first_name", mockFirstName)
+	form.Add("last_name", mockLastName)
+	form.Add("email", mockEmail)
+	form.Add("password", mockPassword)
 
-	req.Form = url.Values{}
-	req.Form.Add("first_name", mockFirstName)
-	req.Form.Add("last_name", mockLastName)
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
+
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	env := model.Env{
 		DB: &mock.DB{
 			ExistsMock:     mock.Exists{false, nil},
 			UserCreateMock: mock.UserCreate{"", errors.New("db error")},
+		},
+		Former: &mock.Former{
+			MapMock: mock.Map{nil},
 		},
 	}
 

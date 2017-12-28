@@ -5,12 +5,15 @@ import (
 )
 
 type User struct {
-	ID        string    `json:"id"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	StatusID  uint8     `json:"status_id"`
+	ID string `json:"id"`
+
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+
+	StatusID uint8 `json:"status_id"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
@@ -28,7 +31,7 @@ func (db *DB) UserAuth(email string, password string) (string, error) {
 	return uID, err
 }
 
-func (db *DB) UserCreate(firstName string, lastName string, email string, password string) (string, error) {
+func (db *DB) UserCreate(user *User) (string, error) {
 	id, err := db.UUID()
 
 	if err != nil {
@@ -37,7 +40,7 @@ func (db *DB) UserCreate(firstName string, lastName string, email string, passwo
 
 	result, err := db.Exec(`INSERT INTO user (id, first_name, last_name, email, password)
         VALUES(?, ?, ?, ?, ?)`,
-		id, firstName, lastName, email, password)
+		id, user.FirstName, user.LastName, user.Email, user.Password)
 
 	if err != nil {
 		return "", err

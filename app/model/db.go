@@ -20,12 +20,14 @@ const (
 type DBSource interface {
 	Exists(table string, column string, value string) (bool, error)
 
+	UserCreate(user *User) (string, error)
+	UserAuth(string, string) (string, error)
+
 	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
-	UserCreate(string, string, string, string) (string, error)
-	UserAuth(string, string) (string, error)
+	EvidenceCreate(evidence *Evidence) (string, error)
 }
 
 // DB struct holds the connection to DB
@@ -75,4 +77,27 @@ func (db *DB) UUID() (string, error) {
 	}
 
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+}
+
+// create executes passed query and args
+func create(db *DB, query string, args ...interface{}) (string, error) {
+	id, err := db.UUID()
+
+	if err != nil {
+		return "", err
+	}
+
+	args = append([]interface{}{id}, args...)
+
+	result, err := db.Exec(query, args...)
+
+	if err != nil {
+		return "", err
+	}
+
+	if _, err = result.RowsAffected(); err != nil {
+		return "", err
+	}
+
+	return args[0].(string), nil
 }

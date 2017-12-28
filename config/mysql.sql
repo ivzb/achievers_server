@@ -35,6 +35,30 @@ CREATE TABLE user_status (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE involvement (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    name VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE multimedia_type (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    name VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE user (
     id VARCHAR(36) NOT NULL,
     
@@ -51,19 +75,7 @@ CREATE TABLE user (
     
     UNIQUE KEY (email),
     CONSTRAINT `f_user_status` FOREIGN KEY (`status_id`)
-        REFERENCES `user_status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE involvement (
-    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
-    
-    name VARCHAR(25) NOT NULL,
-    
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP DEFAULT 0,
+        REFERENCES `user_status` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
     PRIMARY KEY (id)
 );
@@ -91,6 +103,33 @@ CREATE TABLE achievement (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE evidence (
+    id VARCHAR(36) NOT NULL,
+    
+    description VARCHAR(255) NOT NULL,
+    preview_url VARCHAR(255) NOT NULL,
+    url         VARCHAR(255) NOT NULL,
+    
+    multimedia_type_id TINYINT(1) UNSIGNED NOT NULL,
+    achievement_id     VARCHAR(36) NOT NULL,
+    author_id          VARCHAR(36) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    CONSTRAINT `f_evidence_multimedia_type_id` FOREIGN KEY (`multimedia_type_id`)
+        REFERENCES `multimedia_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_evidence_achievement` FOREIGN KEY (`achievement_id`) 
+        REFERENCES `achievement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_evidence_user` FOREIGN KEY (`author_id`) 
+        REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    
+    PRIMARY KEY (id)
+);
+
 INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
 (1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
@@ -101,3 +140,8 @@ INSERT INTO `involvement` (`id`, `name`, `created_at`, `updated_at`, `deleted_at
 (3, 'gold', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (4, 'platinum', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (5, 'diamond', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+
+INSERT INTO `multimedia_type` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'photo',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'video', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(3, 'voice', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);

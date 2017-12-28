@@ -57,12 +57,14 @@ func main() {
 
 	log.Log("started@:8080")
 
+	http.Handle("/users/auth", anonChain(env, controller.UserAuth))
+	http.Handle("/users/create", anonChain(env, controller.UserCreate))
+
 	http.Handle("/achievement", authChain(env, controller.AchievementSingle))
 	http.Handle("/achievements", authChain(env, controller.AchievementsIndex))
 	http.Handle("/achievement/create", authChain(env, controller.AchievementCreate))
 
-	http.Handle("/users/auth", anonChain(env, controller.UserAuth))
-	http.Handle("/users/create", anonChain(env, controller.UserCreate))
+	http.Handle("/evidence/create", authChain(env, controller.EvidenceCreate))
 
 	http.ListenAndServe(":8080", nil)
 }

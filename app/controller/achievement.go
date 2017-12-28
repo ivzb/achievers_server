@@ -9,19 +9,6 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-const (
-	id            = "id"
-	achievement   = "achievement"
-	achievements  = "achievements"
-	involvement   = "involvement"
-	page          = "page"
-	title         = "title"
-	description   = "description"
-	pictureURL    = "picture_url"
-	involvementID = "involvement_id"
-	authorID      = "author_id"
-)
-
 func AchievementsIndex(
 	env *model.Env,
 	w http.ResponseWriter,

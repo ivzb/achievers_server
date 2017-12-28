@@ -5,15 +5,18 @@ import (
 )
 
 type Achievement struct {
-	ID            string    `json:"id"`
-	Title         string    `json:"title"`
-	Description   string    `json:"description"`
-	PictureURL    string    `json:"picture_url"`
-	InvolvementID string    `json:"involvement_id"`
-	AuthorID      string    `json:"author_id"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     time.Time `json:"deleted_at"`
+	ID string `json:"id"`
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	PictureURL  string `json:"picture_url"`
+
+	InvolvementID string `json:"involvement_id"`
+	AuthorID      string `json:"author_id"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
 
 func (db *DB) AchievementSingle(id string) (*Achievement, error) {
