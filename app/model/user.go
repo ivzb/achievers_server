@@ -19,7 +19,11 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func (db *DB) UserExists(email string) (bool, error) {
+func (db *DB) UserExists(id string) (bool, error) {
+	return exists(db, "user", "id", id)
+}
+
+func (db *DB) UserEmailExists(email string) (bool, error) {
 	return exists(db, "user", "email", email)
 }
 

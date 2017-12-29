@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"testing"
@@ -11,6 +13,179 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
+
+func TestEvidenceSingle_InvalidMethod(t *testing.T) {
+	testInvalidMethod(t, "POST", "/evidence", EvidenceSingle)
+}
+
+func TestEvidenceSingle_MissingId(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "")
+
+	handle := EvidenceSingle
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, nil, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatMissing, id)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidenceSingle_EvidenceExistDBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "random_evidence_id")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: false, Err: errors.New("db error")},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidenceSingle
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidenceSingle_EvidenceDoesNotExist(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "random_evidence_id")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: false, Err: nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidenceSingle
+	statusCode := http.StatusNotFound
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatNotFound, evidence)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidenceSingle_EvidenceSingleDBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "random_evidence_id")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: true, Err: nil},
+			EvidenceSingleMock: mock.EvidenceSingle{Evd: nil, Err: errors.New("db error")},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidenceSingle
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidenceSingle_EvidenceSingleNil(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "random_evidence_id")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: true, Err: nil},
+			EvidenceSingleMock: mock.EvidenceSingle{Evd: nil, Err: nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidenceSingle
+	statusCode := http.StatusNotFound
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatNotFound, evidence)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidenceSingle_EvidenceSingle(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidence", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(id, "random_evidence_id")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: true, Err: nil},
+			EvidenceSingleMock: mock.EvidenceSingle{Evd: mock.Evidence(), Err: nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidenceSingle
+	statusCode := http.StatusOK
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatFound, evidence)
+	marshalled, _ := json.Marshal(mock.Evidence())
+	expectedResults := marshalled
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
+		statusCode,
+		expectedMessage,
+		1,
+		expectedResults)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
 
 func mockEvidenceForm() url.Values {
 	form := url.Values{}
@@ -24,7 +199,7 @@ func mockEvidenceForm() url.Values {
 }
 
 func TestEvidenceCreate_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "GET", "/achievement/create", EvidenceCreate)
+	testInvalidMethod(t, "GET", "/evidence/create", EvidenceCreate)
 }
 
 func TestEvidenceCreate_FormMapError(t *testing.T) {
@@ -67,7 +242,7 @@ func TestEvidenceCreate_MissingMultimediaTypeId(t *testing.T) {
 	testMissingFormValue(t, EvidenceCreate, mockEvidenceForm(), multimediaTypeID)
 }
 
-func TestEvidenceCreate_MissingAchievementId(t *testing.T) {
+func TestEvidenceCreate_MissingEvidenceId(t *testing.T) {
 	testMissingFormValue(t, EvidenceCreate, mockEvidenceForm(), achievementID)
 }
 
@@ -205,7 +380,7 @@ func TestEvidenceCreate_EvidenceCreateDBError(t *testing.T) {
 	}
 }
 
-func TestEvidenceCreate_ValidAchievement(t *testing.T) {
+func TestEvidenceCreate_ValidEvidence(t *testing.T) {
 	rec, req := createRequest(mockEvidenceForm())
 
 	env := model.Env{

@@ -7,6 +7,11 @@ type UserExists struct {
 	Err  error
 }
 
+type UserEmailExists struct {
+	Bool bool
+	Err  error
+}
+
 type UserCreate struct {
 	ID  string
 	Err error
@@ -42,6 +47,11 @@ type EvidenceExists struct {
 	Err  error
 }
 
+type EvidenceSingle struct {
+	Evd *model.Evidence
+	Err error
+}
+
 type EvidenceCreate struct {
 	ID  string
 	Err error
@@ -58,9 +68,10 @@ type MultimediaTypeExists struct {
 }
 
 type DB struct {
-	UserExistsMock UserExists
-	UserCreateMock UserCreate
-	UserAuthMock   UserAuth
+	UserExistsMock      UserExists
+	UserEmailExistsMock UserEmailExists
+	UserCreateMock      UserCreate
+	UserAuthMock        UserAuth
 
 	AchievementExistsMock AchievementExists
 	AchievementSingleMock AchievementSingle
@@ -68,6 +79,7 @@ type DB struct {
 	AchievementCreateMock AchievementCreate
 
 	EvidenceExistsMock EvidenceExists
+	EvidenceSingleMock EvidenceSingle
 	EvidenceCreateMock EvidenceCreate
 
 	InvolvementExistsMock InvolvementExists
@@ -77,6 +89,10 @@ type DB struct {
 
 func (mock *DB) UserExists(string) (bool, error) {
 	return mock.UserExistsMock.Bool, mock.UserExistsMock.Err
+}
+
+func (mock *DB) UserEmailExists(string) (bool, error) {
+	return mock.UserEmailExistsMock.Bool, mock.UserEmailExistsMock.Err
 }
 
 func (mock *DB) UserCreate(user *model.User) (string, error) {
@@ -105,6 +121,10 @@ func (mock *DB) AchievementCreate(achievement *model.Achievement) (string, error
 
 func (mock *DB) EvidenceExists(string) (bool, error) {
 	return mock.EvidenceExistsMock.Bool, mock.EvidenceExistsMock.Err
+}
+
+func (mock *DB) EvidenceSingle(id string) (*model.Evidence, error) {
+	return mock.EvidenceSingleMock.Evd, mock.EvidenceSingleMock.Err
 }
 
 func (mock *DB) EvidenceCreate(evidence *model.Evidence) (string, error) {

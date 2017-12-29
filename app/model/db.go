@@ -18,7 +18,8 @@ const (
 
 // DBSource contains all available DAO functions
 type DBSource interface {
-	UserExists(email string) (bool, error)
+	UserExists(id string) (bool, error)
+	UserEmailExists(email string) (bool, error)
 	UserCreate(user *User) (string, error)
 	UserAuth(string, string) (string, error)
 
@@ -27,6 +28,7 @@ type DBSource interface {
 	AchievementsAll(page int) ([]*Achievement, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
+	EvidenceSingle(id string) (*Evidence, error)
 	EvidenceExists(id string) (bool, error)
 	EvidenceCreate(evidence *Evidence) (string, error)
 

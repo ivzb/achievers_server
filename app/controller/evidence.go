@@ -9,6 +9,47 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
+func EvidenceSingle(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
+	if r.Method != "GET" {
+		return response.MethodNotAllowed(methodNotAllowed)
+	}
+
+	evdID := r.FormValue(id)
+
+	if evdID == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	}
+
+	exists, err := env.DB.EvidenceExists(evdID)
+
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if !exists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, evidence))
+	}
+
+	evd, err := env.DB.EvidenceSingle(evdID)
+
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if evd == nil {
+		return response.NotFound(fmt.Sprintf(formatNotFound, evidence))
+	}
+
+	return response.Ok(
+		fmt.Sprintf(formatFound, evidence),
+		1,
+		evd)
+}
+
 func EvidenceCreate(
 	env *model.Env,
 	w http.ResponseWriter,

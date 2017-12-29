@@ -64,6 +64,7 @@ func main() {
 	http.Handle("/achievements", authChain(env, controller.AchievementsIndex))
 	http.Handle("/achievement/create", authChain(env, controller.AchievementCreate))
 
+	http.Handle("/evidence", authChain(env, controller.EvidenceSingle))
 	http.Handle("/evidence/create", authChain(env, controller.EvidenceCreate))
 
 	http.ListenAndServe(":8080", nil)
