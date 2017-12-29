@@ -50,6 +50,50 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 	return evd, nil
 }
 
+func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
+	offset := limit * page
+
+	rows, err := db.Query("SELECT `id`, `description`, `preview_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+		"FROM evidence "+
+		"ORDER BY `created_at` DESC "+
+		"LIMIT ? OFFSET ?", limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	evds := make([]*Evidence, 0)
+
+	for rows.Next() {
+		evd := new(Evidence)
+		err := rows.Scan(
+			&evd.ID,
+			&evd.Description,
+			&evd.PreviewURL,
+			&evd.URL,
+			&evd.MultimediaTypeID,
+			&evd.AchievementID,
+			&evd.AuthorID,
+			&evd.CreatedAt,
+			&evd.UpdatedAt,
+			&evd.DeletedAt)
+
+		if err != nil {
+			return nil, err
+		}
+
+		evds = append(evds, evd)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return evds, nil
+}
+
 // EvidenceCreate saves evidence object to db
 func (db *DB) EvidenceCreate(evidence *Evidence) (string, error) {
 	return create(db, `INSERT INTO evidence (id, description, preview_url, url, multimedia_type_id, achievement_id, author_id)

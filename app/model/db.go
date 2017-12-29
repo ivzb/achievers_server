@@ -28,8 +28,9 @@ type DBSource interface {
 	AchievementsAll(page int) ([]*Achievement, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
-	EvidenceSingle(id string) (*Evidence, error)
 	EvidenceExists(id string) (bool, error)
+	EvidenceSingle(id string) (*Evidence, error)
+	EvidencesAll(page int) ([]*Evidence, error)
 	EvidenceCreate(evidence *Evidence) (string, error)
 
 	InvolvementExists(id string) (bool, error)

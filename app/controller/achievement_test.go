@@ -17,13 +17,13 @@ import (
 func TestAchievementsIndex_FullPage(t *testing.T) {
 	statusCode := http.StatusOK
 	rec := requestAchievements(t, 9, statusCode)
-	verifyCorrectResult(t, rec, 9)
+	verifyCorrectAchievementsResult(t, rec, 9)
 }
 
 func TestAchievementsIndex_HalfPage(t *testing.T) {
 	statusCode := http.StatusOK
 	rec := requestAchievements(t, 4, statusCode)
-	verifyCorrectResult(t, rec, 4)
+	verifyCorrectAchievementsResult(t, rec, 4)
 }
 
 func TestAchievementsIndex_EmptyPage(t *testing.T) {
@@ -60,7 +60,7 @@ func requestAchievements(t *testing.T, size int, statusCode int) *httptest.Respo
 	return rec
 }
 
-func verifyCorrectResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
+func verifyCorrectAchievementsResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
 	expectedStatusCode := http.StatusOK
 	expectedMessage := fmt.Sprintf(formatFound, achievements)
 	mocks := mock.Achievements(size)

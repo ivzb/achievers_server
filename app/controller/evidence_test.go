@@ -14,6 +14,144 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
+func TestEvidencesIndex_FullPage(t *testing.T) {
+	statusCode := http.StatusOK
+	rec := requestEvidences(t, 9, statusCode)
+	verifyCorrectEvidencesResult(t, rec, 9)
+}
+
+func TestEvidencesIndex_HalfPage(t *testing.T) {
+	statusCode := http.StatusOK
+	rec := requestEvidences(t, 4, statusCode)
+	verifyCorrectEvidencesResult(t, rec, 4)
+}
+
+func TestEvidencesIndex_EmptyPage(t *testing.T) {
+	statusCode := http.StatusNotFound
+	rec := requestEvidences(t, 0, statusCode)
+
+	expectedMessage := fmt.Sprintf(formatNotFound, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func requestEvidences(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidences", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(page, "3")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(size), Err: nil},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidencesIndex
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	return rec
+}
+
+func verifyCorrectEvidencesResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
+	expectedStatusCode := http.StatusOK
+	expectedMessage := fmt.Sprintf(formatFound, evidences)
+	mocks := mock.Evidences(size)
+	expectedLength := len(mocks)
+	marshalled, _ := json.Marshal(mocks)
+	expectedResults := marshalled
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
+		expectedStatusCode,
+		expectedMessage,
+		expectedLength,
+		expectedResults)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidencesIndex_InvalidMethod(t *testing.T) {
+	testInvalidMethod(t, "POST", "/evidences", EvidencesIndex)
+}
+
+func TestEvidencesIndex_MissingPage(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidences", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(page, "")
+
+	handle := EvidencesIndex
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, nil, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatMissing, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidencesIndex_InvalidPage(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidences", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(page, "-1")
+
+	handle := EvidencesIndex
+	statusCode := http.StatusBadRequest
+
+	testHandler(t, rec, req, nil, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expectedMessage := fmt.Sprintf(formatInvalid, page)
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func TestEvidencesIndex_DBError(t *testing.T) {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/evidences", nil)
+
+	req.Form = url.Values{}
+	req.Form.Add(page, "3")
+
+	env := model.Env{
+		DB: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Evds: nil, Err: errors.New("db error")},
+		},
+		Logger: &mock.Logger{},
+	}
+
+	handle := EvidencesIndex
+	statusCode := http.StatusInternalServerError
+
+	testHandler(t, rec, req, &env, handle, statusCode)
+
+	// Check the response body is what we expect.
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rec.Body.String(), expected)
+	}
+}
+
 func TestEvidenceSingle_InvalidMethod(t *testing.T) {
 	testInvalidMethod(t, "POST", "/evidence", EvidenceSingle)
 }
@@ -242,7 +380,7 @@ func TestEvidenceCreate_MissingMultimediaTypeId(t *testing.T) {
 	testMissingFormValue(t, EvidenceCreate, mockEvidenceForm(), multimediaTypeID)
 }
 
-func TestEvidenceCreate_MissingEvidenceId(t *testing.T) {
+func TestEvidenceCreate_MissingAchievementId(t *testing.T) {
 	testMissingFormValue(t, EvidenceCreate, mockEvidenceForm(), achievementID)
 }
 

@@ -4,10 +4,46 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
+
+func EvidencesIndex(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
+	if r.Method != "GET" {
+		return response.MethodNotAllowed(methodNotAllowed)
+	}
+
+	pg, err := strconv.Atoi(r.FormValue("page"))
+
+	if err != nil {
+		return response.BadRequest(fmt.Sprintf(formatMissing, page))
+	}
+
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+	}
+
+	evds, err := env.DB.EvidencesAll(pg)
+
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if len(evds) == 0 {
+		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+	}
+
+	return response.Ok(
+		fmt.Sprintf(formatFound, evidences),
+		len(evds),
+		evds)
+}
 
 func EvidenceSingle(
 	env *model.Env,

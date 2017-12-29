@@ -52,6 +52,11 @@ type EvidenceSingle struct {
 	Err error
 }
 
+type EvidencesAll struct {
+	Evds []*model.Evidence
+	Err  error
+}
+
 type EvidenceCreate struct {
 	ID  string
 	Err error
@@ -80,6 +85,7 @@ type DB struct {
 
 	EvidenceExistsMock EvidenceExists
 	EvidenceSingleMock EvidenceSingle
+	EvidencesAllMock   EvidencesAll
 	EvidenceCreateMock EvidenceCreate
 
 	InvolvementExistsMock InvolvementExists
@@ -125,6 +131,10 @@ func (mock *DB) EvidenceExists(string) (bool, error) {
 
 func (mock *DB) EvidenceSingle(id string) (*model.Evidence, error) {
 	return mock.EvidenceSingleMock.Evd, mock.EvidenceSingleMock.Err
+}
+
+func (mock *DB) EvidencesAll(page int) ([]*model.Evidence, error) {
+	return mock.EvidencesAllMock.Evds, mock.EvidencesAllMock.Err
 }
 
 func (mock *DB) EvidenceCreate(evidence *model.Evidence) (string, error) {

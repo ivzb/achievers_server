@@ -34,4 +34,5 @@ const (
 	multimediaType   = "multimedia_type"
 	achievementID    = "achievement_id"
 	evidence         = "evidence"
+	evidences        = "evidences"
 )
