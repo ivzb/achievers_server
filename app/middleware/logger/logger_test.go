@@ -23,11 +23,11 @@ func TestLoggerHandler_Log(t *testing.T) {
 
 	env := &model.Env{
 		Logger: &mock.Logger{
-			LogMock: mock.Log{nil},
+			LogMock: mock.Log{E: nil},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 
@@ -54,11 +54,11 @@ func TestLoggerHandler_Error(t *testing.T) {
 
 	env := &model.Env{
 		Logger: &mock.Logger{
-			LogMock: mock.Log{errors.New("logger error")},
+			LogMock: mock.Log{E: errors.New("logger error")},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 

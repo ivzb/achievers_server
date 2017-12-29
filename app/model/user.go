@@ -19,6 +19,10 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
+func (db *DB) UserExists(email string) (bool, error) {
+	return exists(db, "user", "email", email)
+}
+
 func (db *DB) UserAuth(email string, password string) (string, error) {
 	stmt, err := db.Prepare("SELECT id FROM user WHERE email = ? AND password = ? LIMIT 1")
 	if err != nil {

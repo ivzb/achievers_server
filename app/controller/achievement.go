@@ -59,7 +59,7 @@ func AchievementSingle(
 		return response.BadRequest(fmt.Sprintf(formatMissing, id))
 	}
 
-	exists, err := env.DB.Exists(achievement, id, achID)
+	exists, err := env.DB.AchievementExists(achID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -117,7 +117,7 @@ func AchievementCreate(
 		return response.BadRequest(fmt.Sprintf(formatMissing, involvementID))
 	}
 
-	involvementExists, err := env.DB.Exists("involvement", "id", ach.InvolvementID)
+	involvementExists, err := env.DB.InvolvementExists(ach.InvolvementID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -136,7 +136,7 @@ func AchievementCreate(
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, achievement),
+		fmt.Sprintf(formatCreated, achievement),
 		1,
 		id)
 }

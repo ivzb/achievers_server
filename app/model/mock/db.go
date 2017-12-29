@@ -2,7 +2,7 @@ package mock
 
 import "github.com/ivzb/achievers_server/app/model"
 
-type Exists struct {
+type UserExists struct {
 	Bool bool
 	Err  error
 }
@@ -15,6 +15,11 @@ type UserCreate struct {
 type UserAuth struct {
 	ID  string
 	Err error
+}
+
+type AchievementExists struct {
+	Bool bool
+	Err  error
 }
 
 type AchievementSingle struct {
@@ -32,23 +37,46 @@ type AchievementCreate struct {
 	Err error
 }
 
+type EvidenceExists struct {
+	Bool bool
+	Err  error
+}
+
 type EvidenceCreate struct {
 	ID  string
 	Err error
 }
 
+type InvolvementExists struct {
+	Bool bool
+	Err  error
+}
+
+type MultimediaTypeExists struct {
+	Bool bool
+	Err  error
+}
+
 type DB struct {
-	ExistsMock            Exists
-	UserCreateMock        UserCreate
-	UserAuthMock          UserAuth
+	UserExistsMock UserExists
+	UserCreateMock UserCreate
+	UserAuthMock   UserAuth
+
+	AchievementExistsMock AchievementExists
 	AchievementSingleMock AchievementSingle
 	AchievementsAllMock   AchievementsAll
 	AchievementCreateMock AchievementCreate
-	EvidenceCreateMock    EvidenceCreate
+
+	EvidenceExistsMock EvidenceExists
+	EvidenceCreateMock EvidenceCreate
+
+	InvolvementExistsMock InvolvementExists
+
+	MultimediaTypeExistsMock MultimediaTypeExists
 }
 
-func (mock *DB) Exists(string, string, string) (bool, error) {
-	return mock.ExistsMock.Bool, mock.ExistsMock.Err
+func (mock *DB) UserExists(string) (bool, error) {
+	return mock.UserExistsMock.Bool, mock.UserExistsMock.Err
 }
 
 func (mock *DB) UserCreate(user *model.User) (string, error) {
@@ -57,6 +85,10 @@ func (mock *DB) UserCreate(user *model.User) (string, error) {
 
 func (mock *DB) UserAuth(string, string) (string, error) {
 	return mock.UserAuthMock.ID, mock.UserAuthMock.Err
+}
+
+func (mock *DB) AchievementExists(string) (bool, error) {
+	return mock.AchievementExistsMock.Bool, mock.AchievementExistsMock.Err
 }
 
 func (mock *DB) AchievementSingle(id string) (*model.Achievement, error) {
@@ -71,6 +103,18 @@ func (mock *DB) AchievementCreate(achievement *model.Achievement) (string, error
 	return mock.AchievementCreateMock.ID, mock.AchievementCreateMock.Err
 }
 
+func (mock *DB) EvidenceExists(string) (bool, error) {
+	return mock.EvidenceExistsMock.Bool, mock.EvidenceExistsMock.Err
+}
+
 func (mock *DB) EvidenceCreate(evidence *model.Evidence) (string, error) {
 	return mock.EvidenceCreateMock.ID, mock.EvidenceCreateMock.Err
+}
+
+func (mock *DB) InvolvementExists(string) (bool, error) {
+	return mock.InvolvementExistsMock.Bool, mock.InvolvementExistsMock.Err
+}
+
+func (mock *DB) MultimediaTypeExists(uint8) (bool, error) {
+	return mock.MultimediaTypeExistsMock.Bool, mock.MultimediaTypeExistsMock.Err
 }

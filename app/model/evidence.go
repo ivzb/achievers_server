@@ -18,6 +18,10 @@ type Evidence struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
+func (db *DB) EvidenceExists(id string) (bool, error) {
+	return exists(db, "evidence", "id", id)
+}
+
 // EvidenceCreate saves evidence object to db
 func (db *DB) EvidenceCreate(evidence *Evidence) (string, error) {
 	return create(db, `INSERT INTO evidence (id, description, preview_url, url, multimedia_type_id, achievement_id, author_id)

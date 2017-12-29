@@ -34,7 +34,7 @@ func Handler(handler app.Handler) app.Handler {
 			return response.Unauthorized(authTokenInvalid)
 		}
 
-		exists, err := handler.Env.DB.Exists("user", "id", uID)
+		exists, err := handler.Env.DB.UserExists(uID)
 		if err != nil {
 			return response.Unauthorized(authTokenInvalid)
 		}

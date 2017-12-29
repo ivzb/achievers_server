@@ -25,10 +25,10 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			UserAuthMock: mock.UserAuth{"454562", nil},
+			UserAuthMock: mock.UserAuth{ID: "454562", Err: nil},
 		},
 		Tokener: &mock.Token{
-			EncryptedMock: mock.Encrypted{mockToken, nil},
+			EncryptedMock: mock.Encrypted{Enc: mockToken, Err: nil},
 		},
 	}
 
@@ -102,7 +102,7 @@ func TestUserAuth_DBError(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			UserAuthMock: mock.UserAuth{"", errors.New("db error")},
+			UserAuthMock: mock.UserAuth{ID: "", Err: errors.New("db error")},
 		},
 	}
 
@@ -130,10 +130,10 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			UserAuthMock: mock.UserAuth{"454562", nil},
+			UserAuthMock: mock.UserAuth{ID: "454562", Err: nil},
 		},
 		Tokener: &mock.Token{
-			EncryptedMock: mock.Encrypted{"", errors.New("encryption error")},
+			EncryptedMock: mock.Encrypted{Enc: "", Err: errors.New("encryption error")},
 		},
 	}
 
@@ -166,11 +166,11 @@ func TestUserCreate_ValidUser(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			ExistsMock:     mock.Exists{false, nil},
-			UserCreateMock: mock.UserCreate{mockID, nil},
+			UserExistsMock: mock.UserExists{Bool: false, Err: nil},
+			UserCreateMock: mock.UserCreate{ID: mockID, Err: nil},
 		},
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -205,7 +205,7 @@ func TestUserCreate_FormMapError(t *testing.T) {
 
 	env := &model.Env{
 		Former: &mock.Former{
-			MapMock: mock.Map{errors.New(mapError)},
+			MapMock: mock.Map{Err: errors.New(mapError)},
 		},
 	}
 
@@ -237,7 +237,7 @@ func TestUserCreate_MissingFirstName(t *testing.T) {
 
 	env := &model.Env{
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -270,7 +270,7 @@ func TestUserCreate_MissingLastName(t *testing.T) {
 
 	env := &model.Env{
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -303,7 +303,7 @@ func TestUserCreate_MissingEmail(t *testing.T) {
 
 	env := &model.Env{
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -336,7 +336,7 @@ func TestUserCreate_MissingPassword(t *testing.T) {
 
 	env := &model.Env{
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -369,10 +369,10 @@ func TestUserCreate_ExistDBError(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			ExistsMock: mock.Exists{false, errors.New("db error")},
+			UserExistsMock: mock.UserExists{Bool: false, Err: errors.New("db error")},
 		},
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -405,10 +405,10 @@ func TestUserCreate_UserExist(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			ExistsMock: mock.Exists{true, nil},
+			UserExistsMock: mock.UserExists{Bool: true, Err: nil},
 		},
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 
@@ -441,11 +441,11 @@ func TestUserCreate_UserCreateDBError(t *testing.T) {
 
 	env := model.Env{
 		DB: &mock.DB{
-			ExistsMock:     mock.Exists{false, nil},
-			UserCreateMock: mock.UserCreate{"", errors.New("db error")},
+			UserExistsMock: mock.UserExists{Bool: false, Err: nil},
+			UserCreateMock: mock.UserCreate{ID: "", Err: errors.New("db error")},
 		},
 		Former: &mock.Former{
-			MapMock: mock.Map{nil},
+			MapMock: mock.Map{Err: nil},
 		},
 	}
 

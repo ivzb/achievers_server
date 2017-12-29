@@ -24,14 +24,14 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 
 	env := &model.Env{
 		DB: &mock.DB{
-			ExistsMock: mock.Exists{true, nil},
+			UserExistsMock: mock.UserExists{Bool: true, Err: nil},
 		},
 		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"decrypted", nil},
+			DecryptedMock: mock.Decrypted{Dec: "decrypted", Err: nil},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 
@@ -61,7 +61,7 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 		Tokener: &mock.Token{},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 
@@ -90,11 +90,11 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 	env := &model.Env{
 		DB: &mock.DB{},
 		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"", errors.New("decryption error")},
+			DecryptedMock: mock.Decrypted{Dec: "", Err: errors.New("decryption error")},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 
@@ -122,14 +122,14 @@ func TestAuthHandler_DBError(t *testing.T) {
 
 	env := &model.Env{
 		DB: &mock.DB{
-			ExistsMock: mock.Exists{false, errors.New("user does not exist")},
+			UserExistsMock: mock.UserExists{Bool: false, Err: errors.New("user does not exist")},
 		},
 		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"decrypted", nil},
+			DecryptedMock: mock.Decrypted{Dec: "decrypted", Err: nil},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 
@@ -157,14 +157,14 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 
 	env := &model.Env{
 		DB: &mock.DB{
-			ExistsMock: mock.Exists{false, nil},
+			UserExistsMock: mock.UserExists{Bool: false, Err: nil},
 		},
 		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"decrypted", nil},
+			DecryptedMock: mock.Decrypted{Dec: "decrypted", Err: nil},
 		},
 	}
 
-	appHandler := app.Handler{env, testHandler}
+	appHandler := app.Handler{Env: env, H: testHandler}
 
 	var handler http.Handler = Handler(appHandler)
 

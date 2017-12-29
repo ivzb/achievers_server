@@ -18,16 +18,21 @@ const (
 
 // DBSource contains all available DAO functions
 type DBSource interface {
-	Exists(table string, column string, value string) (bool, error)
-
+	UserExists(email string) (bool, error)
 	UserCreate(user *User) (string, error)
 	UserAuth(string, string) (string, error)
 
+	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
+	EvidenceExists(id string) (bool, error)
 	EvidenceCreate(evidence *Evidence) (string, error)
+
+	InvolvementExists(id string) (bool, error)
+
+	MultimediaTypeExists(id uint8) (bool, error)
 }
 
 // DB struct holds the connection to DB
@@ -52,22 +57,6 @@ func NewDB(d database.Info) (*DB, error) {
 	}
 }
 
-// Exists checks whether row in specified table exists by column and value
-func (db *DB) Exists(table string, column string, value string) (bool, error) {
-	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
-	if err != nil {
-		return false, err
-	}
-
-	var count int
-	err = stmt.QueryRow(value).Scan(&count)
-	if err != nil {
-		return false, err
-	}
-
-	return count != 0, nil
-}
-
 // UUID generates UUID for use as an ID
 func (db *DB) UUID() (string, error) {
 	b := make([]byte, 16)
@@ -77,6 +66,24 @@ func (db *DB) UUID() (string, error) {
 	}
 
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+}
+
+// exists checks whether row in specified table exists by column and value
+func exists(db *DB, table string, column string, value string) (bool, error) {
+	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
+
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = stmt.QueryRow(value).Scan(&count)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count != 0, nil
 }
 
 // create executes passed query and args

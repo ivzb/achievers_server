@@ -23,9 +23,9 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &mock.DB{
-			ExistsMock: mock.Exists{true, nil},
-		},
+		// DB: &mock.DB{
+		// ExistsMock: mock.Exists{true, nil},
+		// },
 		Tokener: &mock.Token{
 			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
@@ -56,9 +56,6 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB: &mock.DB{
-			ExistsMock: mock.Exists{true, nil},
-		},
 		Tokener: &mock.Token{
 			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},

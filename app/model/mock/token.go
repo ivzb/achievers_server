@@ -2,14 +2,14 @@ package mock
 
 // Encrypted structure used to adjust return values of Encrypt mock
 type Encrypted struct {
-	S string
-	E error
+	Enc string
+	Err error
 }
 
 // Decrypted structure used to adjust return values of Decrypt mock
 type Decrypted struct {
-	S string
-	E error
+	Dec string
+	Err error
 }
 
 // Token structure implements Tokener interface
@@ -20,10 +20,10 @@ type Token struct {
 
 // Encrypt mock return mock adjusted values
 func (mock *Token) Encrypt(string) (string, error) {
-	return mock.EncryptedMock.S, mock.EncryptedMock.E
+	return mock.EncryptedMock.Enc, mock.EncryptedMock.Err
 }
 
 // Decrypt mock return mock adjusted values
 func (mock *Token) Decrypt(string) (string, error) {
-	return mock.DecryptedMock.S, mock.DecryptedMock.E
+	return mock.DecryptedMock.Dec, mock.DecryptedMock.Err
 }

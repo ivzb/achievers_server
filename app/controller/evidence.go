@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
@@ -46,7 +45,7 @@ func EvidenceCreate(
 		return response.BadRequest(fmt.Sprintf(formatMissing, achievementID))
 	}
 
-	multimediaTypeExist, err := env.DB.Exists("multimedia_type", "id", strconv.FormatInt(int64(evd.MultimediaTypeID), 10))
+	multimediaTypeExist, err := env.DB.MultimediaTypeExists(evd.MultimediaTypeID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -56,7 +55,7 @@ func EvidenceCreate(
 		return response.BadRequest(fmt.Sprintf(formatNotFound, multimediaType))
 	}
 
-	achievementExist, err := env.DB.Exists("achievement", "id", evd.AchievementID)
+	achievementExist, err := env.DB.AchievementExists(evd.AchievementID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -76,7 +75,7 @@ func EvidenceCreate(
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, evidence),
+		fmt.Sprintf(formatCreated, evidence),
 		1,
 		id)
 }

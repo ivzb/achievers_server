@@ -19,6 +19,10 @@ type Achievement struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
+func (db *DB) AchievementExists(id string) (bool, error) {
+	return exists(db, "achievement", "id", id)
+}
+
 func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 	ach := new(Achievement)
 
@@ -90,28 +94,11 @@ func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
 }
 
 func (db *DB) AchievementCreate(achievement *Achievement) (string, error) {
-	id, err := db.UUID()
-
-	if err != nil {
-		return "", err
-	}
-
-	result, err := db.Exec(`INSERT INTO achievement (id, title, description, picture_url, involvement_id, author_id)
+	return create(db, `INSERT INTO achievement (id, title, description, picture_url, involvement_id, author_id)
         VALUES(?, ?, ?, ?, ?, ?)`,
-		id,
 		achievement.Title,
 		achievement.Description,
 		achievement.PictureURL,
 		achievement.InvolvementID,
 		achievement.AuthorID)
-
-	if err != nil {
-		return "", err
-	}
-
-	if _, err = result.RowsAffected(); err != nil {
-		return "", err
-	}
-
-	return id, nil
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Map struct {
-	E error
+	Err error
 }
 
 type Former struct {
@@ -19,5 +19,5 @@ func (mock *Former) Map(r *http.Request, model interface{}) error {
 
 	_ = form.Map(r.PostForm, model)
 
-	return mock.MapMock.E
+	return mock.MapMock.Err
 }
