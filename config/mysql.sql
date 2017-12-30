@@ -59,6 +59,18 @@ CREATE TABLE multimedia_type (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE reward_type (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    name VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE user (
     id VARCHAR(36) NOT NULL,
     
@@ -130,6 +142,25 @@ CREATE TABLE evidence (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE reward (
+    id VARCHAR(36) NOT NULL,
+    
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    picture_url VARCHAR(255) NOT NULL,
+    
+    reward_type_id TINYINT(1) UNSIGNED NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    CONSTRAINT `f_reward_type_id` FOREIGN KEY (`reward_type_id`)
+        REFERENCES `reward_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    PRIMARY KEY (id)
+);
+
 INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
 (1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
@@ -145,3 +176,8 @@ INSERT INTO `multimedia_type` (`id`, `name`, `created_at`, `updated_at`, `delete
 (1, 'photo',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'video', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (3, 'voice', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+
+INSERT INTO `reward_type` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'experience',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'item', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(3, 'title', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
