@@ -35,4 +35,6 @@ const (
 	achievementID    = "achievement_id"
 	evidence         = "evidence"
 	evidences        = "evidences"
+	reward           = "reward"
+	rewards          = "rewards"
 )

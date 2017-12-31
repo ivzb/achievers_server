@@ -62,6 +62,21 @@ type EvidenceCreate struct {
 	Err error
 }
 
+type RewardExists struct {
+	Bool bool
+	Err  error
+}
+
+type RewardSingle struct {
+	Rwd *model.Reward
+	Err error
+}
+
+type RewardsAll struct {
+	Rwds []*model.Reward
+	Err  error
+}
+
 type InvolvementExists struct {
 	Bool bool
 	Err  error
@@ -87,6 +102,10 @@ type DB struct {
 	EvidenceSingleMock EvidenceSingle
 	EvidencesAllMock   EvidencesAll
 	EvidenceCreateMock EvidenceCreate
+
+	RewardExistsMock RewardExists
+	RewardSingleMock RewardSingle
+	RewardsAllMock   RewardsAll
 
 	InvolvementExistsMock InvolvementExists
 
@@ -139,6 +158,18 @@ func (mock *DB) EvidencesAll(page int) ([]*model.Evidence, error) {
 
 func (mock *DB) EvidenceCreate(evidence *model.Evidence) (string, error) {
 	return mock.EvidenceCreateMock.ID, mock.EvidenceCreateMock.Err
+}
+
+func (mock *DB) RewardExists(string) (bool, error) {
+	return mock.RewardExistsMock.Bool, mock.RewardExistsMock.Err
+}
+
+func (mock *DB) RewardSingle(id string) (*model.Reward, error) {
+	return mock.RewardSingleMock.Rwd, mock.RewardSingleMock.Err
+}
+
+func (mock *DB) RewardsAll(page int) ([]*model.Reward, error) {
+	return mock.RewardsAllMock.Rwds, mock.RewardsAllMock.Err
 }
 
 func (mock *DB) InvolvementExists(string) (bool, error) {

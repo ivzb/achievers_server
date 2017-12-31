@@ -68,6 +68,9 @@ func main() {
 	http.Handle("/evidences", authChain(env, controller.EvidencesIndex))
 	http.Handle("/evidence/create", authChain(env, controller.EvidenceCreate))
 
+	http.Handle("/reward", authChain(env, controller.RewardSingle))
+	http.Handle("/rewards", authChain(env, controller.RewardsIndex))
+
 	http.ListenAndServe(":8080", nil)
 }
 

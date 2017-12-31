@@ -33,6 +33,10 @@ type DBSource interface {
 	EvidencesAll(page int) ([]*Evidence, error)
 	EvidenceCreate(evidence *Evidence) (string, error)
 
+	RewardExists(id string) (bool, error)
+	RewardSingle(id string) (*Reward, error)
+	RewardsAll(page int) ([]*Reward, error)
+
 	InvolvementExists(id string) (bool, error)
 
 	MultimediaTypeExists(id uint8) (bool, error)
