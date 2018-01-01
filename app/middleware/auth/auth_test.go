@@ -44,7 +44,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":201,"message":"authorized","length":1,"results":"auth token here"}`
+	expected := `{"status":201,"message":"authorized","results":"auth token here"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rr.Body.String(), expected)

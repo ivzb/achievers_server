@@ -30,7 +30,7 @@ var (
 	mockAchievementID    = "mock achievement_id"
 )
 
-func testInvalidMethod(t *testing.T, method string, url string, handle app.Handle) {
+func testMethodNotAllowed(t *testing.T, method string, url string, handle app.Handle) {
 	rec := httptest.NewRecorder()
 	req, _ := http.NewRequest(method, url, nil)
 
@@ -44,15 +44,13 @@ func testInvalidMethod(t *testing.T, method string, url string, handle app.Handl
 			status, http.StatusMethodNotAllowed)
 	}
 
-	// Check the response body is what we expect.
-	expected := `{"status":405,"message":"` + methodNotAllowed + `"}`
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	statusCode := http.StatusMethodNotAllowed
+	message := methodNotAllowed
+
+	expectCore(t, rec, statusCode, message)
 }
 
-func testStatusCode(t *testing.T, rec *httptest.ResponseRecorder, expectedStatusCode int) {
+func checkStatusCode(t *testing.T, rec *httptest.ResponseRecorder, expectedStatusCode int) {
 	// Check the status code is what we expect.
 	if actualStatusCode := rec.Code; actualStatusCode != expectedStatusCode {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -72,7 +70,7 @@ func testHandler(
 
 	appHandler.ServeHTTP(rec, req)
 
-	testStatusCode(t, rec, statusCode)
+	checkStatusCode(t, rec, statusCode)
 }
 
 func testMissingFormValue(t *testing.T, handle app.Handle, form url.Values, expectedMissing string) {
@@ -91,12 +89,8 @@ func testMissingFormValue(t *testing.T, handle app.Handle, form url.Values, expe
 	testHandler(t, rec, req, env, handle, statusCode)
 
 	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatMissing, expectedMissing)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatMissing, expectedMissing)
+	expectCore(t, rec, statusCode, message)
 }
 
 func createRequest(form url.Values) (*httptest.ResponseRecorder, *http.Request) {
@@ -111,4 +105,31 @@ func createRequest(form url.Values) (*httptest.ResponseRecorder, *http.Request) 
 
 func encodeForm(form url.Values) *strings.Reader {
 	return strings.NewReader(form.Encode())
+}
+
+func expectCore(t *testing.T, rec *httptest.ResponseRecorder, statusCode int, message string) {
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, message)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func expectRetrieve(
+	t *testing.T,
+	rec *httptest.ResponseRecorder,
+	statusCode int,
+	message string,
+	results []byte) {
+
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s","results":%s}`,
+		statusCode,
+		message,
+		results)
+
+	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
 }

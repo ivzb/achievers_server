@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strconv"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -15,28 +14,35 @@ import (
 )
 
 func TestEvidencesIndex_FullPage(t *testing.T) {
+	size := 9
 	statusCode := http.StatusOK
-	rec := requestEvidences(t, 9, statusCode)
-	verifyCorrectEvidencesResult(t, rec, 9)
+	rec := requestEvidences(t, size, statusCode)
+
+	message := fmt.Sprintf(formatFound, evidences)
+	results, _ := json.Marshal(mock.Evidences(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestEvidencesIndex_HalfPage(t *testing.T) {
+	size := 9
 	statusCode := http.StatusOK
-	rec := requestEvidences(t, 4, statusCode)
-	verifyCorrectEvidencesResult(t, rec, 4)
+	rec := requestEvidences(t, size, statusCode)
+
+	message := fmt.Sprintf(formatFound, evidences)
+	results, _ := json.Marshal(mock.Evidences(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestEvidencesIndex_EmptyPage(t *testing.T) {
+	size := 0
 	statusCode := http.StatusNotFound
-	rec := requestEvidences(t, 0, statusCode)
+	rec := requestEvidences(t, size, statusCode)
 
-	expectedMessage := fmt.Sprintf(formatNotFound, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
+	message := fmt.Sprintf(formatNotFound, page)
 
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	expectCore(t, rec, statusCode, message)
 }
 
 func requestEvidences(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
@@ -60,27 +66,8 @@ func requestEvidences(t *testing.T, size int, statusCode int) *httptest.Response
 	return rec
 }
 
-func verifyCorrectEvidencesResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
-	expectedStatusCode := http.StatusOK
-	expectedMessage := fmt.Sprintf(formatFound, evidences)
-	mocks := mock.Evidences(size)
-	expectedLength := len(mocks)
-	marshalled, _ := json.Marshal(mocks)
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		expectedStatusCode,
-		expectedMessage,
-		expectedLength,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
-}
-
 func TestEvidencesIndex_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/evidences", EvidencesIndex)
+	testMethodNotAllowed(t, "POST", "/evidences", EvidencesIndex)
 }
 
 func TestEvidencesIndex_MissingPage(t *testing.T) {
@@ -95,13 +82,8 @@ func TestEvidencesIndex_MissingPage(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatMissing, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatMissing, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidencesIndex_InvalidPage(t *testing.T) {
@@ -116,13 +98,8 @@ func TestEvidencesIndex_InvalidPage(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatInvalid, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatInvalid, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidencesIndex_DBError(t *testing.T) {
@@ -144,16 +121,12 @@ func TestEvidencesIndex_DBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/evidence", EvidenceSingle)
+	testMethodNotAllowed(t, "POST", "/evidence", EvidenceSingle)
 }
 
 func TestEvidenceSingle_MissingId(t *testing.T) {
@@ -168,13 +141,8 @@ func TestEvidenceSingle_MissingId(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatMissing, id)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatMissing, id)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_EvidenceExistDBError(t *testing.T) {
@@ -196,12 +164,8 @@ func TestEvidenceSingle_EvidenceExistDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_EvidenceDoesNotExist(t *testing.T) {
@@ -223,13 +187,8 @@ func TestEvidenceSingle_EvidenceDoesNotExist(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatNotFound, evidence)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, evidence)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_EvidenceSingleDBError(t *testing.T) {
@@ -252,12 +211,8 @@ func TestEvidenceSingle_EvidenceSingleDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_EvidenceSingleNil(t *testing.T) {
@@ -280,13 +235,8 @@ func TestEvidenceSingle_EvidenceSingleNil(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatNotFound, evidence)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, evidence)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceSingle_EvidenceSingle(t *testing.T) {
@@ -309,20 +259,9 @@ func TestEvidenceSingle_EvidenceSingle(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatFound, evidence)
-	marshalled, _ := json.Marshal(mock.Evidence())
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		statusCode,
-		expectedMessage,
-		1,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatFound, evidence)
+	results, _ := json.Marshal(mock.Evidence())
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func mockEvidenceForm() url.Values {
@@ -337,7 +276,7 @@ func mockEvidenceForm() url.Values {
 }
 
 func TestEvidenceCreate_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "GET", "/evidence/create", EvidenceCreate)
+	testMethodNotAllowed(t, "GET", "/evidence/create", EvidenceCreate)
 }
 
 func TestEvidenceCreate_FormMapError(t *testing.T) {
@@ -355,13 +294,8 @@ func TestEvidenceCreate_FormMapError(t *testing.T) {
 
 	testHandler(t, rec, req, env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := mapError
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := mapError
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_MissingDescription(t *testing.T) {
@@ -402,12 +336,8 @@ func TestEvidenceCreate_MultimediaTypeIdExistDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_MultimediaTypeIdDoesNotExist(t *testing.T) {
@@ -428,12 +358,8 @@ func TestEvidenceCreate_MultimediaTypeIdDoesNotExist(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, fmt.Sprintf(formatNotFound, multimediaType))
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, multimediaType)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_AchievementIdExistDBError(t *testing.T) {
@@ -455,12 +381,8 @@ func TestEvidenceCreate_AchievementIdExistDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_AchievementIdDoesNotExist(t *testing.T) {
@@ -482,12 +404,8 @@ func TestEvidenceCreate_AchievementIdDoesNotExist(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, fmt.Sprintf(formatNotFound, achievement))
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, achievement)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_EvidenceCreateDBError(t *testing.T) {
@@ -510,12 +428,8 @@ func TestEvidenceCreate_EvidenceCreateDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestEvidenceCreate_ValidEvidence(t *testing.T) {
@@ -538,10 +452,7 @@ func TestEvidenceCreate_ValidEvidence(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatCreated, evidence) + `","length":1,"results":"` + mockID + `"}`
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatCreated, evidence)
+	results, _ := json.Marshal(mockID)
+	expectRetrieve(t, rec, statusCode, message, results)
 }

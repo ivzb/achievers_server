@@ -25,7 +25,6 @@ type Change struct {
 type Retrieve struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
-	Length  int         `json:"length"`
 	Results interface{} `json:"results"`
 }
 
@@ -101,7 +100,6 @@ func send(
 		result = &Retrieve{
 			Status:  status,
 			Message: message,
-			Length:  length,
 			Results: results,
 		}
 	}

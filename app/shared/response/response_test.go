@@ -42,7 +42,6 @@ func TestSend_MultipleResults(t *testing.T) {
 	expectedResult := &Retrieve{
 		Status:  status,
 		Message: message,
-		Length:  length,
 		Results: results,
 	}
 

@@ -40,7 +40,7 @@ func TestLoggerHandler_Log(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok","length":1,"results":"OK"}`
+	expected := `{"status":200,"message":"ok","results":"OK"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

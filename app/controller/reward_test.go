@@ -14,28 +14,32 @@ import (
 )
 
 func TestRewardsIndex_FullPage(t *testing.T) {
+	size := 9
 	statusCode := http.StatusOK
-	rec := requestRewards(t, 9, statusCode)
-	verifyCorrectRewardsResult(t, rec, 9)
+	rec := requestRewards(t, size, statusCode)
+	message := fmt.Sprintf(formatFound, rewards)
+	results, _ := json.Marshal(mock.Rewards(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestRewardsIndex_HalfPage(t *testing.T) {
+	size := 4
 	statusCode := http.StatusOK
-	rec := requestRewards(t, 4, statusCode)
-	verifyCorrectRewardsResult(t, rec, 4)
+	rec := requestRewards(t, size, statusCode)
+	message := fmt.Sprintf(formatFound, rewards)
+	results, _ := json.Marshal(mock.Rewards(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestRewardsIndex_EmptyPage(t *testing.T) {
 	statusCode := http.StatusNotFound
-	rec := requestRewards(t, 0, statusCode)
+	size := 0
+	rec := requestRewards(t, size, statusCode)
 
-	expectedMessage := fmt.Sprintf(formatNotFound, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func requestRewards(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
@@ -59,27 +63,8 @@ func requestRewards(t *testing.T, size int, statusCode int) *httptest.ResponseRe
 	return rec
 }
 
-func verifyCorrectRewardsResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
-	expectedStatusCode := http.StatusOK
-	expectedMessage := fmt.Sprintf(formatFound, rewards)
-	mocks := mock.Rewards(size)
-	expectedLength := len(mocks)
-	marshalled, _ := json.Marshal(mocks)
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		expectedStatusCode,
-		expectedMessage,
-		expectedLength,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
-}
-
 func TestRewardsIndex_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/rewards", RewardsIndex)
+	testMethodNotAllowed(t, "POST", "/rewards", RewardsIndex)
 }
 
 func TestRewardsIndex_MissingPage(t *testing.T) {
@@ -94,13 +79,8 @@ func TestRewardsIndex_MissingPage(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatMissing, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatMissing, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardsIndex_InvalidPage(t *testing.T) {
@@ -115,13 +95,8 @@ func TestRewardsIndex_InvalidPage(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatInvalid, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatInvalid, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardsIndex_DBError(t *testing.T) {
@@ -143,16 +118,12 @@ func TestRewardsIndex_DBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/rewards", RewardSingle)
+	testMethodNotAllowed(t, "POST", "/rewards", RewardSingle)
 }
 
 func TestRewardSingle_MissingId(t *testing.T) {
@@ -167,13 +138,8 @@ func TestRewardSingle_MissingId(t *testing.T) {
 
 	testHandler(t, rec, req, nil, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatMissing, id)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatMissing, id)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_RewardExistDBError(t *testing.T) {
@@ -195,12 +161,8 @@ func TestRewardSingle_RewardExistDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_RewardDoesNotExist(t *testing.T) {
@@ -222,13 +184,8 @@ func TestRewardSingle_RewardDoesNotExist(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatNotFound, reward)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, reward)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_RewardSingleDBError(t *testing.T) {
@@ -251,12 +208,8 @@ func TestRewardSingle_RewardSingleDBError(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, friendlyErrorMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := friendlyErrorMessage
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_RewardSingleNil(t *testing.T) {
@@ -279,13 +232,8 @@ func TestRewardSingle_RewardSingleNil(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatNotFound, reward)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, reward)
+	expectCore(t, rec, statusCode, message)
 }
 
 func TestRewardSingle_RewardSingle(t *testing.T) {
@@ -308,20 +256,9 @@ func TestRewardSingle_RewardSingle(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatFound, reward)
-	marshalled, _ := json.Marshal(mock.Reward())
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		statusCode,
-		expectedMessage,
-		1,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatFound, reward)
+	results, _ := json.Marshal(mock.Reward())
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func mockRewardForm() url.Values {

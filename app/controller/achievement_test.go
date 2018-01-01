@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strconv"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -15,28 +14,32 @@ import (
 )
 
 func TestAchievementsIndex_FullPage(t *testing.T) {
+	size := 9
 	statusCode := http.StatusOK
-	rec := requestAchievements(t, 9, statusCode)
-	verifyCorrectAchievementsResult(t, rec, 9)
+	rec := requestAchievements(t, size, statusCode)
+	message := fmt.Sprintf(formatFound, achievements)
+	results, _ := json.Marshal(mock.Achievements(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestAchievementsIndex_HalfPage(t *testing.T) {
+	size := 4
 	statusCode := http.StatusOK
-	rec := requestAchievements(t, 4, statusCode)
-	verifyCorrectAchievementsResult(t, rec, 4)
+	rec := requestAchievements(t, size, statusCode)
+	message := fmt.Sprintf(formatFound, achievements)
+	results, _ := json.Marshal(mock.Achievements(size))
+
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func TestAchievementsIndex_EmptyPage(t *testing.T) {
 	statusCode := http.StatusNotFound
-	rec := requestAchievements(t, 0, statusCode)
+	size := 0
+	rec := requestAchievements(t, size, statusCode)
 
-	expectedMessage := fmt.Sprintf(formatNotFound, page)
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, expectedMessage)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatNotFound, page)
+	expectCore(t, rec, statusCode, message)
 }
 
 func requestAchievements(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
@@ -60,27 +63,8 @@ func requestAchievements(t *testing.T, size int, statusCode int) *httptest.Respo
 	return rec
 }
 
-func verifyCorrectAchievementsResult(t *testing.T, rec *httptest.ResponseRecorder, size int) {
-	expectedStatusCode := http.StatusOK
-	expectedMessage := fmt.Sprintf(formatFound, achievements)
-	mocks := mock.Achievements(size)
-	expectedLength := len(mocks)
-	marshalled, _ := json.Marshal(mocks)
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		expectedStatusCode,
-		expectedMessage,
-		expectedLength,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
-}
-
 func TestAchievementsIndex_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/achievements", AchievementsIndex)
+	testMethodNotAllowed(t, "POST", "/achievements", AchievementsIndex)
 }
 
 func TestAchievementsIndex_MissingPage(t *testing.T) {
@@ -153,7 +137,7 @@ func TestAchievementsIndex_DBError(t *testing.T) {
 }
 
 func TestAchievementSingle_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "POST", "/achievement", AchievementSingle)
+	testMethodNotAllowed(t, "POST", "/achievement", AchievementSingle)
 }
 
 func TestAchievementSingle_MissingId(t *testing.T) {
@@ -309,20 +293,9 @@ func TestAchievementSingle_AchievementSingle(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expectedMessage := fmt.Sprintf(formatFound, achievement)
-	marshalled, _ := json.Marshal(mock.Achievement())
-	expectedResults := marshalled
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","length":%d,"results":%s}`,
-		statusCode,
-		expectedMessage,
-		1,
-		expectedResults)
-
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatFound, achievement)
+	results, _ := json.Marshal(mock.Achievement())
+	expectRetrieve(t, rec, statusCode, message, results)
 }
 
 func mockAchievementForm() url.Values {
@@ -336,7 +309,7 @@ func mockAchievementForm() url.Values {
 }
 
 func TestAchievementCreate_InvalidMethod(t *testing.T) {
-	testInvalidMethod(t, "GET", "/achievement/create", AchievementCreate)
+	testMethodNotAllowed(t, "GET", "/achievement/create", AchievementCreate)
 }
 
 func TestAchievementCreate_FormMapError(t *testing.T) {
@@ -477,10 +450,7 @@ func TestAchievementCreate_ValidAchievement(t *testing.T) {
 
 	testHandler(t, rec, req, &env, handle, statusCode)
 
-	// Check the response body is what we expect.
-	expected := `{"status":` + strconv.Itoa(statusCode) + `,"message":"` + fmt.Sprintf(formatCreated, achievement) + `","length":1,"results":"` + mockID + `"}`
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
+	message := fmt.Sprintf(formatCreated, achievement)
+	results, _ := json.Marshal(mockID)
+	expectRetrieve(t, rec, statusCode, message, results)
 }

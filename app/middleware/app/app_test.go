@@ -23,9 +23,6 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		// DB: &mock.DB{
-		// ExistsMock: mock.Exists{true, nil},
-		// },
 		Tokener: &mock.Token{
 			DecryptedMock: mock.Decrypted{"decrypted", nil},
 		},
@@ -44,7 +41,7 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok","length":1,"results":"OK"}`
+	expected := `{"status":200,"message":"ok","results":"OK"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
