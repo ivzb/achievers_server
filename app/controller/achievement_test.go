@@ -7,39 +7,52 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-func TestAchievementsIndex_FullPage(t *testing.T) {
-	size := 9
-	statusCode := http.StatusOK
-	rec := requestAchievements(t, size, statusCode)
-	message := fmt.Sprintf(formatFound, achievements)
-	results, _ := json.Marshal(mock.Achievements(size))
-
-	expectRetrieve(t, rec, statusCode, message, results)
+var achievementsIndexTests = []*test{
+	constructAchievementsIndexTest(Retrieve, http.StatusOK, fmt.Sprintf(formatFound, achievements), 0, 9),
+	constructAchievementsIndexTest(Retrieve, http.StatusOK, fmt.Sprintf(formatFound, achievements), 1, 4),
+	constructAchievementsIndexTest(Core, http.StatusNotFound, fmt.Sprintf(formatNotFound, page), 2, 0),
 }
 
-func TestAchievementsIndex_HalfPage(t *testing.T) {
-	size := 4
-	statusCode := http.StatusOK
-	rec := requestAchievements(t, size, statusCode)
-	message := fmt.Sprintf(formatFound, achievements)
-	results, _ := json.Marshal(mock.Achievements(size))
+func constructAchievementsIndexTest(
+	responseType int,
+	responseStatusCode int,
+	responseMessage string,
+	formPage int,
+	mockAchievementsSize int) *test {
 
-	expectRetrieve(t, rec, statusCode, message, results)
+	responseResults, _ := json.Marshal(mock.Achievements(mockAchievementsSize))
+
+	db := constructDB()
+	db.AchievementsAllMock = mock.AchievementsAll{Achs: mock.Achievements(mockAchievementsSize), Err: nil}
+
+	logger := constructLogger()
+
+	return &test{
+		handle:   AchievementsIndex,
+		form:     constructForm(map[string]string{page: strconv.Itoa(formPage)}),
+		env:      constructEnv(db, logger),
+		response: constructTestResponse(responseType, responseStatusCode, responseMessage, responseResults),
+	}
 }
 
-func TestAchievementsIndex_EmptyPage(t *testing.T) {
-	statusCode := http.StatusNotFound
-	size := 0
-	rec := requestAchievements(t, size, statusCode)
+func TestAchievementsIndex_Pages(t *testing.T) {
+	for _, test := range achievementsIndexTests {
+		rec := constructRequest(t, test)
 
-	message := fmt.Sprintf(formatNotFound, page)
-	expectCore(t, rec, statusCode, message)
+		switch test.response.kind {
+		case Core:
+			expectCore(t, rec, test.response.statusCode, test.response.message)
+		case Retrieve:
+			expectRetrieve(t, rec, test.response.statusCode, test.response.message, test.response.results)
+		}
+	}
 }
 
 func requestAchievements(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {

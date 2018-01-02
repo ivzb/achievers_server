@@ -13,6 +13,12 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
+const (
+	Core     = 0
+	Change   = 1
+	Retrieve = 2
+)
+
 var (
 	mockID               = "mock id"
 	mockTitle            = "mock title"
@@ -29,6 +35,65 @@ var (
 	mockMultimediaTypeID = "5"
 	mockAchievementID    = "mock achievement_id"
 )
+
+type test struct {
+	handle   app.Handle
+	form     *url.Values
+	env      *model.Env
+	response *testResponse
+}
+
+type testResponse struct {
+	kind       int
+	statusCode int
+	message    string
+	results    []byte
+}
+
+func constructForm(m map[string]string) *url.Values {
+	form := &url.Values{}
+
+	for key, value := range m {
+		form.Add(key, value)
+	}
+
+	return form
+}
+
+func constructDB() *mock.DB {
+	return &mock.DB{}
+}
+
+func constructLogger() *mock.Logger {
+	return &mock.Logger{}
+}
+
+func constructEnv(db *mock.DB, logger *mock.Logger) *model.Env {
+	return &model.Env{
+		DB:     db,
+		Logger: logger,
+	}
+}
+
+func constructTestResponse(typ int, statusCode int, message string, results []byte) *testResponse {
+	return &testResponse{
+		typ,
+		statusCode,
+		message,
+		results,
+	}
+}
+
+func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
+	rec := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+
+	req.Form = *test.form
+
+	testHandler(t, rec, req, test.env, test.handle, test.response.statusCode)
+
+	return rec
+}
 
 func testMethodNotAllowed(t *testing.T, method string, url string, handle app.Handle) {
 	rec := httptest.NewRecorder()
