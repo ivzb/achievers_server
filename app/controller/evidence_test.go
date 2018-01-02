@@ -13,7 +13,7 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-func TestEvidencesIndex_FullPage(t *testing.T) {
+func TestEvidencesIndex_Fullpage(t *testing.T) {
 	size := 9
 	statusCode := http.StatusOK
 	rec := requestEvidences(t, size, statusCode)
@@ -24,7 +24,7 @@ func TestEvidencesIndex_FullPage(t *testing.T) {
 	expectRetrieve(t, rec, statusCode, message, results)
 }
 
-func TestEvidencesIndex_HalfPage(t *testing.T) {
+func TestEvidencesIndex_Halfpage(t *testing.T) {
 	size := 9
 	statusCode := http.StatusOK
 	rec := requestEvidences(t, size, statusCode)
@@ -35,7 +35,7 @@ func TestEvidencesIndex_HalfPage(t *testing.T) {
 	expectRetrieve(t, rec, statusCode, message, results)
 }
 
-func TestEvidencesIndex_EmptyPage(t *testing.T) {
+func TestEvidencesIndex_Emptypage(t *testing.T) {
 	size := 0
 	statusCode := http.StatusNotFound
 	rec := requestEvidences(t, size, statusCode)
@@ -47,7 +47,7 @@ func TestEvidencesIndex_EmptyPage(t *testing.T) {
 
 func requestEvidences(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidences", nil)
+	req, _ := http.NewRequest("GET", "/Evidences", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "3")
@@ -67,12 +67,12 @@ func requestEvidences(t *testing.T, size int, statusCode int) *httptest.Response
 }
 
 func TestEvidencesIndex_InvalidMethod(t *testing.T) {
-	testMethodNotAllowed(t, "POST", "/evidences", EvidencesIndex)
+	testMethodNotAllowed(t, "POST", "/Evidences", EvidencesIndex)
 }
 
-func TestEvidencesIndex_MissingPage(t *testing.T) {
+func TestEvidencesIndex_Missingpage(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidences", nil)
+	req, _ := http.NewRequest("GET", "/Evidences", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "")
@@ -86,9 +86,9 @@ func TestEvidencesIndex_MissingPage(t *testing.T) {
 	expectCore(t, rec, statusCode, message)
 }
 
-func TestEvidencesIndex_InvalidPage(t *testing.T) {
+func TestEvidencesIndex_Invalidpage(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidences", nil)
+	req, _ := http.NewRequest("GET", "/Evidences", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "-1")
@@ -104,7 +104,7 @@ func TestEvidencesIndex_InvalidPage(t *testing.T) {
 
 func TestEvidencesIndex_DBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidences", nil)
+	req, _ := http.NewRequest("GET", "/Evidences", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "3")
@@ -126,12 +126,12 @@ func TestEvidencesIndex_DBError(t *testing.T) {
 }
 
 func TestEvidenceSingle_InvalidMethod(t *testing.T) {
-	testMethodNotAllowed(t, "POST", "/evidence", EvidenceSingle)
+	testMethodNotAllowed(t, "POST", "/Evidence", EvidenceSingle)
 }
 
 func TestEvidenceSingle_MissingId(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(id, "")
@@ -147,10 +147,10 @@ func TestEvidenceSingle_MissingId(t *testing.T) {
 
 func TestEvidenceSingle_EvidenceExistDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_evidence_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -170,10 +170,10 @@ func TestEvidenceSingle_EvidenceExistDBError(t *testing.T) {
 
 func TestEvidenceSingle_EvidenceDoesNotExist(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_evidence_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -193,10 +193,10 @@ func TestEvidenceSingle_EvidenceDoesNotExist(t *testing.T) {
 
 func TestEvidenceSingle_EvidenceSingleDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_evidence_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -217,10 +217,10 @@ func TestEvidenceSingle_EvidenceSingleDBError(t *testing.T) {
 
 func TestEvidenceSingle_EvidenceSingleNil(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_evidence_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -241,10 +241,10 @@ func TestEvidenceSingle_EvidenceSingleNil(t *testing.T) {
 
 func TestEvidenceSingle_EvidenceSingle(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/evidence", nil)
+	req, _ := http.NewRequest("GET", "/Evidence", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_evidence_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -276,7 +276,7 @@ func mockEvidenceForm() url.Values {
 }
 
 func TestEvidenceCreate_InvalidMethod(t *testing.T) {
-	testMethodNotAllowed(t, "GET", "/evidence/create", EvidenceCreate)
+	testMethodNotAllowed(t, "GET", "/Evidence/create", EvidenceCreate)
 }
 
 func TestEvidenceCreate_FormMapError(t *testing.T) {

@@ -53,13 +53,13 @@ func AchievementSingle(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	achID := r.FormValue(id)
+	achid := r.FormValue(id)
 
-	if achID == "" {
+	if achid == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, id))
 	}
 
-	exists, err := env.DB.AchievementExists(achID)
+	exists, err := env.DB.AchievementExists(achid)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
@@ -69,14 +69,10 @@ func AchievementSingle(
 		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
 	}
 
-	ach, err := env.DB.AchievementSingle(achID)
+	ach, err := env.DB.AchievementSingle(achid)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
-	}
-
-	if ach == nil {
-		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
 	}
 
 	return response.Ok(
@@ -124,7 +120,7 @@ func AchievementCreate(
 	}
 
 	if !involvementExists {
-		return response.BadRequest(fmt.Sprintf(formatNotFound, involvement))
+		return response.NotFound(fmt.Sprintf(formatNotFound, involvement))
 	}
 
 	ach.AuthorID = env.UserId

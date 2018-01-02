@@ -13,7 +13,7 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-func TestRewardsIndex_FullPage(t *testing.T) {
+func TestRewardsIndex_Fullpage(t *testing.T) {
 	size := 9
 	statusCode := http.StatusOK
 	rec := requestRewards(t, size, statusCode)
@@ -23,7 +23,7 @@ func TestRewardsIndex_FullPage(t *testing.T) {
 	expectRetrieve(t, rec, statusCode, message, results)
 }
 
-func TestRewardsIndex_HalfPage(t *testing.T) {
+func TestRewardsIndex_Halfpage(t *testing.T) {
 	size := 4
 	statusCode := http.StatusOK
 	rec := requestRewards(t, size, statusCode)
@@ -33,7 +33,7 @@ func TestRewardsIndex_HalfPage(t *testing.T) {
 	expectRetrieve(t, rec, statusCode, message, results)
 }
 
-func TestRewardsIndex_EmptyPage(t *testing.T) {
+func TestRewardsIndex_Emptypage(t *testing.T) {
 	statusCode := http.StatusNotFound
 	size := 0
 	rec := requestRewards(t, size, statusCode)
@@ -44,7 +44,7 @@ func TestRewardsIndex_EmptyPage(t *testing.T) {
 
 func requestRewards(t *testing.T, size int, statusCode int) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/rewards", nil)
+	req, _ := http.NewRequest("GET", "/Rewards", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "3")
@@ -64,12 +64,12 @@ func requestRewards(t *testing.T, size int, statusCode int) *httptest.ResponseRe
 }
 
 func TestRewardsIndex_InvalidMethod(t *testing.T) {
-	testMethodNotAllowed(t, "POST", "/rewards", RewardsIndex)
+	testMethodNotAllowed(t, "POST", "/Rewards", RewardsIndex)
 }
 
-func TestRewardsIndex_MissingPage(t *testing.T) {
+func TestRewardsIndex_Missingpage(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/rewards", nil)
+	req, _ := http.NewRequest("GET", "/Rewards", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "")
@@ -83,9 +83,9 @@ func TestRewardsIndex_MissingPage(t *testing.T) {
 	expectCore(t, rec, statusCode, message)
 }
 
-func TestRewardsIndex_InvalidPage(t *testing.T) {
+func TestRewardsIndex_Invalidpage(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/rewards", nil)
+	req, _ := http.NewRequest("GET", "/Rewards", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "-1")
@@ -101,7 +101,7 @@ func TestRewardsIndex_InvalidPage(t *testing.T) {
 
 func TestRewardsIndex_DBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/rewards", nil)
+	req, _ := http.NewRequest("GET", "/Rewards", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(page, "3")
@@ -123,12 +123,12 @@ func TestRewardsIndex_DBError(t *testing.T) {
 }
 
 func TestRewardSingle_InvalidMethod(t *testing.T) {
-	testMethodNotAllowed(t, "POST", "/rewards", RewardSingle)
+	testMethodNotAllowed(t, "POST", "/Rewards", RewardSingle)
 }
 
 func TestRewardSingle_MissingId(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
 	req.Form.Add(id, "")
@@ -144,10 +144,10 @@ func TestRewardSingle_MissingId(t *testing.T) {
 
 func TestRewardSingle_RewardExistDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_reward_id")
+	req.Form.Add(id, "random_Reward_id")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -167,10 +167,10 @@ func TestRewardSingle_RewardExistDBError(t *testing.T) {
 
 func TestRewardSingle_RewardDoesNotExist(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_reward_id")
+	req.Form.Add(id, mockID)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -190,10 +190,10 @@ func TestRewardSingle_RewardDoesNotExist(t *testing.T) {
 
 func TestRewardSingle_RewardSingleDBError(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_reward_id")
+	req.Form.Add(id, "random_Reward_id")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -214,10 +214,10 @@ func TestRewardSingle_RewardSingleDBError(t *testing.T) {
 
 func TestRewardSingle_RewardSingleNil(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_reward_id")
+	req.Form.Add(id, "random_Reward_id")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -238,10 +238,10 @@ func TestRewardSingle_RewardSingleNil(t *testing.T) {
 
 func TestRewardSingle_RewardSingle(t *testing.T) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/reward", nil)
+	req, _ := http.NewRequest("GET", "/Reward", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add(id, "random_reward_id")
+	req.Form.Add(id, "random_Reward_id")
 
 	env := model.Env{
 		DB: &mock.DB{

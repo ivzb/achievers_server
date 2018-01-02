@@ -18,7 +18,7 @@ func RewardsIndex(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	pg, err := strconv.Atoi(r.FormValue("page"))
+	pg, err := strconv.Atoi(r.FormValue(page))
 
 	if err != nil {
 		return response.BadRequest(fmt.Sprintf(formatMissing, page))

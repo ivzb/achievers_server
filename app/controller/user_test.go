@@ -20,8 +20,8 @@ func TestUserAuth_ValidAuth(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/users/auth", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add("email", mockEmail)
-	req.Form.Add("password", mockPassword)
+	req.Form.Add(email, mockEmail)
+	req.Form.Add(password, mockPassword)
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -53,7 +53,7 @@ func TestUserAuth_MissingEmail(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/users/auth", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add("password", "P@$$")
+	req.Form.Add(password, "P@$$")
 
 	handle := UserAuth
 	statusCode := http.StatusBadRequest
@@ -70,7 +70,7 @@ func TestUserAuth_MissingPassword(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/users/auth", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add("email", "email@gmail.com")
+	req.Form.Add(email, mockEmail)
 
 	handle := UserAuth
 	statusCode := http.StatusBadRequest
@@ -87,8 +87,8 @@ func TestUserAuth_DBError(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/users/auth", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add("email", "email@gmail.com")
-	req.Form.Add("password", "P@$$")
+	req.Form.Add(email, "Email@gmail.com")
+	req.Form.Add(password, "P@$$")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -111,8 +111,8 @@ func TestUserAuth_EncryptionError(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/users/auth", nil)
 
 	req.Form = url.Values{}
-	req.Form.Add("email", "email@gmail.com")
-	req.Form.Add("password", "P@$$")
+	req.Form.Add(email, "Email@gmail.com")
+	req.Form.Add(password, "P@$$")
 
 	env := model.Env{
 		DB: &mock.DB{
@@ -136,10 +136,10 @@ func TestUserCreate_ValidUser(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	form := url.Values{}
-	form.Add("first_name", mockFirstName)
-	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(firstName, mockFirstName)
+	form.Add(lastName, mockLastName)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -201,8 +201,8 @@ func TestUserCreate_MissingFirstName(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", "")
 	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -230,8 +230,8 @@ func TestUserCreate_MissingLastName(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", "")
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -259,8 +259,8 @@ func TestUserCreate_MissingEmail(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", mockLastName)
-	form.Add("email", "")
-	form.Add("password", mockPassword)
+	form.Add(email, "")
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -288,8 +288,8 @@ func TestUserCreate_MissingPassword(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", "")
+	form.Add(email, mockEmail)
+	form.Add(password, "")
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -317,8 +317,8 @@ func TestUserCreate_ExistDBError(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -349,8 +349,8 @@ func TestUserCreate_UserExist(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 
@@ -381,8 +381,8 @@ func TestUserCreate_UserCreateDBError(t *testing.T) {
 	form := url.Values{}
 	form.Add("first_name", mockFirstName)
 	form.Add("last_name", mockLastName)
-	form.Add("email", mockEmail)
-	form.Add("password", mockPassword)
+	form.Add(email, mockEmail)
+	form.Add(password, mockPassword)
 
 	req, _ := http.NewRequest("POST", "/users/create", strings.NewReader(form.Encode()))
 

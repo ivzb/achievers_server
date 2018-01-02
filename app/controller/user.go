@@ -17,8 +17,8 @@ func UserAuth(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	eml := r.FormValue("email")
-	pwd := r.FormValue("password")
+	eml := r.FormValue(email)
+	pwd := r.FormValue(password)
 
 	if eml == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, email))

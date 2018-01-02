@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -34,13 +35,29 @@ var (
 	mockURL              = "mock url"
 	mockMultimediaTypeID = "5"
 	mockAchievementID    = "mock achievement_id"
+	mockInvolvementID    = "5"
+
+	mockDbErr     = errors.New("db error")
+	mockFormerErr = errors.New("former error")
+
+	mockPage     = "3"
+	mockPageSize = 9
+
+	get  = "GET"
+	post = "POST"
 )
 
 type test struct {
+	purpose  string
 	handle   app.Handle
-	form     *url.Values
-	env      *model.Env
+	request  *testRequest
 	response *testResponse
+}
+
+type testRequest struct {
+	method string
+	form   *url.Values
+	env    *model.Env
 }
 
 type testResponse struct {
@@ -60,18 +77,19 @@ func constructForm(m map[string]string) *url.Values {
 	return form
 }
 
-func constructDB() *mock.DB {
-	return &mock.DB{}
-}
-
-func constructLogger() *mock.Logger {
-	return &mock.Logger{}
-}
-
-func constructEnv(db *mock.DB, logger *mock.Logger) *model.Env {
+func constructEnv(db *mock.DB, logger *mock.Logger, former *mock.Former) *model.Env {
 	return &model.Env{
 		DB:     db,
 		Logger: logger,
+		Former: former,
+	}
+}
+
+func constructTestRequest(method string, form *url.Values, env *model.Env) *testRequest {
+	return &testRequest{
+		method,
+		form,
+		env,
 	}
 }
 
@@ -86,11 +104,14 @@ func constructTestResponse(typ int, statusCode int, message string, results []by
 
 func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequest(test.request.method, "/test", encodeForm(*test.request.form))
 
-	req.Form = *test.form
+	req.Form = *test.request.form
 
-	testHandler(t, rec, req, test.env, test.handle, test.response.statusCode)
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	testHandler(t, rec, req, test.request.env, test.handle, test.response.statusCode)
 
 	return rec
 }
@@ -172,10 +193,30 @@ func encodeForm(form url.Values) *strings.Reader {
 	return strings.NewReader(form.Encode())
 }
 
+func expect(t *testing.T, rec *httptest.ResponseRecorder, test *test) {
+	switch test.response.kind {
+	case Core:
+		expectCoreTest(t, rec, test)
+	case Retrieve:
+		expectRetrieveTest(t, rec, test)
+	}
+}
+
 func expectCore(t *testing.T, rec *httptest.ResponseRecorder, statusCode int, message string) {
 	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, statusCode, message)
 
 	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func expectCoreTest(t *testing.T, rec *httptest.ResponseRecorder, test *test) {
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, test.response.statusCode, test.response.message)
+
+	if rec.Body.String() != expected {
+		t.Errorf("test %v", test.purpose)
+
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rec.Body.String(), expected)
 	}
@@ -194,6 +235,24 @@ func expectRetrieve(
 		results)
 
 	if rec.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
+			rec.Body.String(), expected)
+	}
+}
+
+func expectRetrieveTest(
+	t *testing.T,
+	rec *httptest.ResponseRecorder,
+	test *test) {
+
+	expected := fmt.Sprintf(`{"status":%d,"message":"%s","results":%s}`,
+		test.response.statusCode,
+		test.response.message,
+		test.response.results)
+
+	if rec.Body.String() != expected {
+		t.Errorf("test %v", test.purpose)
+
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rec.Body.String(), expected)
 	}
