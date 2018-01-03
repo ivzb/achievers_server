@@ -76,10 +76,6 @@ func EvidenceSingle(
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	if evd == nil {
-		return response.NotFound(fmt.Sprintf(formatNotFound, evidence))
-	}
-
 	return response.Ok(
 		fmt.Sprintf(formatFound, evidence),
 		1,
@@ -129,7 +125,7 @@ func EvidenceCreate(
 	}
 
 	if !multimediaTypeExist {
-		return response.BadRequest(fmt.Sprintf(formatNotFound, multimediaType))
+		return response.NotFound(fmt.Sprintf(formatNotFound, multimediaType))
 	}
 
 	achievementExist, err := env.DB.AchievementExists(evd.AchievementID)
@@ -139,7 +135,7 @@ func EvidenceCreate(
 	}
 
 	if !achievementExist {
-		return response.BadRequest(fmt.Sprintf(formatNotFound, achievement))
+		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
 	}
 
 	evd.AuthorID = env.UserId

@@ -75,10 +75,6 @@ func RewardSingle(
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	if rwd == nil {
-		return response.NotFound(fmt.Sprintf(formatNotFound, reward))
-	}
-
 	return response.Ok(
 		fmt.Sprintf(formatFound, reward),
 		1,
