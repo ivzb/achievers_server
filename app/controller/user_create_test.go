@@ -8,196 +8,123 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type userCreateTest struct {
-	purpose            string
-	requestMethod      string
-	responseType       int
-	responseStatusCode int
-	responseMessage    string
-	formerErr          error
-	formFirstName      string
-	formLastName       string
-	formEmail          string
-	formPassword       string
-	dbUserEmailExists  mock.UserEmailExists
-	dbUserCreate       mock.UserCreate
+func userCreateForm() *map[string]string {
+	return &map[string]string{
+		firstName: mockFirstName,
+		lastName:  mockLastName,
+		email:     mockEmail,
+		password:  mockPassword,
+	}
 }
 
 var userCreateTests = []*test{
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
-		formerErr:          nil,
-		formFirstName:      "",
-		formLastName:       "",
-		formEmail:          "",
-		formPassword:       "",
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               &map[string]string{},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "former error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
-		formerErr:          mockFormerErr,
-		formFirstName:      "",
-		formLastName:       "",
-		formEmail:          "",
-		formPassword:       "",
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               &map[string]string{},
+		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "missing form first_name",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, firstName),
-		formerErr:          nil,
-		formFirstName:      "",
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               mapWithout(userCreateForm(), firstName),
+		former:             &mock.Former{},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "missing form last_name",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, lastName),
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       "",
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               mapWithout(userCreateForm(), lastName),
+		former:             &mock.Former{},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "missing form email",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          "",
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               mapWithout(userCreateForm(), email),
+		former:             &mock.Former{},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "missing form password",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       "",
-		dbUserEmailExists:  mock.UserEmailExists{},
-		dbUserCreate:       mock.UserCreate{},
+		form:               mapWithout(userCreateForm(), password),
+		former:             &mock.Former{},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "user email exists db error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{Err: mockDbErr},
-		dbUserCreate:       mock.UserCreate{},
+		form:               userCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
+		},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "user email exists",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatAlreadyExists, email),
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{Bool: true},
-		dbUserCreate:       mock.UserCreate{},
+		form:               userCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
+		},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "user create db error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{Bool: false},
-		dbUserCreate:       mock.UserCreate{Err: mockDbErr},
+		form:               userCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+			UserCreateMock:      mock.UserCreate{Err: mockDbErr},
+		},
 	}),
-	constructUserCreateTest(&userCreateTest{
+	constructUserCreateTest(&testInput{
 		purpose:            "user create ok",
 		requestMethod:      post,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(formatCreated, user),
-		formerErr:          nil,
-		formFirstName:      mockFirstName,
-		formLastName:       mockLastName,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserEmailExists:  mock.UserEmailExists{Bool: false},
-		dbUserCreate:       mock.UserCreate{ID: mockID},
+		form:               userCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+			UserCreateMock:      mock.UserCreate{ID: mockID},
+		},
 	}),
 }
 
-func constructUserCreateTest(testInput *userCreateTest) *test {
+func constructUserCreateTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mockID)
 
-	db := &mock.DB{
-		UserEmailExistsMock: testInput.dbUserEmailExists,
-		UserCreateMock:      testInput.dbUserCreate,
-	}
-
-	logger := &mock.Logger{}
-
-	former := &mock.Former{
-		MapMock: mock.Map{Err: testInput.formerErr},
-	}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  UserCreate,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{
-				firstName: testInput.formFirstName,
-				lastName:  testInput.formLastName,
-				email:     testInput.formEmail,
-				password:  testInput.formPassword,
-			}),
-			constructEnv(db, logger, former, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
-	}
+	return constructTest(UserCreate, testInput, responseResults)
 }

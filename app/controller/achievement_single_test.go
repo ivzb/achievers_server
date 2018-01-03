@@ -8,105 +8,79 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type achievementSingleTest struct {
-	purpose             string
-	requestMethod       string
-	responseType        int
-	responseStatusCode  int
-	responseMessage     string
-	formID              string
-	dbAchievementExists mock.AchievementExists
-	dbAchievementSingle mock.AchievementSingle
+func achievementSingleForm() *map[string]string {
+	return &map[string]string{
+		id: mockID,
+	}
 }
 
 var achievementSingleTests = []*test{
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "invalid request method",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusMethodNotAllowed,
-		responseMessage:     methodNotAllowed,
-		formID:              "",
-		dbAchievementExists: mock.AchievementExists{},
-		dbAchievementSingle: mock.AchievementSingle{},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "invalid request method",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusMethodNotAllowed,
+		responseMessage:    methodNotAllowed,
+		form:               &map[string]string{},
 	}),
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "missing id",
-		requestMethod:       get,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     fmt.Sprintf(formatMissing, id),
-		formID:              "",
-		dbAchievementExists: mock.AchievementExists{},
-		dbAchievementSingle: mock.AchievementSingle{},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "missing id",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    fmt.Sprintf(formatMissing, id),
+		form:               mapWithout(achievementSingleForm(), id),
 	}),
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "achievement exists db error",
-		requestMethod:       get,
-		responseType:        Core,
-		responseStatusCode:  http.StatusInternalServerError,
-		responseMessage:     friendlyErrorMessage,
-		formID:              mockID,
-		dbAchievementExists: mock.AchievementExists{Err: mockDbErr},
-		dbAchievementSingle: mock.AchievementSingle{},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "achievement exists db error",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    friendlyErrorMessage,
+		form:               achievementSingleForm(),
+		db: &mock.DB{
+			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+		},
 	}),
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "achievement does not exist",
-		requestMethod:       get,
-		responseType:        Core,
-		responseStatusCode:  http.StatusNotFound,
-		responseMessage:     fmt.Sprintf(formatNotFound, achievement),
-		formID:              mockID,
-		dbAchievementExists: mock.AchievementExists{Bool: false},
-		dbAchievementSingle: mock.AchievementSingle{},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "achievement does not exist",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusNotFound,
+		responseMessage:    fmt.Sprintf(formatNotFound, achievement),
+		form:               achievementSingleForm(),
+		db: &mock.DB{
+			AchievementExistsMock: mock.AchievementExists{Bool: false},
+		},
 	}),
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "achievement single db error",
-		requestMethod:       get,
-		responseType:        Core,
-		responseStatusCode:  http.StatusInternalServerError,
-		responseMessage:     friendlyErrorMessage,
-		formID:              mockID,
-		dbAchievementExists: mock.AchievementExists{Bool: true},
-		dbAchievementSingle: mock.AchievementSingle{Err: mockDbErr},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "achievement single db error",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    friendlyErrorMessage,
+		form:               achievementSingleForm(),
+		db: &mock.DB{
+			AchievementExistsMock: mock.AchievementExists{Bool: true},
+			AchievementSingleMock: mock.AchievementSingle{Err: mockDbErr},
+		},
 	}),
-	constructAchievementSingleTest(&achievementSingleTest{
-		purpose:             "achievement single OK",
-		requestMethod:       get,
-		responseType:        Retrieve,
-		responseStatusCode:  http.StatusOK,
-		responseMessage:     fmt.Sprintf(formatFound, achievement),
-		formID:              mockID,
-		dbAchievementExists: mock.AchievementExists{Bool: true},
-		dbAchievementSingle: mock.AchievementSingle{Ach: mock.Achievement()},
+	constructAchievementSingleTest(&testInput{
+		purpose:            "achievement single OK",
+		requestMethod:      get,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatFound, achievement),
+		form:               achievementSingleForm(),
+		db: &mock.DB{
+			AchievementExistsMock: mock.AchievementExists{Bool: true},
+			AchievementSingleMock: mock.AchievementSingle{Ach: mock.Achievement()},
+		},
 	}),
 }
 
-func constructAchievementSingleTest(testInput *achievementSingleTest) *test {
+func constructAchievementSingleTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mock.Achievement())
 
-	db := &mock.DB{
-		AchievementExistsMock: testInput.dbAchievementExists,
-		AchievementSingleMock: testInput.dbAchievementSingle,
-	}
-
-	logger := &mock.Logger{}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  AchievementSingle,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{
-				id: testInput.formID,
-			}),
-			constructEnv(db, logger, nil, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
-	}
+	return constructTest(AchievementSingle, testInput, responseResults)
 }

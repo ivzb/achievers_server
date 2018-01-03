@@ -8,139 +8,95 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type userAuthTest struct {
-	purpose            string
-	requestMethod      string
-	responseType       int
-	responseStatusCode int
-	responseMessage    string
-	formerErr          error
-	formEmail          string
-	formPassword       string
-	dbUserAuth         mock.UserAuth
-	tokenerEncrypt     mock.Encrypt
+func userAuthForm() *map[string]string {
+	return &map[string]string{
+		email:    mockEmail,
+		password: mockPassword,
+	}
 }
 
 var userAuthTests = []*test{
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
-		formerErr:          nil,
-		formEmail:          "",
-		formPassword:       "",
-		dbUserAuth:         mock.UserAuth{},
-		tokenerEncrypt:     mock.Encrypt{},
+		form:               &map[string]string{},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "former error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
-		formerErr:          mockFormerErr,
-		formEmail:          "",
-		formPassword:       "",
-		dbUserAuth:         mock.UserAuth{},
-		tokenerEncrypt:     mock.Encrypt{},
+		form:               &map[string]string{},
+		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "missing form email",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
-		formerErr:          nil,
-		formEmail:          "",
-		formPassword:       mockPassword,
-		dbUserAuth:         mock.UserAuth{},
-		tokenerEncrypt:     mock.Encrypt{},
+		form:               mapWithout(userAuthForm(), email),
+		former:             &mock.Former{},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "missing form password",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
-		formerErr:          nil,
-		formEmail:          mockEmail,
-		formPassword:       "",
-		dbUserAuth:         mock.UserAuth{},
-		tokenerEncrypt:     mock.Encrypt{},
+		form:               mapWithout(userAuthForm(), password),
+		former:             &mock.Former{},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "user auth db error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formerErr:          nil,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserAuth:         mock.UserAuth{Err: mockDbErr},
-		tokenerEncrypt:     mock.Encrypt{},
+		form:               userAuthForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserAuthMock: mock.UserAuth{Err: mockDbErr},
+		},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "encrypt error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formerErr:          nil,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserAuth:         mock.UserAuth{ID: mockID},
-		tokenerEncrypt:     mock.Encrypt{Err: mockDbErr},
+		form:               userAuthForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserAuthMock: mock.UserAuth{ID: mockID},
+		},
+		tokener: &mock.Tokener{
+			EncryptMock: mock.Encrypt{Err: mockDbErr},
+		},
 	}),
-	constructUserAuthTest(&userAuthTest{
+	constructUserAuthTest(&testInput{
 		purpose:            "user auth ok",
 		requestMethod:      post,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    authorized,
-		formerErr:          nil,
-		formEmail:          mockEmail,
-		formPassword:       mockPassword,
-		dbUserAuth:         mock.UserAuth{ID: mockID},
-		tokenerEncrypt:     mock.Encrypt{Enc: mockEncrypt},
+		form:               userAuthForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserAuthMock: mock.UserAuth{ID: mockID},
+		},
+		tokener: &mock.Tokener{
+			EncryptMock: mock.Encrypt{Enc: mockEncrypt},
+		},
 	}),
 }
 
-func constructUserAuthTest(testInput *userAuthTest) *test {
+func constructUserAuthTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mockEncrypt)
 
-	db := &mock.DB{
-		UserAuthMock: testInput.dbUserAuth,
-	}
-
-	logger := &mock.Logger{}
-
-	former := &mock.Former{
-		MapMock: mock.Map{Err: testInput.formerErr},
-	}
-
-	tokener := &mock.Tokener{
-		EncryptMock: testInput.tokenerEncrypt,
-	}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  UserAuth,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{
-				email:    testInput.formEmail,
-				password: testInput.formPassword,
-			}),
-			constructEnv(db, logger, former, tokener),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
-	}
+	return constructTest(UserAuth, testInput, responseResults)
 }

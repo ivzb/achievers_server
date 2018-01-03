@@ -68,6 +68,20 @@ type testResponse struct {
 	results    []byte
 }
 
+type testInput struct {
+	purpose            string
+	requestMethod      string
+	responseType       int
+	responseStatusCode int
+	responseMessage    string
+	form               *map[string]string
+	db                 *mock.DB
+	logger             *mock.Logger
+	former             *mock.Former
+	tokener            *mock.Tokener
+	args               []string
+}
+
 func run(t *testing.T, tests []*test) {
 	for _, test := range tests {
 		rec := constructRequest(t, test)
@@ -75,10 +89,10 @@ func run(t *testing.T, tests []*test) {
 	}
 }
 
-func constructForm(m map[string]string) *url.Values {
+func constructForm(m *map[string]string) *url.Values {
 	form := &url.Values{}
 
-	for key, value := range m {
+	for key, value := range *m {
 		form.Add(key, value)
 	}
 
@@ -123,6 +137,24 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	testHandler(t, rec, req, test.request.env, test.handle, test.response.statusCode)
 
 	return rec
+}
+
+func constructTest(handle app.Handle, testInput *testInput, responseResults []byte) *test {
+	return &test{
+		purpose: testInput.purpose,
+		handle:  handle,
+		request: constructTestRequest(
+			testInput.requestMethod,
+			constructForm(testInput.form),
+			constructEnv(testInput.db, testInput.logger, testInput.former, testInput.tokener),
+		),
+		response: constructTestResponse(
+			testInput.responseType,
+			testInput.responseStatusCode,
+			testInput.responseMessage,
+			responseResults,
+		),
+	}
 }
 
 func testMethodNotAllowed(t *testing.T, method string, url string, handle app.Handle) {
@@ -265,4 +297,9 @@ func expectRetrieveTest(
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rec.Body.String(), expected)
 	}
+}
+
+func mapWithout(m *map[string]string, key string) *map[string]string {
+	(*m)[key] = ""
+	return m
 }

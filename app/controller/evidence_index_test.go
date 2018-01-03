@@ -4,106 +4,107 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type evidencesIndexTest struct {
-	purpose            string
-	requestMethod      string
-	responseType       int
-	responseStatusCode int
-	responseMessage    string
-	mockPageSize       int
-	formPage           string
-	dbEvidencesAll     mock.EvidencesAll
+func evidencesIndexForm() *map[string]string {
+	return &map[string]string{
+		page: mockPage,
+	}
 }
 
+var evidencesIndexArgs = []string{"9"}
+
 var evidencesIndexTests = []*test{
-	constructEvidencesIndexTest(&evidencesIndexTest{
+	constructEvidencesIndexTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
+		form:               &map[string]string{},
+		args:               evidencesIndexArgs,
 	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
-		purpose:            "9 results on page",
-		requestMethod:      get,
-		responseType:       Retrieve,
-		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, evidences),
-		mockPageSize:       9,
-		formPage:           "0",
-		dbEvidencesAll:     mock.EvidencesAll{Evds: mock.Evidences(9)},
-	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
-		purpose:            "4 results on page",
-		requestMethod:      get,
-		responseType:       Retrieve,
-		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, evidences),
-		mockPageSize:       4,
-		formPage:           "1",
-		dbEvidencesAll:     mock.EvidencesAll{Evds: mock.Evidences(4)},
-	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
-		purpose:            "no results on page",
-		requestMethod:      get,
-		responseType:       Core,
-		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, page),
-		mockPageSize:       0,
-		formPage:           "2",
-		dbEvidencesAll:     mock.EvidencesAll{Evds: mock.Evidences(0)},
-	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
+	constructEvidencesIndexTest(&testInput{
 		purpose:            "missing page",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, page),
-		formPage:           "",
+		form:               mapWithout(evidencesIndexForm(), page),
+		args:               evidencesIndexArgs,
 	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
+	constructEvidencesIndexTest(&testInput{
 		purpose:            "invalid page",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatInvalid, page),
-		formPage:           "-1",
+		form: &map[string]string{
+			page: "-1",
+		},
+		args: evidencesIndexArgs,
 	}),
-	constructEvidencesIndexTest(&evidencesIndexTest{
+	constructEvidencesIndexTest(&testInput{
 		purpose:            "db error",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formPage:           mockPage,
-		dbEvidencesAll:     mock.EvidencesAll{Err: mockDbErr},
+		form:               evidencesIndexForm(),
+		db: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Err: mockDbErr},
+		},
+		args: evidencesIndexArgs,
+	}),
+	constructEvidencesIndexTest(&testInput{
+		purpose:            "no results on page",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusNotFound,
+		responseMessage:    fmt.Sprintf(formatNotFound, page),
+		form:               evidencesIndexForm(),
+		db: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(0)},
+		},
+		args: []string{"0"},
+	}),
+	constructEvidencesIndexTest(&testInput{
+		purpose:            "4 results on page",
+		requestMethod:      get,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatFound, evidences),
+		form:               evidencesIndexForm(),
+		db: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(4)},
+		},
+		args: []string{"4"},
+	}),
+	constructEvidencesIndexTest(&testInput{
+		purpose:            "9 results on page",
+		requestMethod:      get,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatFound, evidences),
+		form:               evidencesIndexForm(),
+		db: &mock.DB{
+			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(9)},
+		},
+		args: []string{"9"},
 	}),
 }
 
-func constructEvidencesIndexTest(testInput *evidencesIndexTest) *test {
-	responseResults, _ := json.Marshal(mock.Evidences(testInput.mockPageSize))
+func constructEvidencesIndexTest(testInput *testInput) *test {
+	evidencesSize, err := strconv.Atoi(testInput.args[0])
 
-	db := &mock.DB{EvidencesAllMock: testInput.dbEvidencesAll}
+	var responseResults []byte
 
-	logger := &mock.Logger{}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  EvidencesIndex,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{page: testInput.formPage}),
-			constructEnv(db, logger, nil, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
+	if err == nil {
+		responseResults, _ = json.Marshal(mock.Evidences(evidencesSize))
 	}
+
+	return constructTest(EvidencesIndex, testInput, responseResults)
 }

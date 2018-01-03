@@ -8,196 +8,122 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type achievementCreateTest struct {
-	purpose             string
-	requestMethod       string
-	responseType        int
-	responseStatusCode  int
-	responseMessage     string
-	formerErr           error
-	formTitle           string
-	formDescription     string
-	formPictureURL      string
-	formInvolvementID   string
-	dbInvolvementExists mock.InvolvementExists
-	dbAchievementCreate mock.AchievementCreate
+func achievementCreateForm() *map[string]string {
+	return &map[string]string{
+		title:         mockTitle,
+		description:   mockDescription,
+		pictureURL:    mockPictureURL,
+		involvementID: mockInvolvementID,
+	}
 }
 
 var achievementCreateTests = []*test{
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "invalid request method",
-		requestMethod:       get,
-		responseType:        Core,
-		responseStatusCode:  http.StatusMethodNotAllowed,
-		responseMessage:     methodNotAllowed,
-		formerErr:           nil,
-		formTitle:           "",
-		formDescription:     "",
-		formPictureURL:      "",
-		formInvolvementID:   "",
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "invalid request method",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusMethodNotAllowed,
+		responseMessage:    methodNotAllowed,
+		form:               &map[string]string{},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "former error",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     "former error",
-		formerErr:           mockFormerErr,
-		formTitle:           "",
-		formDescription:     "",
-		formPictureURL:      "",
-		formInvolvementID:   "",
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "former error",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    "former error",
+		form:               &map[string]string{},
+		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "missing form title",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     fmt.Sprintf(formatMissing, title),
-		formerErr:           nil,
-		formTitle:           "",
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "missing form title",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    fmt.Sprintf(formatMissing, title),
+		form:               mapWithout(achievementCreateForm(), title),
+		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "missing form description",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     fmt.Sprintf(formatMissing, description),
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     "",
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "missing form description",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    fmt.Sprintf(formatMissing, description),
+		form:               mapWithout(achievementCreateForm(), description),
+		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "missing form picture_url",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     fmt.Sprintf(formatMissing, pictureURL),
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      "",
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "missing form picture_url",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
+		form:               mapWithout(achievementCreateForm(), pictureURL),
+		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "missing form involvement_id",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusBadRequest,
-		responseMessage:     fmt.Sprintf(formatMissing, involvementID),
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   "",
-		dbInvolvementExists: mock.InvolvementExists{},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "missing form involvement_id",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusBadRequest,
+		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
+		form:               mapWithout(achievementCreateForm(), involvementID),
+		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "involvement exists db error",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusInternalServerError,
-		responseMessage:     friendlyErrorMessage,
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{Err: mockDbErr},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "involvement exists db error",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    friendlyErrorMessage,
+		form:               achievementCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
+		},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "involvement does not exist",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusNotFound,
-		responseMessage:     fmt.Sprintf(formatNotFound, involvement),
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{Bool: false},
-		dbAchievementCreate: mock.AchievementCreate{},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "involvement does not exist",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusNotFound,
+		responseMessage:    fmt.Sprintf(formatNotFound, involvement),
+		form:               achievementCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
+		},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "achievement create db error",
-		requestMethod:       post,
-		responseType:        Core,
-		responseStatusCode:  http.StatusInternalServerError,
-		responseMessage:     friendlyErrorMessage,
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{Bool: true},
-		dbAchievementCreate: mock.AchievementCreate{Err: mockDbErr},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "achievement create db error",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    friendlyErrorMessage,
+		form:               achievementCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
+			AchievementCreateMock: mock.AchievementCreate{Err: mockDbErr},
+		},
 	}),
-	constructAchievementCreateTest(&achievementCreateTest{
-		purpose:             "achievement create ok",
-		requestMethod:       post,
-		responseType:        Retrieve,
-		responseStatusCode:  http.StatusOK,
-		responseMessage:     fmt.Sprintf(formatCreated, achievement),
-		formerErr:           nil,
-		formTitle:           mockTitle,
-		formDescription:     mockDescription,
-		formPictureURL:      mockPictureURL,
-		formInvolvementID:   mockInvolvementID,
-		dbInvolvementExists: mock.InvolvementExists{Bool: true},
-		dbAchievementCreate: mock.AchievementCreate{ID: mockID},
+	constructAchievementCreateTest(&testInput{
+		purpose:            "achievement create ok",
+		requestMethod:      post,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatCreated, achievement),
+		form:               achievementCreateForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
+			AchievementCreateMock: mock.AchievementCreate{ID: mockID},
+		},
 	}),
 }
 
-func constructAchievementCreateTest(testInput *achievementCreateTest) *test {
+func constructAchievementCreateTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mockID)
-
-	db := &mock.DB{
-		InvolvementExistsMock: testInput.dbInvolvementExists,
-		AchievementCreateMock: testInput.dbAchievementCreate,
-	}
-
-	logger := &mock.Logger{}
-
-	former := &mock.Former{
-		MapMock: mock.Map{Err: testInput.formerErr},
-	}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  AchievementCreate,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{
-				title:         testInput.formTitle,
-				description:   testInput.formDescription,
-				pictureURL:    testInput.formPictureURL,
-				involvementID: testInput.formInvolvementID,
-			}),
-			constructEnv(db, logger, former, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
-	}
+	return constructTest(AchievementCreate, testInput, responseResults)
 }

@@ -8,105 +8,79 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type evidenceSingleTest struct {
-	purpose            string
-	requestMethod      string
-	responseType       int
-	responseStatusCode int
-	responseMessage    string
-	formID             string
-	dbEvidenceExists   mock.EvidenceExists
-	dbEvidenceSingle   mock.EvidenceSingle
+func evidenceSingleForm() *map[string]string {
+	return &map[string]string{
+		id: mockID,
+	}
 }
 
 var evidenceSingleTests = []*test{
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
-		formID:             "",
-		dbEvidenceExists:   mock.EvidenceExists{},
-		dbEvidenceSingle:   mock.EvidenceSingle{},
+		form:               &map[string]string{},
 	}),
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "missing id",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, id),
-		formID:             "",
-		dbEvidenceExists:   mock.EvidenceExists{},
-		dbEvidenceSingle:   mock.EvidenceSingle{},
+		form:               mapWithout(evidenceSingleForm(), id),
 	}),
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence exists db error",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formID:             mockID,
-		dbEvidenceExists:   mock.EvidenceExists{Err: mockDbErr},
-		dbEvidenceSingle:   mock.EvidenceSingle{},
+		form:               evidenceSingleForm(),
+		db: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Err: mockDbErr},
+		},
 	}),
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence does not exist",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, evidence),
-		formID:             mockID,
-		dbEvidenceExists:   mock.EvidenceExists{Bool: false},
-		dbEvidenceSingle:   mock.EvidenceSingle{},
+		form:               evidenceSingleForm(),
+		db: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: false},
+		},
 	}),
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single db error",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formID:             mockID,
-		dbEvidenceExists:   mock.EvidenceExists{Bool: true},
-		dbEvidenceSingle:   mock.EvidenceSingle{Err: mockDbErr},
+		form:               evidenceSingleForm(),
+		db: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: true},
+			EvidenceSingleMock: mock.EvidenceSingle{Err: mockDbErr},
+		},
 	}),
-	constructEvidenceSingleTest(&evidenceSingleTest{
+	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single OK",
 		requestMethod:      get,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, evidence),
-		formID:             mockID,
-		dbEvidenceExists:   mock.EvidenceExists{Bool: true},
-		dbEvidenceSingle:   mock.EvidenceSingle{Evd: mock.Evidence()},
+		form:               evidenceSingleForm(),
+		db: &mock.DB{
+			EvidenceExistsMock: mock.EvidenceExists{Bool: true},
+			EvidenceSingleMock: mock.EvidenceSingle{Evd: mock.Evidence()},
+		},
 	}),
 }
 
-func constructEvidenceSingleTest(testInput *evidenceSingleTest) *test {
+func constructEvidenceSingleTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mock.Evidence())
 
-	db := &mock.DB{
-		EvidenceExistsMock: testInput.dbEvidenceExists,
-		EvidenceSingleMock: testInput.dbEvidenceSingle,
-	}
-
-	logger := &mock.Logger{}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  EvidenceSingle,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{
-				id: testInput.formID,
-			}),
-			constructEnv(db, logger, nil, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
-	}
+	return constructTest(EvidenceSingle, testInput, responseResults)
 }

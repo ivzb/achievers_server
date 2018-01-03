@@ -4,106 +4,107 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-type achievementsIndexTest struct {
-	purpose            string
-	requestMethod      string
-	responseType       int
-	responseStatusCode int
-	responseMessage    string
-	mockPageSize       int
-	formPage           string
-	dbAchievementsAll  mock.AchievementsAll
+func achievementsIndexForm() *map[string]string {
+	return &map[string]string{
+		page: mockPage,
+	}
 }
 
+var achievementsIndexArgs = []string{"9"}
+
 var achievementsIndexTests = []*test{
-	constructAchievementsIndexTest(&achievementsIndexTest{
+	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
+		form:               &map[string]string{},
+		args:               achievementsIndexArgs,
 	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
-		purpose:            "9 results on page",
-		requestMethod:      get,
-		responseType:       Retrieve,
-		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
-		mockPageSize:       9,
-		formPage:           "0",
-		dbAchievementsAll:  mock.AchievementsAll{Achs: mock.Achievements(9)},
-	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
-		purpose:            "4 results on page",
-		requestMethod:      get,
-		responseType:       Retrieve,
-		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
-		mockPageSize:       4,
-		formPage:           "1",
-		dbAchievementsAll:  mock.AchievementsAll{Achs: mock.Achievements(4)},
-	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
-		purpose:            "no results on page",
-		requestMethod:      get,
-		responseType:       Core,
-		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, page),
-		mockPageSize:       0,
-		formPage:           "2",
-		dbAchievementsAll:  mock.AchievementsAll{Achs: mock.Achievements(0)},
-	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
+	constructAchievementsIndexTest(&testInput{
 		purpose:            "missing page",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, page),
-		formPage:           "",
+		form:               mapWithout(achievementsIndexForm(), page),
+		args:               achievementsIndexArgs,
 	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
+	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid page",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatInvalid, page),
-		formPage:           "-1",
+		form: &map[string]string{
+			page: "-1",
+		},
+		args: achievementsIndexArgs,
 	}),
-	constructAchievementsIndexTest(&achievementsIndexTest{
+	constructAchievementsIndexTest(&testInput{
 		purpose:            "db error",
 		requestMethod:      get,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		formPage:           mockPage,
-		dbAchievementsAll:  mock.AchievementsAll{Err: mockDbErr},
+		form:               achievementsIndexForm(),
+		db: &mock.DB{
+			AchievementsAllMock: mock.AchievementsAll{Err: mockDbErr},
+		},
+		args: achievementsIndexArgs,
+	}),
+	constructAchievementsIndexTest(&testInput{
+		purpose:            "no results on page",
+		requestMethod:      get,
+		responseType:       Core,
+		responseStatusCode: http.StatusNotFound,
+		responseMessage:    fmt.Sprintf(formatNotFound, page),
+		form:               achievementsIndexForm(),
+		db: &mock.DB{
+			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(0)},
+		},
+		args: []string{"0"},
+	}),
+	constructAchievementsIndexTest(&testInput{
+		purpose:            "4 results on page",
+		requestMethod:      get,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		form:               achievementsIndexForm(),
+		db: &mock.DB{
+			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(4)},
+		},
+		args: []string{"4"},
+	}),
+	constructAchievementsIndexTest(&testInput{
+		purpose:            "9 results on page",
+		requestMethod:      get,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusOK,
+		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		form:               achievementsIndexForm(),
+		db: &mock.DB{
+			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(9)},
+		},
+		args: []string{"9"},
 	}),
 }
 
-func constructAchievementsIndexTest(testInput *achievementsIndexTest) *test {
-	responseResults, _ := json.Marshal(mock.Achievements(testInput.mockPageSize))
+func constructAchievementsIndexTest(testInput *testInput) *test {
+	achievementsSize, err := strconv.Atoi(testInput.args[0])
 
-	db := &mock.DB{AchievementsAllMock: testInput.dbAchievementsAll}
+	var responseResults []byte
 
-	logger := &mock.Logger{}
-
-	return &test{
-		purpose: testInput.purpose,
-		handle:  AchievementsIndex,
-		request: constructTestRequest(
-			testInput.requestMethod,
-			constructForm(map[string]string{page: testInput.formPage}),
-			constructEnv(db, logger, nil, nil),
-		),
-		response: constructTestResponse(
-			testInput.responseType,
-			testInput.responseStatusCode,
-			testInput.responseMessage,
-			responseResults,
-		),
+	if err == nil {
+		responseResults, _ = json.Marshal(mock.Achievements(achievementsSize))
 	}
+
+	return constructTest(AchievementsIndex, testInput, responseResults)
 }
