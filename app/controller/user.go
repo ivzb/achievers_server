@@ -17,21 +17,25 @@ func UserAuth(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	eml := r.FormValue(email)
-	pwd := r.FormValue(password)
+	auth := &model.User{}
+	err := env.Former.Map(r, auth)
 
-	if eml == "" {
+	if err != nil {
+		return response.BadRequest(err.Error())
+	}
+
+	if auth.Email == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, email))
 	}
 
-	if pwd == "" {
+	if auth.Password == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
-	uID, err := env.DB.UserAuth(eml, pwd)
+	uID, err := env.DB.UserAuth(auth.Email, auth.Password)
 
 	if err != nil {
-		return response.Unauthorized(unauthorized)
+		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	token, err := env.Tokener.Encrypt(uID)

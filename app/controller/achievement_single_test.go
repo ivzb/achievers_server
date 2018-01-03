@@ -100,7 +100,7 @@ func constructAchievementSingleTest(testInput *achievementSingleTest) *test {
 			constructForm(map[string]string{
 				id: testInput.formID,
 			}),
-			constructEnv(db, logger, nil),
+			constructEnv(db, logger, nil, nil),
 		),
 		response: constructTestResponse(
 			testInput.responseType,

@@ -5,22 +5,13 @@ import (
 )
 
 func TestAchievementsIndex(t *testing.T) {
-	for _, test := range achievementsIndexTests {
-		rec := constructRequest(t, test)
-		expect(t, rec, test)
-	}
+	run(t, achievementsIndexTests)
 }
 
 func TestAchievementSingle(t *testing.T) {
-	for _, test := range achievementSingleTests {
-		rec := constructRequest(t, test)
-		expect(t, rec, test)
-	}
+	run(t, achievementSingleTests)
 }
 
 func TestAchievementCreate(t *testing.T) {
-	for _, test := range achievementCreateTests {
-		rec := constructRequest(t, test)
-		expect(t, rec, test)
-	}
+	run(t, achievementCreateTests)
 }

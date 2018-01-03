@@ -191,7 +191,7 @@ func constructAchievementCreateTest(testInput *achievementCreateTest) *test {
 				pictureURL:    testInput.formPictureURL,
 				involvementID: testInput.formInvolvementID,
 			}),
-			constructEnv(db, logger, former),
+			constructEnv(db, logger, former, nil),
 		),
 		response: constructTestResponse(
 			testInput.responseType,

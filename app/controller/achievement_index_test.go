@@ -97,7 +97,7 @@ func constructAchievementsIndexTest(testInput *achievementsIndexTest) *test {
 		request: constructTestRequest(
 			testInput.requestMethod,
 			constructForm(map[string]string{page: testInput.formPage}),
-			constructEnv(db, logger, nil),
+			constructEnv(db, logger, nil, nil),
 		),
 		response: constructTestResponse(
 			testInput.responseType,

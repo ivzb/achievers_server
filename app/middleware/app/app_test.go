@@ -23,8 +23,8 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"decrypted", nil},
+		Tokener: &mock.Tokener{
+			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
 	}
 
@@ -53,8 +53,8 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		Tokener: &mock.Token{
-			DecryptedMock: mock.Decrypted{"decrypted", nil},
+		Tokener: &mock.Tokener{
+			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
 	}
 

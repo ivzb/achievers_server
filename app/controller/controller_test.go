@@ -36,6 +36,7 @@ var (
 	mockMultimediaTypeID = "5"
 	mockAchievementID    = "mock achievement_id"
 	mockInvolvementID    = "5"
+	mockEncrypt          = "mock encrypt"
 
 	mockDbErr     = errors.New("db error")
 	mockFormerErr = errors.New("former error")
@@ -67,6 +68,13 @@ type testResponse struct {
 	results    []byte
 }
 
+func run(t *testing.T, tests []*test) {
+	for _, test := range tests {
+		rec := constructRequest(t, test)
+		expect(t, rec, test)
+	}
+}
+
 func constructForm(m map[string]string) *url.Values {
 	form := &url.Values{}
 
@@ -77,11 +85,12 @@ func constructForm(m map[string]string) *url.Values {
 	return form
 }
 
-func constructEnv(db *mock.DB, logger *mock.Logger, former *mock.Former) *model.Env {
+func constructEnv(db *mock.DB, logger *mock.Logger, former *mock.Former, tokener *mock.Tokener) *model.Env {
 	return &model.Env{
-		DB:     db,
-		Logger: logger,
-		Former: former,
+		DB:      db,
+		Logger:  logger,
+		Former:  former,
+		Tokener: tokener,
 	}
 }
 
