@@ -5,9 +5,9 @@ import "time"
 type Evidence struct {
 	ID string `json:"id"`
 
-	Description string `json:"description"`
-	PreviewURL  string `json:"preview_url"`
-	URL         string `json:"url"`
+	Title      string `json:"title"`
+	PictureURL string `json:"picture_url"`
+	URL        string `json:"url"`
 
 	MultimediaTypeID uint8  `json:"multimedia_type_id"`
 	AchievementID    string `json:"achievement_id"`
@@ -27,14 +27,14 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 
 	evd.ID = id
 
-	row := db.QueryRow("SELECT `description`, `preview_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := db.QueryRow("SELECT `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM evidence "+
 		"WHERE id = ? "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
-		&evd.Description,
-		&evd.PreviewURL,
+		&evd.Title,
+		&evd.PictureURL,
 		&evd.URL,
 		&evd.MultimediaTypeID,
 		&evd.AchievementID,
@@ -53,7 +53,7 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 	offset := limit * page
 
-	rows, err := db.Query("SELECT `id`, `description`, `preview_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := db.Query("SELECT `id`, `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM evidence "+
 		"ORDER BY `created_at` DESC "+
 		"LIMIT ? OFFSET ?", limit, offset)
@@ -70,8 +70,8 @@ func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 		evd := new(Evidence)
 		err := rows.Scan(
 			&evd.ID,
-			&evd.Description,
-			&evd.PreviewURL,
+			&evd.Title,
+			&evd.PictureURL,
 			&evd.URL,
 			&evd.MultimediaTypeID,
 			&evd.AchievementID,
@@ -96,10 +96,10 @@ func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 
 // EvidenceCreate saves evidence object to db
 func (db *DB) EvidenceCreate(evidence *Evidence) (string, error) {
-	return create(db, `INSERT INTO evidence (id, description, preview_url, url, multimedia_type_id, achievement_id, author_id)
+	return create(db, `INSERT INTO evidence (id, title, picture_url, url, multimedia_type_id, achievement_id, author_id)
         VALUES(?, ?, ?, ?, ?, ?, ?)`,
-		evidence.Description,
-		evidence.PreviewURL,
+		evidence.Title,
+		evidence.PictureURL,
 		evidence.URL,
 		evidence.MultimediaTypeID,
 		evidence.AchievementID,

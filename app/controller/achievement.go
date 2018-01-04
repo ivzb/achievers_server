@@ -120,7 +120,7 @@ func AchievementCreate(
 	}
 
 	if !involvementExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, involvement))
+		return response.NotFound(fmt.Sprintf(formatNotFound, involvementID))
 	}
 
 	ach.AuthorID = env.UserId

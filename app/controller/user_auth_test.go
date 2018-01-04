@@ -52,6 +52,30 @@ var userAuthTests = []*test{
 		former:             &mock.Former{},
 	}),
 	constructUserAuthTest(&testInput{
+		purpose:            "user email exists db error",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    friendlyErrorMessage,
+		form:               userAuthForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
+		},
+	}),
+	constructUserAuthTest(&testInput{
+		purpose:            "user email does not exist",
+		requestMethod:      post,
+		responseType:       Core,
+		responseStatusCode: http.StatusNotFound,
+		responseMessage:    fmt.Sprintf(formatNotFound, email),
+		form:               userAuthForm(),
+		former:             &mock.Former{},
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+		},
+	}),
+	constructUserAuthTest(&testInput{
 		purpose:            "user auth db error",
 		requestMethod:      post,
 		responseType:       Core,
@@ -60,7 +84,8 @@ var userAuthTests = []*test{
 		form:               userAuthForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			UserAuthMock: mock.UserAuth{Err: mockDbErr},
+			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
+			UserAuthMock:        mock.UserAuth{Err: mockDbErr},
 		},
 	}),
 	constructUserAuthTest(&testInput{
@@ -72,7 +97,8 @@ var userAuthTests = []*test{
 		form:               userAuthForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			UserAuthMock: mock.UserAuth{ID: mockID},
+			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
+			UserAuthMock:        mock.UserAuth{ID: mockID},
 		},
 		tokener: &mock.Tokener{
 			EncryptMock: mock.Encrypt{Err: mockDbErr},
@@ -87,7 +113,8 @@ var userAuthTests = []*test{
 		form:               userAuthForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			UserAuthMock: mock.UserAuth{ID: mockID},
+			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
+			UserAuthMock:        mock.UserAuth{ID: mockID},
 		},
 		tokener: &mock.Tokener{
 			EncryptMock: mock.Encrypt{Enc: mockEncrypt},

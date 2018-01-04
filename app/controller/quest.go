@@ -9,7 +9,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func RewardsIndex(
+func QuestsIndex(
 	env *model.Env,
 	w http.ResponseWriter,
 	r *http.Request) response.Message {
@@ -18,7 +18,7 @@ func RewardsIndex(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	pg, err := strconv.Atoi(r.FormValue(page))
+	pg, err := strconv.Atoi(r.FormValue("page"))
 
 	if err != nil {
 		return response.BadRequest(fmt.Sprintf(formatMissing, page))
@@ -28,23 +28,23 @@ func RewardsIndex(
 		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
 	}
 
-	rwds, err := env.DB.RewardsAll(pg)
+	qsts, err := env.DB.QuestsAll(pg)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	if len(rwds) == 0 {
+	if len(qsts) == 0 {
 		return response.NotFound(fmt.Sprintf(formatNotFound, page))
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, rewards),
-		len(rwds),
-		rwds)
+		fmt.Sprintf(formatFound, quests),
+		len(qsts),
+		qsts)
 }
 
-func RewardSingle(
+func QuestSingle(
 	env *model.Env,
 	w http.ResponseWriter,
 	r *http.Request) response.Message {
@@ -53,35 +53,35 @@ func RewardSingle(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	rwdID := r.FormValue(id)
+	qstID := r.FormValue(id)
 
-	if rwdID == "" {
+	if qstID == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, id))
 	}
 
-	exists, err := env.DB.RewardExists(rwdID)
+	exists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, reward))
+		return response.NotFound(fmt.Sprintf(formatNotFound, quest))
 	}
 
-	rwd, err := env.DB.RewardSingle(rwdID)
+	qst, err := env.DB.QuestSingle(qstID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, reward),
+		fmt.Sprintf(formatFound, quest),
 		1,
-		rwd)
+		qst)
 }
 
-func RewardCreate(
+func QuestCreate(
 	env *model.Env,
 	w http.ResponseWriter,
 	r *http.Request) response.Message {
@@ -90,49 +90,59 @@ func RewardCreate(
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	rwd := &model.Reward{}
-	err := env.Former.Map(r, rwd)
+	qst := &model.Quest{}
+	err := env.Former.Map(r, qst)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
 	}
 
-	if rwd.Title == "" {
+	if qst.Title == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, title))
 	}
 
-	if rwd.Description == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, description))
-	}
-
-	if rwd.PictureURL == "" {
+	if qst.PictureURL == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, pictureURL))
 	}
 
-	if rwd.RewardTypeID == 0 {
-		return response.BadRequest(fmt.Sprintf(formatMissing, rewardTypeID))
+	if qst.InvolvementID == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, involvementID))
 	}
 
-	rewardTypeExists, err := env.DB.RewardTypeExists(rwd.RewardTypeID)
+	if qst.QuestTypeID == 0 {
+		return response.BadRequest(fmt.Sprintf(formatMissing, questTypeID))
+	}
+
+	involvementExists, err := env.DB.InvolvementExists(qst.InvolvementID)
 
 	if err != nil {
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	if !rewardTypeExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, rewardTypeID))
+	if !involvementExists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, involvementID))
 	}
 
-	rwd.AuthorID = env.UserId
+	questTypeExists, err := env.DB.QuestTypeExists(qst.QuestTypeID)
 
-	id, err := env.DB.RewardCreate(rwd)
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if !questTypeExists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, questTypeID))
+	}
+
+	qst.AuthorID = env.UserId
+
+	id, err := env.DB.QuestCreate(qst)
 
 	if err != nil || id == "" {
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatCreated, reward),
+		fmt.Sprintf(formatCreated, quest),
 		1,
 		id)
 }

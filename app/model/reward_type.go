@@ -1,11 +1,12 @@
 package model
 
 import (
+	"strconv"
 	"time"
 )
 
-type Involvement struct {
-	ID string `json:"id"`
+type RewardType struct {
+	ID uint8 `json:"id"`
 
 	Title string `json:"title"`
 
@@ -14,6 +15,6 @@ type Involvement struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func (db *DB) InvolvementExists(id string) (bool, error) {
-	return exists(db, "involvement", "id", id)
+func (db *DB) RewardTypeExists(id uint8) (bool, error) {
+	return exists(db, "reward_type", "id", strconv.FormatInt(int64(id), 10))
 }

@@ -8,17 +8,17 @@ import (
 	"github.com/ivzb/achievers_server/app/model/mock"
 )
 
-func achievementCreateForm() *map[string]string {
+func rewardCreateForm() *map[string]string {
 	return &map[string]string{
-		title:         mockTitle,
-		description:   mockDescription,
-		pictureURL:    mockPictureURL,
-		involvementID: mockInvolvementID,
+		title:        mockTitle,
+		description:  mockDescription,
+		pictureURL:   mockPictureURL,
+		rewardTypeID: mockRewardTypeID,
 	}
 }
 
-var achievementCreateTests = []*test{
-	constructAchievementCreateTest(&testInput{
+var rewardCreateTests = []*test{
+	constructRewardCreateTest(&testInput{
 		purpose:            "invalid request method",
 		requestMethod:      get,
 		responseType:       Core,
@@ -26,7 +26,7 @@ var achievementCreateTests = []*test{
 		responseMessage:    methodNotAllowed,
 		form:               &map[string]string{},
 	}),
-	constructAchievementCreateTest(&testInput{
+	constructRewardCreateTest(&testInput{
 		purpose:            "former error",
 		requestMethod:      post,
 		responseType:       Core,
@@ -35,95 +35,95 @@ var achievementCreateTests = []*test{
 		form:               &map[string]string{},
 		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
-	constructAchievementCreateTest(&testInput{
+	constructRewardCreateTest(&testInput{
 		purpose:            "missing form title",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
-		form:               mapWithout(achievementCreateForm(), title),
+		form:               mapWithout(rewardCreateForm(), title),
 		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&testInput{
+	constructRewardCreateTest(&testInput{
 		purpose:            "missing form description",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, description),
-		form:               mapWithout(achievementCreateForm(), description),
+		form:               mapWithout(rewardCreateForm(), description),
 		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&testInput{
+	constructRewardCreateTest(&testInput{
 		purpose:            "missing form picture_url",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
-		form:               mapWithout(achievementCreateForm(), pictureURL),
+		form:               mapWithout(rewardCreateForm(), pictureURL),
 		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&testInput{
-		purpose:            "missing form involvement_id",
+	constructRewardCreateTest(&testInput{
+		purpose:            "missing form reward_type_id",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
-		form:               mapWithout(achievementCreateForm(), involvementID),
+		responseMessage:    fmt.Sprintf(formatMissing, rewardTypeID),
+		form:               mapWithout(rewardCreateForm(), rewardTypeID),
 		former:             &mock.Former{},
 	}),
-	constructAchievementCreateTest(&testInput{
-		purpose:            "involvement exists db error",
+	constructRewardCreateTest(&testInput{
+		purpose:            "reward_type exists db error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		form:               achievementCreateForm(),
+		form:               rewardCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
+			RewardTypeExistsMock: mock.RewardTypeExists{Err: mockDbErr},
 		},
 	}),
-	constructAchievementCreateTest(&testInput{
-		purpose:            "involvement does not exist",
+	constructRewardCreateTest(&testInput{
+		purpose:            "reward_type does not exist",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
-		form:               achievementCreateForm(),
+		responseMessage:    fmt.Sprintf(formatNotFound, rewardTypeID),
+		form:               rewardCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
+			RewardTypeExistsMock: mock.RewardTypeExists{Bool: false},
 		},
 	}),
-	constructAchievementCreateTest(&testInput{
-		purpose:            "achievement create db error",
+	constructRewardCreateTest(&testInput{
+		purpose:            "reward create db error",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
-		form:               achievementCreateForm(),
+		form:               rewardCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			AchievementCreateMock: mock.AchievementCreate{Err: mockDbErr},
+			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
+			RewardCreateMock:     mock.RewardCreate{Err: mockDbErr},
 		},
 	}),
-	constructAchievementCreateTest(&testInput{
-		purpose:            "achievement create ok",
+	constructRewardCreateTest(&testInput{
+		purpose:            "reward create ok",
 		requestMethod:      post,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatCreated, achievement),
-		form:               achievementCreateForm(),
+		responseMessage:    fmt.Sprintf(formatCreated, reward),
+		form:               rewardCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			AchievementCreateMock: mock.AchievementCreate{ID: mockID},
+			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
+			RewardCreateMock:     mock.RewardCreate{ID: mockID},
 		},
 	}),
 }
 
-func constructAchievementCreateTest(testInput *testInput) *test {
+func constructRewardCreateTest(testInput *testInput) *test {
 	responseResults, _ := json.Marshal(mockID)
-	return constructTest(AchievementCreate, testInput, responseResults)
+	return constructTest(RewardCreate, testInput, responseResults)
 }

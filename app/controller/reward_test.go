@@ -11,3 +11,7 @@ func TestRewardsIndex(t *testing.T) {
 func TestRewardSingle(t *testing.T) {
 	run(t, rewardSingleTests)
 }
+
+func TestRewardCreate(t *testing.T) {
+	run(t, rewardCreateTests)
+}

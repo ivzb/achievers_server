@@ -10,8 +10,8 @@ import (
 
 func evidenceCreateForm() *map[string]string {
 	return &map[string]string{
-		description:      mockDescription,
-		previewURL:       mockPreviewURL,
+		title:            mockTitle,
+		pictureURL:       mockPictureURL,
 		_url:             mockURL,
 		multimediaTypeID: mockMultimediaTypeID,
 		achievementID:    mockAchievementID,
@@ -39,21 +39,21 @@ var evidenceCreateTests = []*test{
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
-		purpose:            "missing form description",
+		purpose:            "missing form title",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, description),
-		form:               mapWithout(evidenceCreateForm(), description),
+		responseMessage:    fmt.Sprintf(formatMissing, title),
+		form:               mapWithout(evidenceCreateForm(), title),
 		former:             &mock.Former{},
 	}),
 	constructEvidenceCreateTest(&testInput{
-		purpose:            "missing form preview_url",
+		purpose:            "missing form picture_url",
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, previewURL),
-		form:               mapWithout(evidenceCreateForm(), previewURL),
+		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
+		form:               mapWithout(evidenceCreateForm(), pictureURL),
 		former:             &mock.Former{},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -100,7 +100,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, multimediaType),
+		responseMessage:    fmt.Sprintf(formatNotFound, multimediaTypeID),
 		form:               evidenceCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{
@@ -125,7 +125,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      post,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, achievement),
+		responseMessage:    fmt.Sprintf(formatNotFound, achievementID),
 		form:               evidenceCreateForm(),
 		former:             &mock.Former{},
 		db: &mock.DB{

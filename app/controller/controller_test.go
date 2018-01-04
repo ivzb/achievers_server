@@ -25,18 +25,18 @@ var (
 	mockTitle            = "mock title"
 	mockDescription      = "mock description"
 	mockPictureURL       = "mock picture_url"
-	mockInovlvementID    = "mock involvement_id"
 	mockFirstName        = "mock first_name"
 	mockLastName         = "mock last_name"
 	mockEmail            = "mock email"
 	mockPassword         = "mock password"
 	mockToken            = "mock token"
-	mockPreviewURL       = "mock preview_url"
 	mockURL              = "mock url"
-	mockMultimediaTypeID = "5"
-	mockAchievementID    = "mock achievement_id"
-	mockInvolvementID    = "5"
 	mockEncrypt          = "mock encrypt"
+	mockAchievementID    = "mock achievement_id"
+	mockInvolvementID    = "mock_involvement_id"
+	mockRewardTypeID     = "5"
+	mockQuestTypeID      = "5"
+	mockMultimediaTypeID = "5"
 
 	mockDbErr     = errors.New("db error")
 	mockFormerErr = errors.New("former error")

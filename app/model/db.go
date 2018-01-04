@@ -33,9 +33,19 @@ type DBSource interface {
 	EvidencesAll(page int) ([]*Evidence, error)
 	EvidenceCreate(evidence *Evidence) (string, error)
 
+	QuestExists(id string) (bool, error)
+	QuestSingle(id string) (*Quest, error)
+	QuestsAll(page int) ([]*Quest, error)
+	QuestCreate(quest *Quest) (string, error)
+
+	QuestTypeExists(id uint8) (bool, error)
+
 	RewardExists(id string) (bool, error)
 	RewardSingle(id string) (*Reward, error)
 	RewardsAll(page int) ([]*Reward, error)
+	RewardCreate(reward *Reward) (string, error)
+
+	RewardTypeExists(id uint8) (bool, error)
 
 	InvolvementExists(id string) (bool, error)
 

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -32,9 +33,20 @@ func UserAuth(
 		return response.BadRequest(fmt.Sprintf(formatMissing, password))
 	}
 
+	exists, err := env.DB.UserEmailExists(auth.Email)
+
+	if err != nil {
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if !exists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, email))
+	}
+
 	uID, err := env.DB.UserAuth(auth.Email, auth.Password)
 
 	if err != nil {
+		log.Println(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 

@@ -70,6 +70,11 @@ func main() {
 
 	http.Handle("/reward", authChain(env, controller.RewardSingle))
 	http.Handle("/rewards", authChain(env, controller.RewardsIndex))
+	http.Handle("/reward/create", authChain(env, controller.RewardCreate))
+
+	http.Handle("/quest", authChain(env, controller.QuestSingle))
+	http.Handle("/quests", authChain(env, controller.QuestsIndex))
+	http.Handle("/quest/create", authChain(env, controller.QuestCreate))
 
 	http.ListenAndServe(":8080", nil)
 }

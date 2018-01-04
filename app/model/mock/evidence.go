@@ -6,6 +6,26 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
+type EvidenceExists struct {
+	Bool bool
+	Err  error
+}
+
+type EvidenceSingle struct {
+	Evd *model.Evidence
+	Err error
+}
+
+type EvidencesAll struct {
+	Evds []*model.Evidence
+	Err  error
+}
+
+type EvidenceCreate struct {
+	ID  string
+	Err error
+}
+
 func Evidences(size int) []*model.Evidence {
 	evds := make([]*model.Evidence, size)
 
@@ -31,4 +51,20 @@ func Evidence() *model.Evidence {
 	}
 
 	return evd
+}
+
+func (mock *DB) EvidenceExists(string) (bool, error) {
+	return mock.EvidenceExistsMock.Bool, mock.EvidenceExistsMock.Err
+}
+
+func (mock *DB) EvidenceSingle(id string) (*model.Evidence, error) {
+	return mock.EvidenceSingleMock.Evd, mock.EvidenceSingleMock.Err
+}
+
+func (mock *DB) EvidencesAll(page int) ([]*model.Evidence, error) {
+	return mock.EvidencesAllMock.Evds, mock.EvidencesAllMock.Err
+}
+
+func (mock *DB) EvidenceCreate(evidence *model.Evidence) (string, error) {
+	return mock.EvidenceCreateMock.ID, mock.EvidenceCreateMock.Err
 }

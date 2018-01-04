@@ -7,11 +7,12 @@ import (
 type Reward struct {
 	ID string `json:"id"`
 
-	Name        string `json:"name"`
+	Title       string `json:"title"`
 	Description string `json:"description"`
 	PictureURL  string `json:"picture_url"`
 
-	RewardTypeID uint8 `json:"reward_type_id"`
+	RewardTypeID uint8  `json:"reward_type_id"`
+	AuthorID     string `json:"author_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -27,16 +28,17 @@ func (db *DB) RewardSingle(id string) (*Reward, error) {
 
 	rwd.ID = id
 
-	row := db.QueryRow("SELECT `name`, `description`, `picture_url`, `reward_type_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := db.QueryRow("SELECT `title`, `description`, `picture_url`, `reward_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM reward "+
 		"WHERE id = ? "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
-		&rwd.Name,
+		&rwd.Title,
 		&rwd.Description,
 		&rwd.PictureURL,
 		&rwd.RewardTypeID,
+		&rwd.AuthorID,
 		&rwd.CreatedAt,
 		&rwd.UpdatedAt,
 		&rwd.DeletedAt)
@@ -51,7 +53,7 @@ func (db *DB) RewardSingle(id string) (*Reward, error) {
 func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 	offset := limit * page
 
-	rows, err := db.Query("SELECT `id`, `name`, `description`, `picture_url`, `reward_type_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `reward_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM reward "+
 		"ORDER BY `created_at` DESC "+
 		"LIMIT ? OFFSET ?", limit, offset)
@@ -68,10 +70,11 @@ func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 		rwd := new(Reward)
 		err := rows.Scan(
 			&rwd.ID,
-			&rwd.Name,
+			&rwd.Title,
 			&rwd.Description,
 			&rwd.PictureURL,
 			&rwd.RewardTypeID,
+			&rwd.AuthorID,
 			&rwd.CreatedAt,
 			&rwd.UpdatedAt,
 			&rwd.DeletedAt)
@@ -88,4 +91,14 @@ func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 	}
 
 	return rwds, nil
+}
+
+func (db *DB) RewardCreate(reward *Reward) (string, error) {
+	return create(db, `INSERT INTO reward(id, title, description, picture_url, reward_type_id, author_id)
+        VALUES(?, ?, ?, ?, ?, ?)`,
+		reward.Title,
+		reward.Description,
+		reward.PictureURL,
+		reward.RewardTypeID,
+		reward.AuthorID)
 }

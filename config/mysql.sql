@@ -38,7 +38,7 @@ CREATE TABLE user_status (
 CREATE TABLE involvement (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     
-    name VARCHAR(25) NOT NULL,
+    title VARCHAR(25) NOT NULL,
     
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -50,7 +50,7 @@ CREATE TABLE involvement (
 CREATE TABLE multimedia_type (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     
-    name VARCHAR(25) NOT NULL,
+    title VARCHAR(25) NOT NULL,
     
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -62,7 +62,19 @@ CREATE TABLE multimedia_type (
 CREATE TABLE reward_type (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     
-    name VARCHAR(25) NOT NULL,
+    title VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE quest_type (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    title VARCHAR(25) NOT NULL,
     
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -118,8 +130,8 @@ CREATE TABLE achievement (
 CREATE TABLE evidence (
     id VARCHAR(36) NOT NULL,
     
-    description VARCHAR(255) NOT NULL,
-    preview_url VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    picture_url VARCHAR(255) NOT NULL,
     url         VARCHAR(255) NOT NULL,
     
     multimedia_type_id TINYINT(1) UNSIGNED NOT NULL,
@@ -145,11 +157,12 @@ CREATE TABLE evidence (
 CREATE TABLE reward (
     id VARCHAR(36) NOT NULL,
     
-    name VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     picture_url VARCHAR(255) NOT NULL,
     
     reward_type_id TINYINT(1) UNSIGNED NOT NULL,
+    author_id      VARCHAR(36) NOT NULL,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -158,26 +171,64 @@ CREATE TABLE reward (
     CONSTRAINT `f_reward_type_id` FOREIGN KEY (`reward_type_id`)
         REFERENCES `reward_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
+    CONSTRAINT `f_reward_user` FOREIGN KEY (`author_id`) 
+        REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
     PRIMARY KEY (id)
 );
 
+CREATE TABLE quest (
+    id VARCHAR(36) NOT NULL,
+    
+    title VARCHAR(255) NOT NULL,
+    picture_url VARCHAR(255) NOT NULL,
+    
+    involvement_id TINYINT(1) UNSIGNED NOT NULL,
+    quest_type_id TINYINT(1) UNSIGNED NOT NULL,
+    author_id      VARCHAR(36) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+
+    CONSTRAINT `f_quest_involvement` FOREIGN KEY (`involvement_id`) 
+        REFERENCES `involvement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    
+    CONSTRAINT `f_quest_type_id` FOREIGN KEY (`quest_type_id`)
+        REFERENCES `quest_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_quest_user` FOREIGN KEY (`author_id`) 
+        REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    PRIMARY KEY (id)
+);
+
+/* *****************************************************************************
+// Seed tables
+// ****************************************************************************/
 INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
 (1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
 
-INSERT INTO `involvement` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `involvement` (`id`, `title`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'bronze',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'silver', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (3, 'gold', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (4, 'platinum', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (5, 'diamond', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
 
-INSERT INTO `multimedia_type` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `multimedia_type` (`id`, `title`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'photo',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'video', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (3, 'voice', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
 
-INSERT INTO `reward_type` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `reward_type` (`id`, `title`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'experience',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (2, 'item', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
 (3, 'title', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+
+INSERT INTO `quest_type` (`id`, `title`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'world',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'daily', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(3, 'weekly', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(4, 'monthly', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);

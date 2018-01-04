@@ -98,12 +98,12 @@ func EvidenceCreate(
 		return response.BadRequest(err.Error())
 	}
 
-	if evd.Description == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, description))
+	if evd.Title == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, title))
 	}
 
-	if evd.PreviewURL == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, previewURL))
+	if evd.PictureURL == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, pictureURL))
 	}
 
 	if evd.URL == "" {
@@ -125,7 +125,7 @@ func EvidenceCreate(
 	}
 
 	if !multimediaTypeExist {
-		return response.NotFound(fmt.Sprintf(formatNotFound, multimediaType))
+		return response.NotFound(fmt.Sprintf(formatNotFound, multimediaTypeID))
 	}
 
 	achievementExist, err := env.DB.AchievementExists(evd.AchievementID)
@@ -135,7 +135,7 @@ func EvidenceCreate(
 	}
 
 	if !achievementExist {
-		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
+		return response.NotFound(fmt.Sprintf(formatNotFound, achievementID))
 	}
 
 	evd.AuthorID = env.UserId
