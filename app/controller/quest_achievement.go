@@ -8,28 +8,31 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func QuestAchievementSingle(
+func QuestAchievementCreate(
 	env *model.Env,
 	w http.ResponseWriter,
 	r *http.Request) response.Message {
 
-	if r.Method != "GET" {
+	if r.Method != "POST" {
 		return response.MethodNotAllowed(methodNotAllowed)
 	}
 
-	qstID := r.FormValue(questID)
+	qstAch := &model.QuestAchievement{}
+	err := env.Former.Map(r, qstAch)
 
-	if len(qstID) == 0 {
+	if err != nil {
+		return response.BadRequest(err.Error())
+	}
+
+	if qstAch.QuestID == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, questID))
 	}
 
-	achID := r.FormValue(achievementID)
-
-	if len(achID) == 0 {
+	if qstAch.AchievementID == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, achievementID))
 	}
 
-	qstExists, err := env.DB.QuestExists(qstID)
+	qstExists, err := env.DB.QuestExists(qstAch.QuestID)
 
 	if err != nil {
 		env.Logger.Error(err)
@@ -40,7 +43,7 @@ func QuestAchievementSingle(
 		return response.NotFound(fmt.Sprintf(formatNotFound, questID))
 	}
 
-	achExists, err := env.DB.AchievementExists(achID)
+	achExists, err := env.DB.AchievementExists(qstAch.AchievementID)
 
 	if err != nil {
 		env.Logger.Error(err)
@@ -51,26 +54,28 @@ func QuestAchievementSingle(
 		return response.NotFound(fmt.Sprintf(formatNotFound, achievementID))
 	}
 
-	exists, err := env.DB.QuestAchievementExists(qstID, achID)
+	achQstExists, err := env.DB.QuestAchievementExists(qstAch.QuestID, qstAch.AchievementID)
 
 	if err != nil {
 		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
-	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, questAchievement))
+	if achQstExists {
+		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, questAchievement))
 	}
 
-	qstAch, err := env.DB.QuestAchievementSingle(qstID, achID)
+	qstAch.AuthorID = env.UserId
 
-	if err != nil {
+	id, err := env.DB.QuestAchievementCreate(qstAch)
+
+	if err != nil || id == "" {
 		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, questAchievement),
+		fmt.Sprintf(formatCreated, questAchievement),
 		1,
-		qstAch)
+		id)
 }

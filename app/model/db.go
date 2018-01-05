@@ -42,7 +42,7 @@ type DBSource interface {
 	QuestTypeExists(id uint8) (bool, error)
 
 	QuestAchievementExists(questID string, achievementID string) (bool, error)
-	QuestAchievementSingle(questID string, achievemenetID string) (*QuestAchievement, error)
+	QuestAchievementCreate(qstAch *QuestAchievement) (string, error)
 
 	RewardExists(id string) (bool, error)
 	RewardSingle(id string) (*Reward, error)

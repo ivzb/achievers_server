@@ -76,7 +76,7 @@ func main() {
 	http.Handle("/quests", authChain(env, controller.QuestsIndex))
 	http.Handle("/quest/create", authChain(env, controller.QuestCreate))
 
-	http.Handle("/quest_achievement", authChain(env, controller.QuestAchievementSingle))
+	http.Handle("/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
 
 	http.ListenAndServe(":8080", nil)
 }

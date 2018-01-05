@@ -64,6 +64,6 @@ func (mock *DB) QuestsAll(page int) ([]*model.Quest, error) {
 	return mock.QuestsAllMock.Qsts, mock.QuestsAllMock.Err
 }
 
-func (mock *DB) QuestCreate(reward *model.Quest) (string, error) {
+func (mock *DB) QuestCreate(quest *model.Quest) (string, error) {
 	return mock.QuestCreateMock.ID, mock.QuestCreateMock.Err
 }

@@ -102,9 +102,6 @@ source {path_to_sql_script}
 ```
 
 ## TODO
-1. quest_achievement controller
-    1. create quest_achievement
-    2. get achievements by quest_id
-    3. get quests by achievement_id
+1. get achievements by quest_id
 2. extract common controller functionalities which return plain Result
 

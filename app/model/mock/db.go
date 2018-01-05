@@ -31,7 +31,7 @@ type DB struct {
 	QuestTypeExistsMock QuestTypeExists
 
 	QuestAchievementExistsMock QuestAchievementExists
-	QuestAchievementSingleMock QuestAchievementSingle
+	QuestAchievementCreateMock QuestAchievementCreate
 
 	InvolvementExistsMock InvolvementExists
 

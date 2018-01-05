@@ -11,9 +11,9 @@ type QuestAchievementExists struct {
 	Err  error
 }
 
-type QuestAchievementSingle struct {
-	QstAch *model.QuestAchievement
-	Err    error
+type QuestAchievementCreate struct {
+	ID  string
+	Err error
 }
 
 func QuestAchievements(size int) []*model.QuestAchievement {
@@ -44,6 +44,6 @@ func (mock *DB) QuestAchievementExists(string, string) (bool, error) {
 	return mock.QuestAchievementExistsMock.Bool, mock.QuestAchievementExistsMock.Err
 }
 
-func (mock *DB) QuestAchievementSingle(string, string) (*model.QuestAchievement, error) {
-	return mock.QuestAchievementSingleMock.QstAch, mock.QuestAchievementSingleMock.Err
+func (mock *DB) QuestAchievementCreate(questAchievement *model.QuestAchievement) (string, error) {
+	return mock.QuestAchievementCreateMock.ID, mock.QuestAchievementCreateMock.Err
 }
