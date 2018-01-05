@@ -21,6 +21,11 @@ type AchievementsAll struct {
 	Err  error
 }
 
+type AchievementsByQuestID struct {
+	Achs []*model.Achievement
+	Err  error
+}
+
 type AchievementCreate struct {
 	ID  string
 	Err error
@@ -62,6 +67,10 @@ func (mock *DB) AchievementSingle(id string) (*model.Achievement, error) {
 
 func (mock *DB) AchievementsAll(page int) ([]*model.Achievement, error) {
 	return mock.AchievementsAllMock.Achs, mock.AchievementsAllMock.Err
+}
+
+func (mock *DB) AchievementsByQuestID(questID string, page int) ([]*model.Achievement, error) {
+	return mock.AchievementsByQuestIDMock.Achs, mock.AchievementsByQuestIDMock.Err
 }
 
 func (mock *DB) AchievementCreate(achievement *model.Achievement) (string, error) {

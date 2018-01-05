@@ -31,6 +31,60 @@ func AchievementsIndex(
 	achs, err := env.DB.AchievementsAll(pg)
 
 	if err != nil {
+		env.Logger.Error(err)
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if len(achs) == 0 {
+		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+	}
+
+	return response.Ok(
+		fmt.Sprintf(formatFound, achievements),
+		len(achs),
+		achs)
+}
+
+func AchievementsByQuestID(
+	env *model.Env,
+	w http.ResponseWriter,
+	r *http.Request) response.Message {
+
+	if r.Method != "GET" {
+		return response.MethodNotAllowed(methodNotAllowed)
+	}
+
+	pg, err := strconv.Atoi(r.FormValue(page))
+
+	if err != nil {
+		return response.BadRequest(fmt.Sprintf(formatMissing, page))
+	}
+
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+	}
+
+	qstID := r.FormValue(id)
+
+	if qstID == "" {
+		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	}
+
+	qstExists, err := env.DB.QuestExists(qstID)
+
+	if err != nil {
+		env.Logger.Error(err)
+		return response.InternalServerError(friendlyErrorMessage)
+	}
+
+	if !qstExists {
+		return response.NotFound(fmt.Sprintf(formatNotFound, id))
+	}
+
+	achs, err := env.DB.AchievementsByQuestID(qstID, pg)
+
+	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -62,6 +116,7 @@ func AchievementSingle(
 	exists, err := env.DB.AchievementExists(achid)
 
 	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -72,6 +127,7 @@ func AchievementSingle(
 	ach, err := env.DB.AchievementSingle(achid)
 
 	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -116,6 +172,7 @@ func AchievementCreate(
 	involvementExists, err := env.DB.InvolvementExists(ach.InvolvementID)
 
 	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 

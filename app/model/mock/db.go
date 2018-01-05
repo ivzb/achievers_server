@@ -6,10 +6,11 @@ type DB struct {
 	UserCreateMock      UserCreate
 	UserAuthMock        UserAuth
 
-	AchievementExistsMock AchievementExists
-	AchievementSingleMock AchievementSingle
-	AchievementsAllMock   AchievementsAll
-	AchievementCreateMock AchievementCreate
+	AchievementExistsMock     AchievementExists
+	AchievementSingleMock     AchievementSingle
+	AchievementsAllMock       AchievementsAll
+	AchievementsByQuestIDMock AchievementsByQuestID
+	AchievementCreateMock     AchievementCreate
 
 	EvidenceExistsMock EvidenceExists
 	EvidenceSingleMock EvidenceSingle

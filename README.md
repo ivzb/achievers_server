@@ -29,14 +29,27 @@ To create a user, send a POST request to http://localhost/user with the followin
 The following endpoints are available:
 
 ```
-* POST   http://localhost/auth       - Retrieve an access token
+* POST   /user/auth       - Retrieve an access token
+* POST   /user/create      - Create a new user
 
-* POST   http://localhost/users		 - Create a new user
-* GET	 http://localhost/users/{id} - Retrieve a user by ID
-* GET	 http://localhost/users 	 - Retrieve a list of all users
-* PUT	 http://localhost/users/{id} - Update a user by ID
-* DELETE http://localhost/users/{id} - Delete a user by ID
-* DELETE http://localhost/users		 - Delete all users
+* GET	 /achievement?id= - Retrieve an achievement by ID
+* GET	 /achievements?page= - Retrieve achievements by page
+* GET    /achievements/quest?id=&page= - Retrieve achievements by quest_id and page
+* POST   /achievement/create - Create a new achievement
+
+* GET	 /evidence?id= - Retrieve an evidence by ID
+* GET	 /evidences?page= - Retrieve evidences by page
+* POST   /evidence/create - Create a new evidence 
+
+* GET	 /reward?id= - Retrieve a reward by ID
+* GET	 /rewards?page= - Retrieve rewards by page
+* POST   /reward/create - Create a new reward 
+
+* GET	 /quest?id= - Retrieve a quest by ID
+* GET	 /quests?page= - Retrieve quests by page
+* POST   /quest/create - Create a new quest 
+
+* POST   /quest_achievement/create - Create a new quest_achievement
 ```
 
 ## Rules for Consistency
@@ -77,13 +90,13 @@ Rules for messages:
 Run all tests
 
 ```
-go test ./vendor/app/...
+go test ./... -cover
 ```
 
 Run specific package tests with coverage
 
 ```
-go test ./vendor/app/controller -coverprofile=coverage.out
+go test ./app/controller -coverprofile=coverage.out
 ```
 
 View coverage result in html
@@ -96,12 +109,12 @@ go tool cover -html=coverage.out
 
 Create database via executing sql script in mysql
 It is localted in /config/mysql.sql
+Enter mysql and execute
 
 ```
 source {path_to_sql_script}
 ```
 
 ## TODO
-1. get achievements by quest_id
-2. extract common controller functionalities which return plain Result
+1. extract common controller functionalities which return plain Result
 

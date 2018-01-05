@@ -8,6 +8,10 @@ func TestAchievementsIndex(t *testing.T) {
 	run(t, achievementsIndexTests)
 }
 
+func TestAchievementsByQuestID(t *testing.T) {
+	run(t, achievementsByQuestIDTests)
+}
+
 func TestAchievementSingle(t *testing.T) {
 	run(t, achievementSingleTests)
 }

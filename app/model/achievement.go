@@ -50,6 +50,52 @@ func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 	return ach, nil
 }
 
+func (db *DB) AchievementsByQuestID(questID string, page int) ([]*Achievement, error) {
+	offset := limit * page
+
+	rows, err := db.Query("SELECT `a`.`id`, `a`.`title`, `a`.`description`, `a`.`picture_url`, `a`.`involvement_id`, `a`.`author_id`, `a`.`created_at`, `a`.`updated_at`, `a`.`deleted_at` "+
+		"FROM achievement AS a "+
+		"INNER JOIN quest_achievement as qa "+
+		"ON a.id = qa.achievement_id "+
+		"WHERE qa.quest_id = ? "+
+		"ORDER BY `a`.`created_at` DESC "+
+		"LIMIT ? OFFSET ?", questID, limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	achs := make([]*Achievement, 0)
+
+	for rows.Next() {
+		ach := new(Achievement)
+		err := rows.Scan(
+			&ach.ID,
+			&ach.Title,
+			&ach.Description,
+			&ach.PictureURL,
+			&ach.InvolvementID,
+			&ach.AuthorID,
+			&ach.CreatedAt,
+			&ach.UpdatedAt,
+			&ach.DeletedAt)
+
+		if err != nil {
+			return nil, err
+		}
+
+		achs = append(achs, ach)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return achs, nil
+}
+
 func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
 	offset := limit * page
 

@@ -27,6 +27,7 @@ type DBSource interface {
 	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)
+	AchievementsByQuestID(questID string, page int) ([]*Achievement, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
 	EvidenceExists(id string) (bool, error)
