@@ -87,18 +87,18 @@ CREATE TABLE user (
     id VARCHAR(36) NOT NULL,
     
     first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    password CHAR(60) NOT NULL,
+    last_name  VARCHAR(50) NOT NULL,
+    email      VARCHAR(100) NOT NULL,
+    password   CHAR(60) NOT NULL,
     
-    status_id TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+    user_status_id TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT 0,
     
     UNIQUE KEY (email),
-    CONSTRAINT `f_user_status` FOREIGN KEY (`status_id`)
+    CONSTRAINT `f_user__user_status` FOREIGN KEY (`user_status_id`)
         REFERENCES `user_status` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
     PRIMARY KEY (id)
@@ -118,10 +118,10 @@ CREATE TABLE achievement (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT 0,
     
-    CONSTRAINT `f_achievement_involvement` FOREIGN KEY (`involvement_id`) 
+    CONSTRAINT `f_achievement__involvement` FOREIGN KEY (`involvement_id`) 
         REFERENCES `involvement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
-    CONSTRAINT `f_achievement_user` FOREIGN KEY (`author_id`) 
+    CONSTRAINT `f_achievement__user` FOREIGN KEY (`author_id`) 
         REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
     PRIMARY KEY (id)
@@ -142,13 +142,13 @@ CREATE TABLE evidence (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT 0,
     
-    CONSTRAINT `f_evidence_multimedia_type_id` FOREIGN KEY (`multimedia_type_id`)
+    CONSTRAINT `f_evidence__multimedia_type` FOREIGN KEY (`multimedia_type_id`)
         REFERENCES `multimedia_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
-    CONSTRAINT `f_evidence_achievement` FOREIGN KEY (`achievement_id`) 
+    CONSTRAINT `f_evidence__achievement` FOREIGN KEY (`achievement_id`) 
         REFERENCES `achievement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
-    CONSTRAINT `f_evidence_user` FOREIGN KEY (`author_id`) 
+    CONSTRAINT `f_evidence__user` FOREIGN KEY (`author_id`) 
         REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
     PRIMARY KEY (id)
@@ -168,10 +168,10 @@ CREATE TABLE reward (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT 0,
     
-    CONSTRAINT `f_reward_type_id` FOREIGN KEY (`reward_type_id`)
+    CONSTRAINT `f_reward__reward_type` FOREIGN KEY (`reward_type_id`)
         REFERENCES `reward_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
-    CONSTRAINT `f_reward_user` FOREIGN KEY (`author_id`) 
+    CONSTRAINT `f_reward__user` FOREIGN KEY (`author_id`) 
         REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
     PRIMARY KEY (id)
@@ -191,13 +191,36 @@ CREATE TABLE quest (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT 0,
 
-    CONSTRAINT `f_quest_involvement` FOREIGN KEY (`involvement_id`) 
+    CONSTRAINT `f_quest__involvement` FOREIGN KEY (`involvement_id`) 
         REFERENCES `involvement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     
-    CONSTRAINT `f_quest_type_id` FOREIGN KEY (`quest_type_id`)
+    CONSTRAINT `f_quest__quest_type` FOREIGN KEY (`quest_type_id`)
         REFERENCES `quest_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
-    CONSTRAINT `f_quest_user` FOREIGN KEY (`author_id`) 
+    CONSTRAINT `f_quest__user` FOREIGN KEY (`author_id`) 
+        REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE quest_achievement (
+    id VARCHAR(36) NOT NULL,
+    
+    quest_id       VARCHAR(36) NOT NULL,
+    achievement_id VARCHAR(36) NOT NULL,
+    author_id      VARCHAR(36) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+
+    CONSTRAINT `f_quest_achievement__quest` FOREIGN KEY (`quest_id`) 
+        REFERENCES `quest` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_quest_achievement__achievement` FOREIGN KEY (`achievement_id`) 
+        REFERENCES `achievement` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+
+    CONSTRAINT `f_quest_achievement__user` FOREIGN KEY (`author_id`) 
         REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 
     PRIMARY KEY (id)

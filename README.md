@@ -100,3 +100,12 @@ It is localted in /config/mysql.sql
 ```
 source {path_to_sql_script}
 ```
+
+## TODO
+1. quest_achievement controller
+    1. create quest_achievement
+    2. get achievements by quest_id
+    3. get quests by achievement_id
+2. logger - add log error method
+3. extract common controller functionalities which return plain Result
+

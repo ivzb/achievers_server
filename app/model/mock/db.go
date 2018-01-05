@@ -30,6 +30,9 @@ type DB struct {
 
 	QuestTypeExistsMock QuestTypeExists
 
+	QuestAchievementExistsMock QuestAchievementExists
+	QuestAchievementSingleMock QuestAchievementSingle
+
 	InvolvementExistsMock InvolvementExists
 
 	MultimediaTypeExistsMock MultimediaTypeExists

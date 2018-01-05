@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/ivzb/achievers_server/app/shared/database"
 
@@ -39,6 +40,9 @@ type DBSource interface {
 	QuestCreate(quest *Quest) (string, error)
 
 	QuestTypeExists(id uint8) (bool, error)
+
+	QuestAchievementExists(questID string, achievementID string) (bool, error)
+	QuestAchievementSingle(questID string, achievemenetID string) (*QuestAchievement, error)
 
 	RewardExists(id string) (bool, error)
 	RewardSingle(id string) (*Reward, error)
@@ -87,7 +91,8 @@ func (db *DB) UUID() (string, error) {
 
 // exists checks whether row in specified table exists by column and value
 func exists(db *DB, table string, column string, value string) (bool, error) {
-	stmt, err := db.Prepare("SELECT COUNT(id) FROM " + table + " WHERE " + column + " = ? LIMIT 1")
+	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s = ? LIMIT 1", table, column)
+	stmt, err := db.Prepare(query)
 
 	if err != nil {
 		return false, err
@@ -101,6 +106,45 @@ func exists(db *DB, table string, column string, value string) (bool, error) {
 	}
 
 	return count != 0, nil
+}
+
+// existsMultiple checks whether row in specified table exists by []columns and []values
+func existsMultiple(db *DB, table string, columns []string, values []string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s LIMIT 1", table, whereClause(columns))
+	stmt, err := db.Prepare(query)
+
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = stmt.QueryRow(scanArgs(values)...).Scan(&count)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count != 0, nil
+}
+
+func scanArgs(values []string) []interface{} {
+	scanArgs := make([]interface{}, len(values))
+
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	return scanArgs
+}
+
+func whereClause(columns []string) string {
+	placeholders := make([]string, 0, len(columns))
+
+	for _, column := range columns {
+		placeholders = append(placeholders, column+" = ?")
+	}
+
+	return strings.Join(placeholders, " AND ")
 }
 
 // create executes passed query and args
