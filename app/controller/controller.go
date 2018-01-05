@@ -45,4 +45,6 @@ const (
 	questTypeID      = "quest_type_id"
 	experience       = "experience"
 	questAchievement = "quest_achievement"
+	home             = "home"
+	welcome          = "welcome"
 )

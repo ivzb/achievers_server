@@ -29,6 +29,8 @@ To create a user, send a POST request to http://localhost/user with the followin
 The following endpoints are available:
 
 ```
+* GET	 / - Retrieve an welcome message
+
 * POST   /user/auth       - Retrieve an access token
 * POST   /user/create      - Create a new user
 
