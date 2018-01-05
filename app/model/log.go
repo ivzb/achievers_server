@@ -5,7 +5,8 @@ import (
 )
 
 type Logger interface {
-	Log(string) error
+	Message(string)
+	Error(error)
 }
 
 type Log struct {
@@ -15,7 +16,10 @@ func NewLogger() *Log {
 	return &Log{}
 }
 
-func (log *Log) Log(value string) error {
-	l.Println(value)
-	return nil
+func (log *Log) Message(message string) {
+	l.Println(message)
+}
+
+func (log *Log) Error(err error) {
+	l.Println(err.Error())
 }

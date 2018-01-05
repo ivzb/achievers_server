@@ -55,7 +55,7 @@ func main() {
 		Former:  form,
 	}
 
-	log.Log("started@:8080")
+	log.Message("started@:8080")
 
 	http.Handle("/users/auth", anonChain(env, controller.UserAuth))
 	http.Handle("/users/create", anonChain(env, controller.UserCreate))

@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,9 +21,7 @@ func TestLoggerHandler_Log(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		Logger: &mock.Logger{
-			LogMock: mock.Log{E: nil},
-		},
+		Logger: &mock.Logger{},
 	}
 
 	appHandler := app.Handler{Env: env, H: testHandler}
@@ -41,37 +38,6 @@ func TestLoggerHandler_Log(t *testing.T) {
 
 	// Check the response body is what we expect.
 	expected := `{"status":200,"message":"ok","results":"OK"}`
-	if rec.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rec.Body.String(), expected)
-	}
-}
-
-func TestLoggerHandler_Error(t *testing.T) {
-	req := httptest.NewRequest("GET", "/logger", nil)
-
-	rec := httptest.NewRecorder()
-
-	env := &model.Env{
-		Logger: &mock.Logger{
-			LogMock: mock.Log{E: errors.New("logger error")},
-		},
-	}
-
-	appHandler := app.Handler{Env: env, H: testHandler}
-
-	var handler http.Handler = Handler(appHandler)
-
-	handler.ServeHTTP(rec, req)
-
-	// Check the status code is what we expect.
-	if status := rec.Code; status != http.StatusInternalServerError {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusInternalServerError)
-	}
-
-	// Check the response body is what we expect.
-	expected := `{"status":500,"message":"an error occurred, please try again later"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

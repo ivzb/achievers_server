@@ -18,12 +18,8 @@ func Handler(handler app.Handler) app.Handler {
 	prevH := handler.H
 
 	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
-		log := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
-		err := handler.Env.Logger.Log(log)
-
-		if err != nil {
-			return response.InternalServerError(friendlyError)
-		}
+		message := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+		handler.Env.Logger.Message(message)
 
 		return prevH(env, w, r)
 	}

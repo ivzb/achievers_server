@@ -32,6 +32,7 @@ func QuestAchievementSingle(
 	qstExists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -42,6 +43,7 @@ func QuestAchievementSingle(
 	achExists, err := env.DB.AchievementExists(achID)
 
 	if err != nil {
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -52,7 +54,7 @@ func QuestAchievementSingle(
 	exists, err := env.DB.QuestAchievementExists(qstID, achID)
 
 	if err != nil {
-		env.Logger.Log(err.Error())
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
@@ -63,7 +65,7 @@ func QuestAchievementSingle(
 	qstAch, err := env.DB.QuestAchievementSingle(qstID, achID)
 
 	if err != nil {
-		env.Logger.Log(err.Error())
+		env.Logger.Error(err)
 		return response.InternalServerError(friendlyErrorMessage)
 	}
 
