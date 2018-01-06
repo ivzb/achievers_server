@@ -10,11 +10,11 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+func testHandler(env *model.Env, r *http.Request) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
-func jsonErrorHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+func jsonErrorHandler(env *model.Env, r *http.Request) *response.Message {
 	return &response.Message{http.StatusOK, func() {}}
 }
 
@@ -28,9 +28,9 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 		},
 	}
 
-	appHandler := Handler{env, testHandler}
+	app := App{env, testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = App(app)
 
 	handler.ServeHTTP(rr, req)
 
@@ -58,9 +58,9 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 		},
 	}
 
-	appHandler := Handler{env, jsonErrorHandler}
+	app := App{env, jsonErrorHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = App(app)
 
 	handler.ServeHTTP(rr, req)
 

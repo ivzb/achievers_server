@@ -11,7 +11,6 @@ import (
 
 func QuestsIndex(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -46,7 +45,6 @@ func QuestsIndex(
 
 func QuestSingle(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -83,7 +81,6 @@ func QuestSingle(
 
 func QuestCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {

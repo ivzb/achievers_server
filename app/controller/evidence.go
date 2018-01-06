@@ -12,7 +12,6 @@ import (
 
 func EvidencesIndex(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -47,7 +46,6 @@ func EvidencesIndex(
 
 func EvidenceSingle(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -84,7 +82,6 @@ func EvidenceSingle(
 
 func EvidenceCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {

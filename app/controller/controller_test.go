@@ -47,7 +47,7 @@ var (
 
 type test struct {
 	purpose  string
-	handle   app.Handle
+	handler  app.Handler
 	request  *testRequest
 	response *testResponse
 }
@@ -124,8 +124,8 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	req.Header = http.Header{}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	appHandler := app.Handler{test.request.env, test.handle}
-	appHandler.ServeHTTP(rec, req)
+	app := app.App{test.request.env, test.handler}
+	app.ServeHTTP(rec, req)
 
 	actualStatusCode := rec.Code
 	expectedStatusCode := test.response.statusCode
@@ -138,10 +138,10 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	return rec
 }
 
-func constructTest(handle app.Handle, testInput *testInput, responseResults []byte) *test {
+func constructTest(handler app.Handler, testInput *testInput, responseResults []byte) *test {
 	return &test{
 		purpose: testInput.purpose,
-		handle:  handle,
+		handler: handler,
 		request: constructTestRequest(
 			testInput.requestMethod,
 			constructForm(testInput.form),

@@ -14,15 +14,15 @@ const (
 )
 
 // Handler will log the HTTP requests
-func Handler(handler app.Handler) app.Handler {
-	prevH := handler.H
+func Handler(app app.App) app.App {
+	prevHandler := app.Handler
 
-	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+	app.Handler = func(env *model.Env, r *http.Request) *response.Message {
 		message := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
-		handler.Env.Log.Message(message)
+		app.Env.Log.Message(message)
 
-		return prevH(env, w, r)
+		return prevHandler(env, r)
 	}
 
-	return handler
+	return app
 }

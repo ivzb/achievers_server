@@ -11,7 +11,6 @@ import (
 
 func RewardsIndex(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -46,7 +45,6 @@ func RewardsIndex(
 
 func RewardSingle(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
@@ -83,7 +81,6 @@ func RewardSingle(
 
 func RewardCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {

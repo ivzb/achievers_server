@@ -11,7 +11,6 @@ import (
 
 func AchievementsIndex(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if !request.Is(r, GET) {
@@ -43,7 +42,6 @@ func AchievementsIndex(
 
 func AchievementsByQuestID(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if !request.Is(r, GET) {
@@ -88,7 +86,6 @@ func AchievementsByQuestID(
 
 func AchievementSingle(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if !request.Is(r, GET) {
@@ -125,7 +122,6 @@ func AchievementSingle(
 
 func AchievementCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if !request.Is(r, POST) {

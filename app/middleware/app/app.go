@@ -8,15 +8,15 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-type Handle func(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message
+type Handler func(env *model.Env, r *http.Request) *response.Message
 
-type Handler struct {
-	Env *model.Env
-	H   Handle
+type App struct {
+	Env     *model.Env
+	Handler Handler
 }
 
-func (fn Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	response := fn.H(fn.Env, w, r)
+func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	response := app.Handler(app.Env, r)
 
 	js, err := json.Marshal(response.Result)
 

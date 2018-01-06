@@ -18,23 +18,23 @@ const (
 )
 
 // Handler will authorize HTTP requests
-func Handler(handler app.Handler) app.Handler {
-	prevH := handler.H
+func Handler(app app.App) app.App {
+	prevHandler := app.Handler
 
-	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+	app.Handler = func(env *model.Env, r *http.Request) *response.Message {
 		at, err := request.GetHeader(r, authTokenHeader)
 
 		if err != nil {
 			return response.Unauthorized(authTokenMissing)
 		}
 
-		uID, err := handler.Env.Token.Decrypt(at)
+		uID, err := app.Env.Token.Decrypt(at)
 
 		if err != nil {
 			return response.Unauthorized(authTokenInvalid)
 		}
 
-		exists, err := handler.Env.DB.UserExists(uID)
+		exists, err := app.Env.DB.UserExists(uID)
 		if err != nil {
 			return response.Unauthorized(authTokenInvalid)
 		}
@@ -43,10 +43,10 @@ func Handler(handler app.Handler) app.Handler {
 			return response.Unauthorized(authTokenInvalid)
 		}
 
-		handler.Env.UserId = uID
+		app.Env.UserId = uID
 
-		return prevH(env, w, r)
+		return prevHandler(env, r)
 	}
 
-	return handler
+	return app
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+func testHandler(env *model.Env, r *http.Request) *response.Message {
 	return response.Created("auth_token", "auth token here")
 }
 
@@ -31,9 +31,9 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 		},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rr, req)
 
@@ -61,9 +61,9 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 		Token: &mock.Tokener{},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rr, req)
 
@@ -94,9 +94,9 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 		},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rec, req)
 
@@ -129,9 +129,9 @@ func TestAuthHandler_DBError(t *testing.T) {
 		},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rec, req)
 
@@ -164,9 +164,9 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 		},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rec, req)
 

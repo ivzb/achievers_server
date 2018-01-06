@@ -11,7 +11,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+func testHandler(env *model.Env, r *http.Request) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
@@ -24,9 +24,9 @@ func TestLoggerHandler_Log(t *testing.T) {
 		Log: &mock.Logger{},
 	}
 
-	appHandler := app.Handler{Env: env, H: testHandler}
+	app := app.App{Env: env, Handler: testHandler}
 
-	var handler http.Handler = Handler(appHandler)
+	var handler http.Handler = Handler(app)
 
 	handler.ServeHTTP(rec, req)
 

@@ -84,20 +84,21 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func authChain(env *model.Env, handler app.Handle) http.Handler {
-	return use(app.Handler{env, handler}, auth.Handler, logger.Handler)
+func authChain(env *model.Env, handler app.Handler) http.Handler {
+	return use(app.App{env, handler}, auth.Handler, logger.Handler)
 }
 
-func anonChain(env *model.Env, handler app.Handle) http.Handler {
-	return use(app.Handler{env, handler}, logger.Handler)
+func anonChain(env *model.Env, handler app.Handler) http.Handler {
+	return use(app.App{env, handler}, logger.Handler)
 }
 
 // specify middlewares in reverse order since it is chaining them recursively
-func use(appHandler app.Handler, middlewares ...func(app.Handler) app.Handler) http.Handler {
+func use(app app.App, middlewares ...func(app.App) app.App) http.Handler {
 	for _, middleware := range middlewares {
-		appHandler = middleware(appHandler)
+		app = middleware(app)
 	}
-	var handler http.Handler = appHandler
+
+	var handler http.Handler = app
 
 	return handler
 }

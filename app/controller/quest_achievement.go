@@ -10,7 +10,6 @@ import (
 
 func QuestAchievementCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {

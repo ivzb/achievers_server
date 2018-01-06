@@ -11,7 +11,6 @@ import (
 
 func UserAuth(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
@@ -61,7 +60,6 @@ func UserAuth(
 
 func UserCreate(
 	env *model.Env,
-	w http.ResponseWriter,
 	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
