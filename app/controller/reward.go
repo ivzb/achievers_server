@@ -12,10 +12,10 @@ import (
 func RewardsIndex(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	pg, err := strconv.Atoi(r.FormValue(page))
@@ -31,7 +31,7 @@ func RewardsIndex(
 	rwds, err := env.DB.RewardsAll(pg)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if len(rwds) == 0 {
@@ -47,10 +47,10 @@ func RewardsIndex(
 func RewardSingle(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	rwdID := r.FormValue(id)
@@ -62,7 +62,7 @@ func RewardSingle(
 	exists, err := env.DB.RewardExists(rwdID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !exists {
@@ -72,7 +72,7 @@ func RewardSingle(
 	rwd, err := env.DB.RewardSingle(rwdID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
@@ -84,10 +84,10 @@ func RewardSingle(
 func RewardCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	rwd := &model.Reward{}
@@ -116,7 +116,7 @@ func RewardCreate(
 	rewardTypeExists, err := env.DB.RewardTypeExists(rwd.RewardTypeID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !rewardTypeExists {
@@ -128,7 +128,7 @@ func RewardCreate(
 	id, err := env.DB.RewardCreate(rwd)
 
 	if err != nil || id == "" {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(

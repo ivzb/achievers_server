@@ -20,7 +20,7 @@ func rewardCreateForm() *map[string]string {
 var rewardCreateTests = []*test{
 	constructRewardCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -28,7 +28,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -37,7 +37,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form title",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
@@ -46,7 +46,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form description",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, description),
@@ -55,7 +55,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
@@ -64,7 +64,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form reward_type_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, rewardTypeID),
@@ -73,7 +73,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward_type exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -85,7 +85,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward_type does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, rewardTypeID),
@@ -97,7 +97,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward create db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -110,7 +110,7 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward create ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, reward),

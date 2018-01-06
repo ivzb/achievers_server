@@ -21,7 +21,7 @@ func evidenceCreateForm() *map[string]string {
 var evidenceCreateTests = []*test{
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -29,7 +29,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -40,7 +40,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form title",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
@@ -49,7 +49,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
@@ -58,7 +58,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form url",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, _url),
@@ -67,7 +67,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form multimedia_type_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, multimediaTypeID),
@@ -76,7 +76,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form achievement_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, achievementID),
@@ -85,7 +85,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "multimediaType exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -97,7 +97,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "multimediaType does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, multimediaTypeID),
@@ -109,7 +109,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "achievement exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -122,7 +122,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "achievement does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, achievementID),
@@ -135,7 +135,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "evidence create db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -149,7 +149,7 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "evidence create ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, evidence),

@@ -20,7 +20,7 @@ func questCreateForm() *map[string]string {
 var questCreateTests = []*test{
 	constructQuestCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -28,7 +28,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -37,7 +37,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form title",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
@@ -46,7 +46,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
@@ -55,7 +55,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form involvement_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
@@ -64,7 +64,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form quest_type_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, questTypeID),
@@ -73,7 +73,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "involvement exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -85,7 +85,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "involvement does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
@@ -97,7 +97,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest_type_id exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -110,7 +110,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest_type_id does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, questTypeID),
@@ -123,7 +123,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest create db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -137,7 +137,7 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest create ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, quest),

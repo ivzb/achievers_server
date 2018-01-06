@@ -17,7 +17,7 @@ func achievementSingleForm() *map[string]string {
 var achievementSingleTests = []*test{
 	constructAchievementSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -25,7 +25,7 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, id),
@@ -33,7 +33,7 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement exists db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -44,7 +44,7 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement does not exist",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, achievement),
@@ -55,7 +55,7 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement single db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -67,7 +67,7 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement single OK",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, achievement),

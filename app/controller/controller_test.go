@@ -43,9 +43,6 @@ var (
 
 	mockPage     = "3"
 	mockPageSize = 9
-
-	get  = "GET"
-	post = "POST"
 )
 
 type test struct {

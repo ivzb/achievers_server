@@ -17,7 +17,7 @@ func evidenceSingleForm() *map[string]string {
 var evidenceSingleTests = []*test{
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -25,7 +25,7 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, id),
@@ -33,7 +33,7 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence exists db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -44,7 +44,7 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence does not exist",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, evidence),
@@ -55,7 +55,7 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -67,7 +67,7 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single OK",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, evidence),

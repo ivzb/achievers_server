@@ -11,7 +11,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
+func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
@@ -37,7 +37,7 @@ func TestLoggerHandler_Log(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok","results":"OK"}`
+	expected := `{"status":200,"message":"ok found","results":"OK"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)

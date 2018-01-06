@@ -9,7 +9,7 @@ import (
 var homeIndexTests = []*test{
 	constructHomeIndexTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -17,7 +17,7 @@ var homeIndexTests = []*test{
 	}),
 	constructHomeIndexTest(&testInput{
 		purpose:            "welcome",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, home),

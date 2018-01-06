@@ -12,10 +12,10 @@ import (
 func QuestsIndex(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	pg, err := strconv.Atoi(r.FormValue("page"))
@@ -31,7 +31,7 @@ func QuestsIndex(
 	qsts, err := env.DB.QuestsAll(pg)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if len(qsts) == 0 {
@@ -47,10 +47,10 @@ func QuestsIndex(
 func QuestSingle(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	qstID := r.FormValue(id)
@@ -62,7 +62,7 @@ func QuestSingle(
 	exists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !exists {
@@ -72,7 +72,7 @@ func QuestSingle(
 	qst, err := env.DB.QuestSingle(qstID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
@@ -84,10 +84,10 @@ func QuestSingle(
 func QuestCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	qst := &model.Quest{}
@@ -116,7 +116,7 @@ func QuestCreate(
 	involvementExists, err := env.DB.InvolvementExists(qst.InvolvementID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !involvementExists {
@@ -126,7 +126,7 @@ func QuestCreate(
 	questTypeExists, err := env.DB.QuestTypeExists(qst.QuestTypeID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !questTypeExists {
@@ -138,7 +138,7 @@ func QuestCreate(
 	id, err := env.DB.QuestCreate(qst)
 
 	if err != nil || id == "" {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(

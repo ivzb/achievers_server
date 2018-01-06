@@ -1,6 +1,17 @@
 package response
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
+
+var (
+	methodNotAllowed    = "method not allowed"
+	internalServerError = "an error occurred, please try again later"
+	formatNotFound      = "%s not found"
+	formatFound         = "%s found"
+	formatCreated       = "%s created"
+)
 
 // Message is the return type of all handlers
 type Message struct {
@@ -30,48 +41,51 @@ type Retrieve struct {
 
 // Ok sends response with status code 200
 func Ok(
-	message string,
+	key string,
 	length int,
-	results interface{}) Message {
+	results interface{}) *Message {
 
+	message := fmt.Sprintf(formatFound, key)
 	return send(http.StatusOK, message, length, results)
 }
 
 // Created sends response with status code 201
 func Created(
-	message string,
-	results interface{}) Message {
+	key string,
+	results interface{}) *Message {
 
+	message := fmt.Sprintf(formatCreated, key)
 	return send(http.StatusCreated, message, 1, results)
 }
 
 // BadRequest sends response with status code 400
-func BadRequest(message string) Message {
+func BadRequest(message string) *Message {
 	return sendError(http.StatusBadRequest, message)
 }
 
 // Unauthorized sends response with status code 401
-func Unauthorized(message string) Message {
+func Unauthorized(message string) *Message {
 	return sendError(http.StatusUnauthorized, message)
 }
 
 // NotFound sends response with status code 404
-func NotFound(message string) Message {
+func NotFound(key string) *Message {
+	message := fmt.Sprintf(formatNotFound, key)
 	return sendError(http.StatusNotFound, message)
 }
 
 // MethodNotAllowed sends response with status code 405
-func MethodNotAllowed(message string) Message {
-	return sendError(http.StatusMethodNotAllowed, message)
+func MethodNotAllowed() *Message {
+	return sendError(http.StatusMethodNotAllowed, methodNotAllowed)
 }
 
 // InternalServerError sends response with status code 500
-func InternalServerError(message string) Message {
-	return sendError(http.StatusInternalServerError, message)
+func InternalServerError() *Message {
+	return sendError(http.StatusInternalServerError, internalServerError)
 }
 
 // sendError calls Send by without a count or results
-func sendError(status int, message string) Message {
+func sendError(status int, message string) *Message {
 	return send(status, message, 0, nil)
 }
 
@@ -80,7 +94,7 @@ func send(
 	status int,
 	message string,
 	length int,
-	results interface{}) Message {
+	results interface{}) *Message {
 
 	var result interface{}
 
@@ -104,5 +118,5 @@ func send(
 		}
 	}
 
-	return Message{status, result}
+	return &Message{status, result}
 }

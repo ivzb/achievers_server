@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
@@ -11,14 +10,14 @@ import (
 func HomeIndex(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, home),
+		home,
 		1,
 		welcome)
 }

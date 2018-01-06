@@ -18,7 +18,7 @@ func userAuthForm() *map[string]string {
 var userAuthTests = []*test{
 	constructUserAuthTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -26,7 +26,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -35,7 +35,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "missing form email",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
@@ -44,7 +44,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "missing form password",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
@@ -53,7 +53,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user email exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -65,7 +65,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user email does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, email),
@@ -77,7 +77,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user auth db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -90,7 +90,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "encrypt error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -106,7 +106,7 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user auth ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    authorized,

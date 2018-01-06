@@ -13,10 +13,10 @@ import (
 func EvidencesIndex(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	pg, err := strconv.Atoi(r.FormValue("page"))
@@ -32,7 +32,7 @@ func EvidencesIndex(
 	evds, err := env.DB.EvidencesAll(pg)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if len(evds) == 0 {
@@ -48,10 +48,10 @@ func EvidencesIndex(
 func EvidenceSingle(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	evdID := r.FormValue(id)
@@ -63,7 +63,7 @@ func EvidenceSingle(
 	exists, err := env.DB.EvidenceExists(evdID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !exists {
@@ -73,7 +73,7 @@ func EvidenceSingle(
 	evd, err := env.DB.EvidenceSingle(evdID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
@@ -85,10 +85,10 @@ func EvidenceSingle(
 func EvidenceCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	evd := &model.Evidence{}
@@ -121,7 +121,7 @@ func EvidenceCreate(
 	multimediaTypeExist, err := env.DB.MultimediaTypeExists(evd.MultimediaTypeID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !multimediaTypeExist {
@@ -131,7 +131,7 @@ func EvidenceCreate(
 	achievementExist, err := env.DB.AchievementExists(evd.AchievementID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !achievementExist {
@@ -144,7 +144,7 @@ func EvidenceCreate(
 
 	if err != nil || id == "" {
 		log.Println(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(

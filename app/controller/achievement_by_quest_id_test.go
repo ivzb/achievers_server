@@ -21,7 +21,7 @@ var achievementsByQuestIDArgs = []string{"9"}
 var achievementsByQuestIDTests = []*test{
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -30,7 +30,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "missing page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, page),
@@ -39,7 +39,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "invalid page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatInvalid, page),
@@ -50,7 +50,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, id),
@@ -59,7 +59,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "questExists db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -71,7 +71,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "id does not exist",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, id),
@@ -83,7 +83,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -96,7 +96,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "no results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, page),
@@ -109,7 +109,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "4 results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, achievements),
@@ -122,7 +122,7 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "9 results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, achievements),

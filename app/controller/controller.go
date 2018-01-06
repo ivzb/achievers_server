@@ -47,4 +47,10 @@ const (
 	questAchievement = "quest_achievement"
 	home             = "home"
 	welcome          = "welcome"
+
+	nonNegative = 0
+	positive    = 1
+
+	GET  = "GET"
+	POST = "POST"
 )

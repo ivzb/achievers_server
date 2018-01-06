@@ -20,7 +20,7 @@ var achievementsIndexArgs = []string{"9"}
 var achievementsIndexTests = []*test{
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -29,7 +29,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "missing page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, page),
@@ -38,7 +38,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatInvalid, page),
@@ -49,7 +49,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -61,7 +61,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "no results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, page),
@@ -73,7 +73,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "4 results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, achievements),
@@ -85,7 +85,7 @@ var achievementsIndexTests = []*test{
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "9 results on page",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, achievements),

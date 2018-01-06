@@ -3,44 +3,40 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func AchievementsIndex(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
-	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+	if !request.Is(r, GET) {
+		return response.MethodNotAllowed()
 	}
 
-	pg, err := strconv.Atoi(r.FormValue("page"))
+	pg, err := request.FormIntValue(r, page, nonNegative)
 
 	if err != nil {
-		return response.BadRequest(fmt.Sprintf(formatMissing, page))
-	}
-
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+		return response.BadRequest(err.Error())
 	}
 
 	achs, err := env.DB.AchievementsAll(pg)
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if len(achs) == 0 {
-		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+		return response.NotFound(page)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, achievements),
+		achievements,
 		len(achs),
 		achs)
 }
@@ -48,52 +44,44 @@ func AchievementsIndex(
 func AchievementsByQuestID(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
-	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+	if !request.Is(r, GET) {
+		return response.MethodNotAllowed()
 	}
 
-	pg, err := strconv.Atoi(r.FormValue(page))
+	pg, err := request.FormIntValue(r, page, nonNegative)
 
 	if err != nil {
-		return response.BadRequest(fmt.Sprintf(formatMissing, page))
+		return response.BadRequest(err.Error())
 	}
 
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
-	}
+	qstID, err := request.FormValue(r, id)
 
-	qstID := r.FormValue(id)
-
-	if qstID == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	qstExists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
-	}
-
-	if !qstExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, id))
+		return response.InternalServerError()
+	} else if !qstExists {
+		return response.NotFound(id)
 	}
 
 	achs, err := env.DB.AchievementsByQuestID(qstID, pg)
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
-	}
-
-	if len(achs) == 0 {
-		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+		return response.InternalServerError()
+	} else if len(achs) == 0 {
+		return response.NotFound(page)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, achievements),
+		achievements,
 		len(achs),
 		achs)
 }
@@ -101,38 +89,36 @@ func AchievementsByQuestID(
 func AchievementSingle(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
-	if r.Method != "GET" {
-		return response.MethodNotAllowed(methodNotAllowed)
+	if !request.Is(r, GET) {
+		return response.MethodNotAllowed()
 	}
 
-	achid := r.FormValue(id)
+	achID, err := request.FormValue(r, id)
 
-	if achid == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
-	exists, err := env.DB.AchievementExists(achid)
+	achExists, err := env.DB.AchievementExists(achID)
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
+	} else if !achExists {
+		return response.NotFound(achievement)
 	}
 
-	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, achievement))
-	}
-
-	ach, err := env.DB.AchievementSingle(achid)
+	ach, err := env.DB.AchievementSingle(achID)
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, achievement),
+		achievement,
 		1,
 		ach)
 }
@@ -140,10 +126,10 @@ func AchievementSingle(
 func AchievementCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
-	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+	if !request.Is(r, POST) {
+		return response.MethodNotAllowed()
 	}
 
 	ach := &model.Achievement{}
@@ -173,11 +159,9 @@ func AchievementCreate(
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
-	}
-
-	if !involvementExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, involvementID))
+		return response.InternalServerError()
+	} else if !involvementExists {
+		return response.NotFound(involvementID)
 	}
 
 	ach.AuthorID = env.UserId
@@ -185,11 +169,10 @@ func AchievementCreate(
 	id, err := env.DB.AchievementCreate(ach)
 
 	if err != nil || id == "" {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
-	return response.Ok(
-		fmt.Sprintf(formatCreated, achievement),
-		1,
+	return response.Created(
+		achievement,
 		id)
 }

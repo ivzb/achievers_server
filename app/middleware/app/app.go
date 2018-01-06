@@ -8,7 +8,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-type Handle func(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message
+type Handle func(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message
 
 type Handler struct {
 	Env *model.Env

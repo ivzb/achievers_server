@@ -12,10 +12,10 @@ import (
 func UserAuth(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	auth := &model.User{}
@@ -36,7 +36,7 @@ func UserAuth(
 	exists, err := env.DB.UserEmailExists(auth.Email)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !exists {
@@ -47,13 +47,13 @@ func UserAuth(
 
 	if err != nil {
 		log.Println(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	token, err := env.Tokener.Encrypt(uID)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Created(authorized, token)
@@ -62,10 +62,10 @@ func UserAuth(
 func UserCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	usr := &model.User{}
@@ -94,7 +94,7 @@ func UserCreate(
 	exists, err := env.DB.UserEmailExists(usr.Email)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if exists {
@@ -104,7 +104,7 @@ func UserCreate(
 	id, err := env.DB.UserCreate(usr)
 
 	if err != nil {
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Created(fmt.Sprintf(formatCreated, user), id)

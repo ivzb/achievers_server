@@ -17,7 +17,7 @@ func questSingleForm() *map[string]string {
 var questSingleTests = []*test{
 	constructQuestSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -25,7 +25,7 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, id),
@@ -33,7 +33,7 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest exists db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -44,7 +44,7 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest does not exist",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, quest),
@@ -55,7 +55,7 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest single db error",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -67,7 +67,7 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest single OK",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatFound, quest),

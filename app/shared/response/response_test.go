@@ -203,7 +203,7 @@ func TestNotFound(t *testing.T) {
 func TestMethodNotAllowed(t *testing.T) {
 	status := http.StatusMethodNotAllowed
 
-	response := MethodNotAllowed("")
+	response := MethodNotAllowed()
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {
@@ -214,7 +214,7 @@ func TestMethodNotAllowed(t *testing.T) {
 func TestInternalServerError(t *testing.T) {
 	status := http.StatusInternalServerError
 
-	response := InternalServerError("")
+	response := InternalServerError()
 
 	// Check the status code is what we expect.
 	if status != response.StatusCode {

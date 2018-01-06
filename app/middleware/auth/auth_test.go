@@ -12,8 +12,8 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) response.Message {
-	return response.Created("authorized", "auth token here")
+func testHandler(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
+	return response.Created("auth_token", "auth token here")
 }
 
 func TestAuthHandler_ValidAuthToken(t *testing.T) {
@@ -44,7 +44,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":201,"message":"authorized","results":"auth token here"}`
+	expected := `{"status":201,"message":"auth_token created","results":"auth token here"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rr.Body.String(), expected)

@@ -20,7 +20,7 @@ func userCreateForm() *map[string]string {
 var userCreateTests = []*test{
 	constructUserCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -28,7 +28,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -37,7 +37,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form first_name",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, firstName),
@@ -46,7 +46,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form last_name",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, lastName),
@@ -55,7 +55,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form email",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
@@ -64,7 +64,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form password",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
@@ -73,7 +73,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user email exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -85,7 +85,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user email exists",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatAlreadyExists, email),
@@ -97,7 +97,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user create db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -110,7 +110,7 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user create ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(formatCreated, user),

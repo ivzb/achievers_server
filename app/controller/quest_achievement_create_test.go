@@ -18,7 +18,7 @@ func questAchievementCreateForm() *map[string]string {
 var questAchievementCreateTests = []*test{
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      get,
+		requestMethod:      GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
@@ -26,7 +26,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
@@ -35,7 +35,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "missing form quest_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, questID),
@@ -44,7 +44,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "missing form achievement_id",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, achievementID),
@@ -53,7 +53,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -65,7 +65,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest_id does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, questID),
@@ -77,7 +77,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "achievement exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -90,7 +90,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "achievement_id does not exist",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, achievementID),
@@ -103,7 +103,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest_achievement exists db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -117,7 +117,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest_achievement already exists",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatAlreadyExists, questAchievement),
@@ -131,7 +131,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest_achievement create db error",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
@@ -146,7 +146,7 @@ var questAchievementCreateTests = []*test{
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest_achievement create ok",
-		requestMethod:      post,
+		requestMethod:      POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, questAchievement),

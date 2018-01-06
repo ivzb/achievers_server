@@ -11,10 +11,10 @@ import (
 func QuestAchievementCreate(
 	env *model.Env,
 	w http.ResponseWriter,
-	r *http.Request) response.Message {
+	r *http.Request) *response.Message {
 
 	if r.Method != "POST" {
-		return response.MethodNotAllowed(methodNotAllowed)
+		return response.MethodNotAllowed()
 	}
 
 	qstAch := &model.QuestAchievement{}
@@ -36,7 +36,7 @@ func QuestAchievementCreate(
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !qstExists {
@@ -47,7 +47,7 @@ func QuestAchievementCreate(
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if !achExists {
@@ -58,7 +58,7 @@ func QuestAchievementCreate(
 
 	if err != nil {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	if achQstExists {
@@ -71,7 +71,7 @@ func QuestAchievementCreate(
 
 	if err != nil || id == "" {
 		env.Logger.Error(err)
-		return response.InternalServerError(friendlyErrorMessage)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
