@@ -21,7 +21,7 @@ func TestLoggerHandler_Log(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		Logger: &mock.Logger{},
+		Log: &mock.Logger{},
 	}
 
 	appHandler := app.Handler{Env: env, H: testHandler}

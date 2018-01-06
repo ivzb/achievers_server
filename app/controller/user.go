@@ -19,7 +19,7 @@ func UserAuth(
 	}
 
 	auth := &model.User{}
-	err := env.Former.Map(r, auth)
+	err := env.Form.Map(r, auth)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -50,7 +50,7 @@ func UserAuth(
 		return response.InternalServerError()
 	}
 
-	token, err := env.Tokener.Encrypt(uID)
+	token, err := env.Token.Encrypt(uID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -69,7 +69,7 @@ func UserCreate(
 	}
 
 	usr := &model.User{}
-	err := env.Former.Map(r, usr)
+	err := env.Form.Map(r, usr)
 
 	if err != nil {
 		return response.BadRequest(err.Error())

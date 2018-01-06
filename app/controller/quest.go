@@ -91,7 +91,7 @@ func QuestCreate(
 	}
 
 	qst := &model.Quest{}
-	err := env.Former.Map(r, qst)
+	err := env.Form.Map(r, qst)
 
 	if err != nil {
 		return response.BadRequest(err.Error())

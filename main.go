@@ -49,10 +49,10 @@ func main() {
 	form := model.NewFormer()
 
 	env := &model.Env{
-		DB:      db,
-		Tokener: token,
-		Logger:  log,
-		Former:  form,
+		DB:    db,
+		Token: token,
+		Log:   log,
+		Form:  form,
 	}
 
 	log.Message("started@:8080")

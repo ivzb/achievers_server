@@ -19,7 +19,7 @@ func Handler(handler app.Handler) app.Handler {
 
 	handler.H = func(env *model.Env, w http.ResponseWriter, r *http.Request) *response.Message {
 		message := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
-		handler.Env.Logger.Message(message)
+		handler.Env.Log.Message(message)
 
 		return prevH(env, w, r)
 	}

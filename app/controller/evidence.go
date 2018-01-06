@@ -92,7 +92,7 @@ func EvidenceCreate(
 	}
 
 	evd := &model.Evidence{}
-	err := env.Former.Map(r, evd)
+	err := env.Form.Map(r, evd)
 
 	if err != nil {
 		return response.BadRequest(err.Error())

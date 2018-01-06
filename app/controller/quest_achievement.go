@@ -18,7 +18,7 @@ func QuestAchievementCreate(
 	}
 
 	qstAch := &model.QuestAchievement{}
-	err := env.Former.Map(r, qstAch)
+	err := env.Form.Map(r, qstAch)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -35,7 +35,7 @@ func QuestAchievementCreate(
 	qstExists, err := env.DB.QuestExists(qstAch.QuestID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -46,7 +46,7 @@ func QuestAchievementCreate(
 	achExists, err := env.DB.AchievementExists(qstAch.AchievementID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -57,7 +57,7 @@ func QuestAchievementCreate(
 	achQstExists, err := env.DB.QuestAchievementExists(qstAch.QuestID, qstAch.AchievementID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -70,7 +70,7 @@ func QuestAchievementCreate(
 	id, err := env.DB.QuestAchievementCreate(qstAch)
 
 	if err != nil || id == "" {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 

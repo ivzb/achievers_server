@@ -91,7 +91,7 @@ func RewardCreate(
 	}
 
 	rwd := &model.Reward{}
-	err := env.Former.Map(r, rwd)
+	err := env.Form.Map(r, rwd)
 
 	if err != nil {
 		return response.BadRequest(err.Error())

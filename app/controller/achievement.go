@@ -27,7 +27,7 @@ func AchievementsIndex(
 	achs, err := env.DB.AchievementsAll(pg)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -65,7 +65,7 @@ func AchievementsByQuestID(
 	qstExists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	} else if !qstExists {
 		return response.NotFound(id)
@@ -74,7 +74,7 @@ func AchievementsByQuestID(
 	achs, err := env.DB.AchievementsByQuestID(qstID, pg)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	} else if len(achs) == 0 {
 		return response.NotFound(page)
@@ -104,7 +104,7 @@ func AchievementSingle(
 	achExists, err := env.DB.AchievementExists(achID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	} else if !achExists {
 		return response.NotFound(achievement)
@@ -113,7 +113,7 @@ func AchievementSingle(
 	ach, err := env.DB.AchievementSingle(achID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -133,7 +133,7 @@ func AchievementCreate(
 	}
 
 	ach := &model.Achievement{}
-	err := env.Former.Map(r, ach)
+	err := env.Form.Map(r, ach)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -158,7 +158,7 @@ func AchievementCreate(
 	involvementExists, err := env.DB.InvolvementExists(ach.InvolvementID)
 
 	if err != nil {
-		env.Logger.Error(err)
+		env.Log.Error(err)
 		return response.InternalServerError()
 	} else if !involvementExists {
 		return response.NotFound(involvementID)

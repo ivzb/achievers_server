@@ -91,10 +91,10 @@ func constructForm(m *map[string]string) *url.Values {
 
 func constructEnv(db *mock.DB, logger *mock.Logger, former *mock.Former, tokener *mock.Tokener) *model.Env {
 	return &model.Env{
-		DB:      db,
-		Logger:  logger,
-		Former:  former,
-		Tokener: tokener,
+		DB:    db,
+		Log:   logger,
+		Form:  former,
+		Token: tokener,
 	}
 }
 

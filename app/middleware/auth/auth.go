@@ -28,7 +28,7 @@ func Handler(handler app.Handler) app.Handler {
 			return response.Unauthorized(authTokenMissing)
 		}
 
-		uID, err := handler.Env.Tokener.Decrypt(at)
+		uID, err := handler.Env.Token.Decrypt(at)
 
 		if err != nil {
 			return response.Unauthorized(authTokenInvalid)
