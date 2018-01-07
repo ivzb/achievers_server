@@ -16,6 +16,7 @@ type App struct {
 }
 
 func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	app.Env.Request = model.NewRequester(r)
 	response := app.Handler(app.Env, r)
 
 	js, err := json.Marshal(response.Result)

@@ -13,7 +13,7 @@ func AchievementsIndex(
 	env *model.Env,
 	r *http.Request) *response.Message {
 
-	if !request.Is(r, GET) {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 

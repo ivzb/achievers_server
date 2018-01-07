@@ -120,7 +120,7 @@ source {path_to_sql_script}
 ## TODO
 1. extract common controller functionalities which return plain Result
 2. extract consts from controller/controller.go to shared/consts.go
-3. return *response.Message instead response.Message 
-4. implement constructTest for shared/ similar to this in controller/
-5. handlers should have *shared.Request instead of *http.Request which will wrap *http.Request and use it only internally
-6. implement router with following format: router.GET("path", handler, middleware)
+3. implement constructTest for shared/ similar to this in controller/
+4. handlers should have *shared.Request instead of *http.Request which will wrap *http.Request and use it only internally
+5. implement router with following format: router.GET("path", handler, middleware)
+6. extract framework models from app models
