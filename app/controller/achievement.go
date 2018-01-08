@@ -2,25 +2,24 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
-	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func AchievementsIndex(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
+func AchievementsIndex(env *model.Env) *response.Message {
 	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := request.FormIntValue(r, page, nonNegative)
+	pg, err := env.Request.Form.IntValue(page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
+	}
+
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
 	}
 
 	achs, err := env.DB.AchievementsAll(pg)
@@ -40,21 +39,22 @@ func AchievementsIndex(
 		achs)
 }
 
-func AchievementsByQuestID(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if !request.Is(r, GET) {
+func AchievementsByQuestID(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := request.FormIntValue(r, page, nonNegative)
+	pg, err := env.Request.Form.IntValue(page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
 	}
 
-	qstID, err := request.FormValue(r, id)
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+	}
+
+	qstID, err := env.Request.Form.StringValue(id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -84,15 +84,12 @@ func AchievementsByQuestID(
 		achs)
 }
 
-func AchievementSingle(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if !request.Is(r, GET) {
+func AchievementSingle(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	achID, err := request.FormValue(r, id)
+	achID, err := env.Request.Form.StringValue(id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -103,7 +100,9 @@ func AchievementSingle(
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
-	} else if !achExists {
+	}
+
+	if !achExists {
 		return response.NotFound(achievement)
 	}
 
@@ -120,16 +119,13 @@ func AchievementSingle(
 		ach)
 }
 
-func AchievementCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if !request.Is(r, POST) {
+func AchievementCreate(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(POST) {
 		return response.MethodNotAllowed()
 	}
 
 	ach := &model.Achievement{}
-	err := env.Form.Map(r, ach)
+	err := env.Request.Form.Map(ach)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -160,7 +156,7 @@ func AchievementCreate(
 		return response.NotFound(involvementID)
 	}
 
-	ach.AuthorID = env.UserId
+	ach.AuthorID = env.Request.UserID
 
 	id, err := env.DB.AchievementCreate(ach)
 

@@ -2,29 +2,20 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func RewardsIndex(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func RewardsIndex(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := strconv.Atoi(r.FormValue(page))
+	pg, err := env.Request.Form.IntValue(page)
 
 	if err != nil {
-		return response.BadRequest(fmt.Sprintf(formatMissing, page))
-	}
-
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+		return response.BadRequest(err.Error())
 	}
 
 	rwds, err := env.DB.RewardsAll(pg)
@@ -43,18 +34,15 @@ func RewardsIndex(
 		rwds)
 }
 
-func RewardSingle(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func RewardSingle(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	rwdID := r.FormValue(id)
+	rwdID, err := env.Request.Form.StringValue(id)
 
-	if rwdID == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	exists, err := env.DB.RewardExists(rwdID)
@@ -79,16 +67,13 @@ func RewardSingle(
 		rwd)
 }
 
-func RewardCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func RewardCreate(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(POST) {
 		return response.MethodNotAllowed()
 	}
 
 	rwd := &model.Reward{}
-	err := env.Form.Map(r, rwd)
+	err := env.Request.Form.Map(rwd)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -120,7 +105,7 @@ func RewardCreate(
 		return response.NotFound(fmt.Sprintf(formatNotFound, rewardTypeID))
 	}
 
-	rwd.AuthorID = env.UserId
+	rwd.AuthorID = env.Request.UserID
 
 	id, err := env.DB.RewardCreate(rwd)
 

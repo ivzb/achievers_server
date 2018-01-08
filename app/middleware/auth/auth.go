@@ -1,11 +1,8 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
-	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -21,8 +18,8 @@ const (
 func Handler(app app.App) app.App {
 	prevHandler := app.Handler
 
-	app.Handler = func(env *model.Env, r *http.Request) *response.Message {
-		at, err := request.GetHeader(r, authTokenHeader)
+	app.Handler = func(env *model.Env) *response.Message {
+		at, err := app.Env.Request.HeaderValue(authTokenHeader)
 
 		if err != nil {
 			return response.Unauthorized(authTokenMissing)
@@ -43,9 +40,9 @@ func Handler(app app.App) app.App {
 			return response.Unauthorized(authTokenInvalid)
 		}
 
-		app.Env.UserId = uID
+		app.Env.Request.UserID = uID
 
-		return prevHandler(env, r)
+		return prevHandler(env)
 	}
 
 	return app

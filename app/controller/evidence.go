@@ -3,22 +3,17 @@ package controller
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func EvidencesIndex(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func EvidencesIndex(env *model.Env) *response.Message {
+	if env.Request.Method != "GET" {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := strconv.Atoi(r.FormValue("page"))
+	pg, err := env.Request.Form.IntValue("page")
 
 	if err != nil {
 		return response.BadRequest(fmt.Sprintf(formatMissing, page))
@@ -44,15 +39,16 @@ func EvidencesIndex(
 		evds)
 }
 
-func EvidenceSingle(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func EvidenceSingle(env *model.Env) *response.Message {
+	if env.Request.Method != "GET" {
 		return response.MethodNotAllowed()
 	}
 
-	evdID := r.FormValue(id)
+	evdID, err := env.Request.Form.StringValue(id)
+
+	if err != nil {
+		return response.BadRequest(err.Error())
+	}
 
 	if evdID == "" {
 		return response.BadRequest(fmt.Sprintf(formatMissing, id))
@@ -80,16 +76,13 @@ func EvidenceSingle(
 		evd)
 }
 
-func EvidenceCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func EvidenceCreate(env *model.Env) *response.Message {
+	if env.Request.Method != "POST" {
 		return response.MethodNotAllowed()
 	}
 
 	evd := &model.Evidence{}
-	err := env.Form.Map(r, evd)
+	err := env.Request.Form.Map(evd)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -135,7 +128,7 @@ func EvidenceCreate(
 		return response.NotFound(fmt.Sprintf(formatNotFound, achievementID))
 	}
 
-	evd.AuthorID = env.UserId
+	evd.AuthorID = env.Request.UserID
 
 	id, err := env.DB.EvidenceCreate(evd)
 

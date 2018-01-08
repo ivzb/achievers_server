@@ -2,22 +2,18 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func QuestAchievementCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func QuestAchievementCreate(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(POST) {
 		return response.MethodNotAllowed()
 	}
 
 	qstAch := &model.QuestAchievement{}
-	err := env.Form.Map(r, qstAch)
+	err := env.Request.Form.Map(qstAch)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -64,7 +60,7 @@ func QuestAchievementCreate(
 		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, questAchievement))
 	}
 
-	qstAch.AuthorID = env.UserId
+	qstAch.AuthorID = env.Request.UserID
 
 	id, err := env.DB.QuestAchievementCreate(qstAch)
 

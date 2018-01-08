@@ -2,25 +2,20 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func QuestsIndex(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func QuestsIndex(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := strconv.Atoi(r.FormValue("page"))
+	pg, err := env.Request.Form.IntValue(page)
 
 	if err != nil {
-		return response.BadRequest(fmt.Sprintf(formatMissing, page))
+		return response.BadRequest(err.Error())
 	}
 
 	if pg < 0 {
@@ -43,18 +38,15 @@ func QuestsIndex(
 		qsts)
 }
 
-func QuestSingle(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "GET" {
+func QuestSingle(env *model.Env) *response.Message {
+	if env.Request.Method != "GET" {
 		return response.MethodNotAllowed()
 	}
 
-	qstID := r.FormValue(id)
+	qstID, err := env.Request.Form.StringValue(id)
 
-	if qstID == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, id))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	exists, err := env.DB.QuestExists(qstID)
@@ -79,16 +71,13 @@ func QuestSingle(
 		qst)
 }
 
-func QuestCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func QuestCreate(env *model.Env) *response.Message {
+	if env.Request.Method != "POST" {
 		return response.MethodNotAllowed()
 	}
 
 	qst := &model.Quest{}
-	err := env.Form.Map(r, qst)
+	err := env.Request.Form.Map(qst)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -130,7 +119,7 @@ func QuestCreate(
 		return response.NotFound(fmt.Sprintf(formatNotFound, questTypeID))
 	}
 
-	qst.AuthorID = env.UserId
+	qst.AuthorID = env.Request.UserID
 
 	id, err := env.DB.QuestCreate(qst)
 

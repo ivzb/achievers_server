@@ -12,8 +12,6 @@ To download, run the following command:
 go get github.com/ivzb/achievers_server
 ~~~
 
-If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go 1.4 or earlier, the code will not work because it uses the vendor folder.
-
 ## Quick Start with MySQL
 
 Start MySQL and import config/mysql.sql to create the database and tables.

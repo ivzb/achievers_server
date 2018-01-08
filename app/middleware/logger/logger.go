@@ -2,7 +2,6 @@ package logger
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
@@ -17,11 +16,15 @@ const (
 func Handler(app app.App) app.App {
 	prevHandler := app.Handler
 
-	app.Handler = func(env *model.Env, r *http.Request) *response.Message {
-		message := fmt.Sprintf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+	app.Handler = func(env *model.Env) *response.Message {
+		message := fmt.Sprintf("%s %s %s",
+			env.Request.RemoteAddr,
+			env.Request.Method,
+			env.Request.URL)
+
 		app.Env.Log.Message(message)
 
-		return prevHandler(env, r)
+		return prevHandler(env)
 	}
 
 	return app

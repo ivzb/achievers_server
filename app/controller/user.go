@@ -3,22 +3,18 @@ package controller
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func UserAuth(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func UserAuth(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(POST) {
 		return response.MethodNotAllowed()
 	}
 
 	auth := &model.User{}
-	err := env.Form.Map(r, auth)
+	err := env.Request.Form.Map(auth)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -58,16 +54,13 @@ func UserAuth(
 	return response.Created(authorized, token)
 }
 
-func UserCreate(
-	env *model.Env,
-	r *http.Request) *response.Message {
-
-	if r.Method != "POST" {
+func UserCreate(env *model.Env) *response.Message {
+	if !env.Request.IsMethod(POST) {
 		return response.MethodNotAllowed()
 	}
 
 	usr := &model.User{}
-	err := env.Form.Map(r, usr)
+	err := env.Request.Form.Map(usr)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
