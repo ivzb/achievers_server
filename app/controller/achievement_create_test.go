@@ -33,7 +33,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
 		form:               &map[string]string{},
-		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
+		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form title",
@@ -42,7 +42,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
 		form:               mapWithout(achievementCreateForm(), title),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form description",
@@ -51,7 +51,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, description),
 		form:               mapWithout(achievementCreateForm(), description),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form picture_url",
@@ -60,7 +60,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
 		form:               mapWithout(achievementCreateForm(), pictureURL),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form involvement_id",
@@ -69,7 +69,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
 		form:               mapWithout(achievementCreateForm(), involvementID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "involvement exists db error",
@@ -78,7 +78,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               achievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
 		},
@@ -90,7 +90,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
 		form:               achievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
 		},
@@ -102,7 +102,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               achievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			AchievementCreateMock: mock.AchievementCreate{Err: mockDbErr},
@@ -115,7 +115,7 @@ var achievementCreateTests = []*test{
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(formatCreated, achievement),
 		form:               achievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			AchievementCreateMock: mock.AchievementCreate{ID: mockID},

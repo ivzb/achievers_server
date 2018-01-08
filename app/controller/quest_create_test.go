@@ -33,7 +33,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
 		form:               &map[string]string{},
-		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
+		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form title",
@@ -42,7 +42,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
 		form:               mapWithout(questCreateForm(), title),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form picture_url",
@@ -51,7 +51,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
 		form:               mapWithout(questCreateForm(), pictureURL),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form involvement_id",
@@ -60,7 +60,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
 		form:               mapWithout(questCreateForm(), involvementID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form quest_type_id",
@@ -69,7 +69,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, questTypeID),
 		form:               mapWithout(questCreateForm(), questTypeID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "involvement exists db error",
@@ -78,7 +78,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
 		},
@@ -90,7 +90,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
 		},
@@ -102,7 +102,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			QuestTypeExistsMock:   mock.QuestTypeExists{Err: mockDbErr},
@@ -115,7 +115,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, questTypeID),
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: false},
@@ -128,7 +128,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: true},
@@ -142,7 +142,7 @@ var questCreateTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, quest),
 		form:               questCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
 			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: true},

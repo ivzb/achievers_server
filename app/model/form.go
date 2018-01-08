@@ -14,8 +14,8 @@ var (
 	errNotStruct        = errors.New("model is not a struct")
 	errWrongContentType = errors.New("content-type of request is incorrect")
 
-	formatMissing = "% missing"
-	formatInvalid = "% invalid"
+	formatMissing = "missing %s"
+	formatInvalid = "invalid %s"
 )
 
 type Former interface {

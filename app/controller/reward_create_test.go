@@ -33,7 +33,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
 		form:               &map[string]string{},
-		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
+		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form title",
@@ -42,7 +42,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, title),
 		form:               mapWithout(rewardCreateForm(), title),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form description",
@@ -51,7 +51,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, description),
 		form:               mapWithout(rewardCreateForm(), description),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form picture_url",
@@ -60,7 +60,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
 		form:               mapWithout(rewardCreateForm(), pictureURL),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form reward_type_id",
@@ -69,7 +69,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, rewardTypeID),
 		form:               mapWithout(rewardCreateForm(), rewardTypeID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward_type exists db error",
@@ -78,7 +78,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               rewardCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Err: mockDbErr},
 		},
@@ -90,7 +90,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, rewardTypeID),
 		form:               rewardCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: false},
 		},
@@ -102,7 +102,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               rewardCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
 			RewardCreateMock:     mock.RewardCreate{Err: mockDbErr},
@@ -115,7 +115,7 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, reward),
 		form:               rewardCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
 			RewardCreateMock:     mock.RewardCreate{ID: mockID},

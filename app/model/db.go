@@ -17,8 +17,8 @@ const (
 	limit = 9
 )
 
-// DBSource contains all available DAO functions
-type DBSource interface {
+// DBSourcer contains all available DAO functions
+type DBSourcer interface {
 	UserExists(id string) (bool, error)
 	UserEmailExists(email string) (bool, error)
 	UserCreate(user *User) (string, error)

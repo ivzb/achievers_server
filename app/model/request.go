@@ -11,9 +11,8 @@ const (
 )
 
 //type Requester interface {
-//Form() Former
 //IsMethod(expected string) bool
-//HeaderValue(key string) (string, error)
+//Header(key string) (string, error)
 //}
 
 type Request struct {
@@ -28,18 +27,15 @@ type Request struct {
 
 func NewRequest(r *http.Request, f Former) *Request {
 	return &Request{
-		Form:        f,
+		UserID:     "", // to be determined by auth middleware
+		Form:       f,
+		RemoteAddr: r.RemoteAddr,
+		Method:     r.Method,
+		URL:        r.URL,
+
 		httpRequest: r,
-		RemoteAddr:  r.RemoteAddr,
-		Method:      r.Method,
-		URL:         r.URL,
 	}
 }
-
-//// Form returns request form
-//func (r *Request) Form() Former {
-//return *r.form
-//}
 
 // IsMethod returns whether actual request method equals expected one
 func (r *Request) IsMethod(expected string) bool {

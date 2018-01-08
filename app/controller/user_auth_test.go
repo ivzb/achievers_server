@@ -31,7 +31,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
 		form:               &map[string]string{},
-		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
+		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "missing form email",
@@ -40,7 +40,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
 		form:               mapWithout(userAuthForm(), email),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "missing form password",
@@ -49,7 +49,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
 		form:               mapWithout(userAuthForm(), password),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user email exists db error",
@@ -58,7 +58,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               userAuthForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
 		},
@@ -70,7 +70,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, email),
 		form:               userAuthForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
 		},
@@ -82,7 +82,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               userAuthForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
 			UserAuthMock:        mock.UserAuth{Err: mockDbErr},
@@ -95,7 +95,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               userAuthForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
 			UserAuthMock:        mock.UserAuth{ID: mockID},
@@ -111,7 +111,7 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    authorized,
 		form:               userAuthForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
 			UserAuthMock:        mock.UserAuth{ID: mockID},

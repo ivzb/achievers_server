@@ -2,7 +2,7 @@ package model
 
 type Env struct {
 	Request *Request
-	DB      DBSource
+	DB      DBSourcer
 	Log     Logger
 	Token   Tokener
 }

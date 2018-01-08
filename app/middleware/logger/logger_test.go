@@ -11,7 +11,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env, r *http.Request) *response.Message {
+func testHandler(env *model.Env) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 

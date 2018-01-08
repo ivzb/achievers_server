@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -56,6 +57,7 @@ type testRequest struct {
 	method string
 	form   *url.Values
 	env    *model.Env
+	former model.Former
 }
 
 type testResponse struct {
@@ -74,7 +76,7 @@ type testInput struct {
 	form               *map[string]string
 	db                 *mock.DB
 	logger             *mock.Logger
-	former             *mock.Former
+	former             mock.Form
 	tokener            *mock.Tokener
 	args               []string
 }
@@ -89,20 +91,20 @@ func constructForm(m *map[string]string) *url.Values {
 	return form
 }
 
-func constructEnv(db *mock.DB, logger *mock.Logger, former *mock.Former, tokener *mock.Tokener) *model.Env {
+func constructEnv(db *mock.DB, logger *mock.Logger, tokener *mock.Tokener) *model.Env {
 	return &model.Env{
 		DB:    db,
 		Log:   logger,
-		Form:  former,
 		Token: tokener,
 	}
 }
 
-func constructTestRequest(method string, form *url.Values, env *model.Env) *testRequest {
+func constructTestRequest(method string, form *url.Values, env *model.Env, former model.Former) *testRequest {
 	return &testRequest{
 		method,
 		form,
 		env,
+		former,
 	}
 }
 
@@ -124,8 +126,11 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	req.Header = http.Header{}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
+	mockForm := test.request.former.(mock.Form)
+	mockForm.HttpRequest = req
+	test.request.env.Request = model.NewRequest(req, mockForm)
 	app := app.App{test.request.env, test.handler}
-	app.ServeHTTP(rec, req)
+	serveHTTP(app, rec, req)
 
 	actualStatusCode := rec.Code
 	expectedStatusCode := test.response.statusCode
@@ -138,6 +143,20 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	return rec
 }
 
+func serveHTTP(app app.App, w http.ResponseWriter, r *http.Request) {
+	response := app.Handler(app.Env)
+
+	js, err := json.Marshal(response.Result)
+
+	if err != nil {
+		http.Error(w, "JSON Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	w.Write(js)
+}
 func constructTest(handler app.Handler, testInput *testInput, responseResults []byte) *test {
 	return &test{
 		purpose: testInput.purpose,
@@ -145,7 +164,8 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 		request: constructTestRequest(
 			testInput.requestMethod,
 			constructForm(testInput.form),
-			constructEnv(testInput.db, testInput.logger, testInput.former, testInput.tokener),
+			constructEnv(testInput.db, testInput.logger, testInput.tokener),
+			testInput.former,
 		),
 		response: constructTestResponse(
 			testInput.responseType,

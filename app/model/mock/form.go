@@ -20,24 +20,25 @@ type IntValue struct {
 	Err error
 }
 
-type Former struct {
+type Form struct {
+	HttpRequest     *http.Request
 	MapMock         Map
 	StringValueMock StringValue
 	IntValueMock    IntValue
 }
 
-func (mock *Former) Map(r *http.Request, model interface{}) error {
-	r.ParseForm()
+func (mock Form) Map(model interface{}) error {
+	mock.HttpRequest.ParseForm()
 
-	_ = form.Map(r.PostForm, model)
+	_ = form.Map(mock.HttpRequest.PostForm, model)
 
 	return mock.MapMock.Err
 }
 
-func (mock *Former) StringValue(r *http.Request, key string) (string, error) {
+func (mock Form) StringValue(key string) (string, error) {
 	return mock.StringValueMock.Str, mock.StringValueMock.Err
 }
 
-func (mock *Former) IntValue(r *http.Request, key string) (int, error) {
+func (mock Form) IntValue(key string) (int, error) {
 	return mock.IntValueMock.Int, mock.IntValueMock.Err
 }

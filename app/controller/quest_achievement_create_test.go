@@ -31,7 +31,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "former error",
 		form:               &map[string]string{},
-		former:             &mock.Former{MapMock: mock.Map{Err: mockFormerErr}},
+		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "missing form quest_id",
@@ -40,7 +40,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, questID),
 		form:               mapWithout(questAchievementCreateForm(), questID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "missing form achievement_id",
@@ -49,7 +49,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, achievementID),
 		form:               mapWithout(questAchievementCreateForm(), achievementID),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
 		purpose:            "quest exists db error",
@@ -58,7 +58,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
 		},
@@ -70,7 +70,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, questID),
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Bool: false},
 		},
@@ -82,7 +82,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:       mock.QuestExists{Bool: true},
 			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
@@ -95,7 +95,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(formatNotFound, achievementID),
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:       mock.QuestExists{Bool: true},
 			AchievementExistsMock: mock.AchievementExists{Bool: false},
@@ -108,7 +108,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:            mock.QuestExists{Bool: true},
 			AchievementExistsMock:      mock.AchievementExists{Bool: true},
@@ -122,7 +122,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatAlreadyExists, questAchievement),
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:            mock.QuestExists{Bool: true},
 			AchievementExistsMock:      mock.AchievementExists{Bool: true},
@@ -136,7 +136,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:            mock.QuestExists{Bool: true},
 			AchievementExistsMock:      mock.AchievementExists{Bool: true},
@@ -151,7 +151,7 @@ var questAchievementCreateTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(formatCreated, questAchievement),
 		form:               questAchievementCreateForm(),
-		former:             &mock.Former{},
+		former:             mock.Form{},
 		db: &mock.DB{
 			QuestExistsMock:            mock.QuestExists{Bool: true},
 			AchievementExistsMock:      mock.AchievementExists{Bool: true},
