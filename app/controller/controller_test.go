@@ -54,10 +54,10 @@ type test struct {
 }
 
 type testRequest struct {
-	method string
-	form   *url.Values
-	env    *model.Env
-	former model.Former
+	method        string
+	form          *url.Values
+	env           *model.Env
+	removeHeaders bool
 }
 
 type testResponse struct {
@@ -76,16 +76,18 @@ type testInput struct {
 	form               *map[string]string
 	db                 *mock.DB
 	logger             *mock.Logger
-	former             mock.Form
 	tokener            *mock.Tokener
 	args               []string
+	removeHeaders      bool
 }
 
 func constructForm(m *map[string]string) *url.Values {
 	form := &url.Values{}
 
-	for key, value := range *m {
-		form.Add(key, value)
+	if m != nil {
+		for key, value := range *m {
+			form.Add(key, value)
+		}
 	}
 
 	return form
@@ -99,12 +101,12 @@ func constructEnv(db *mock.DB, logger *mock.Logger, tokener *mock.Tokener) *mode
 	}
 }
 
-func constructTestRequest(method string, form *url.Values, env *model.Env, former model.Former) *testRequest {
+func constructTestRequest(method string, form *url.Values, env *model.Env, removeHeaders bool) *testRequest {
 	return &testRequest{
 		method,
 		form,
 		env,
-		former,
+		removeHeaders,
 	}
 }
 
@@ -123,12 +125,12 @@ func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 
 	req.Form = *test.request.form
 
-	req.Header = http.Header{}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	if !test.request.removeHeaders {
+		req.Header = http.Header{}
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
 
-	mockForm := test.request.former.(mock.Form)
-	mockForm.HttpRequest = req
-	test.request.env.Request = model.NewRequest(req, mockForm)
+	test.request.env.Request = req
 	app := app.App{test.request.env, test.handler}
 	serveHTTP(app, rec, req)
 
@@ -165,7 +167,7 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 			testInput.requestMethod,
 			constructForm(testInput.form),
 			constructEnv(testInput.db, testInput.logger, testInput.tokener),
-			testInput.former,
+			testInput.removeHeaders,
 		),
 		response: constructTestResponse(
 			testInput.responseType,

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -26,7 +25,6 @@ var achievementsIndexTests = []*test{
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    methodNotAllowed,
 		form:               &map[string]string{},
-		former:             mock.Form{},
 		args:               achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
@@ -36,10 +34,7 @@ var achievementsIndexTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, page),
 		form:               mapWithout(achievementsIndexForm(), page),
-		former: mock.Form{
-			IntValueMock: mock.IntValue{0, errors.New(fmt.Sprintf(formatMissing, page))},
-		},
-		args: achievementsIndexArgs,
+		args:               achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid page",
@@ -49,9 +44,6 @@ var achievementsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(formatInvalid, page),
 		form: &map[string]string{
 			page: "-1",
-		},
-		former: mock.Form{
-			IntValueMock: mock.IntValue{0, errors.New(fmt.Sprintf(formatInvalid, page))},
 		},
 		args: achievementsIndexArgs,
 	}),

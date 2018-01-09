@@ -1,5 +1,7 @@
 package controller
 
-//func TestQuestAchievementCreate(t *testing.T) {
-//run(t, questAchievementCreateTests)
-//}
+import "testing"
+
+func TestQuestAchievementCreate(t *testing.T) {
+	run(t, questAchievementCreateTests)
+}

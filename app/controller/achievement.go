@@ -4,15 +4,17 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func AchievementsIndex(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := env.Request.Form.IntValue(page)
+	pg, err := form.IntValue(env.Request, page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -40,11 +42,11 @@ func AchievementsIndex(env *model.Env) *response.Message {
 }
 
 func AchievementsByQuestID(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := env.Request.Form.IntValue(page)
+	pg, err := form.IntValue(env.Request, page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -54,7 +56,7 @@ func AchievementsByQuestID(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
 	}
 
-	qstID, err := env.Request.Form.StringValue(id)
+	qstID, err := form.StringValue(env.Request, id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -85,11 +87,11 @@ func AchievementsByQuestID(env *model.Env) *response.Message {
 }
 
 func AchievementSingle(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	achID, err := env.Request.Form.StringValue(id)
+	achID, err := form.StringValue(env.Request, id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -120,12 +122,12 @@ func AchievementSingle(env *model.Env) *response.Message {
 }
 
 func AchievementCreate(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(POST) {
+	if !request.IsMethod(env.Request, POST) {
 		return response.MethodNotAllowed()
 	}
 
 	ach := &model.Achievement{}
-	err := env.Request.Form.Map(ach)
+	err := form.ModelValue(env.Request, ach)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -156,7 +158,7 @@ func AchievementCreate(env *model.Env) *response.Message {
 		return response.NotFound(involvementID)
 	}
 
-	ach.AuthorID = env.Request.UserID
+	ach.AuthorID = env.UserID
 
 	id, err := env.DB.AchievementCreate(ach)
 

@@ -31,9 +31,9 @@ var userCreateTests = []*test{
 		requestMethod:      POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    "former error",
+		responseMessage:    "content-type of request is incorrect",
 		form:               &map[string]string{},
-		former:             mock.Form{MapMock: mock.Map{Err: mockFormerErr}},
+		removeHeaders:      true,
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form first_name",
@@ -42,7 +42,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, firstName),
 		form:               mapWithout(userCreateForm(), firstName),
-		former:             mock.Form{},
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form last_name",
@@ -51,7 +50,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, lastName),
 		form:               mapWithout(userCreateForm(), lastName),
-		former:             mock.Form{},
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form email",
@@ -60,7 +58,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, email),
 		form:               mapWithout(userCreateForm(), email),
-		former:             mock.Form{},
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form password",
@@ -69,7 +66,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatMissing, password),
 		form:               mapWithout(userCreateForm(), password),
-		former:             mock.Form{},
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user email exists db error",
@@ -78,7 +74,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               userCreateForm(),
-		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
 		},
@@ -90,7 +85,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(formatAlreadyExists, email),
 		form:               userCreateForm(),
-		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
 		},
@@ -102,7 +96,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    friendlyErrorMessage,
 		form:               userCreateForm(),
-		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
 			UserCreateMock:      mock.UserCreate{Err: mockDbErr},
@@ -115,7 +108,6 @@ var userCreateTests = []*test{
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(formatCreated, user),
 		form:               userCreateForm(),
-		former:             mock.Form{},
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
 			UserCreateMock:      mock.UserCreate{ID: mockID},

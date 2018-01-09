@@ -16,8 +16,7 @@ type App struct {
 }
 
 func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	form := model.NewForm(r)
-	app.Env.Request = model.NewRequest(r, form)
+	app.Env.Request = r
 
 	response := app.Handler(app.Env)
 

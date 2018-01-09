@@ -1,45 +1,78 @@
 package request
 
-//func TestGetHeader_ValidHeader(t *testing.T) {
-//req := httptest.NewRequest("GET", "/auth", nil)
+import (
+	"net/http/httptest"
+	"testing"
+)
 
-//key := "header_key"
-//expectedValue := "header_value"
+func TestIsMethod_ValidMethod(t *testing.T) {
+	req := httptest.NewRequest("GET", "/auth", nil)
 
-//req.Header.Add(key, expectedValue)
+	actualValue := IsMethod(req, "GET")
 
-//actualValue, err := GetHeader(req, key)
+	expectedValue := true
 
-//if err != nil {
-//t.Fatalf("GetHeader returned error: %v",
-//err)
-//}
+	// Check the status code is what we expect.
+	if expectedValue != actualValue {
+		t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
+			expectedValue, actualValue)
+	}
+}
 
-//// Check the status code is what we expect.
-//if expectedValue != actualValue {
-//t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
-//expectedValue, actualValue)
-//}
-//}
+func TestIsMethod_InvalidMethod(t *testing.T) {
+	req := httptest.NewRequest("GET", "/auth", nil)
 
-//func TestGetHeader_MissingHeader(t *testing.T) {
-//req := httptest.NewRequest("GET", "/auth", nil)
+	actualValue := IsMethod(req, "POST")
 
-//expectedValue := headerMissing
+	expectedValue := false
 
-//key := "header_key"
+	// Check the status code is what we expect.
+	if expectedValue != actualValue {
+		t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
+			expectedValue, actualValue)
+	}
+}
 
-//_, err := GetHeader(req, key)
+func TestGetHeader_ValidHeader(t *testing.T) {
+	req := httptest.NewRequest("GET", "/auth", nil)
 
-//if err == nil {
-//t.Fatalf("GetHeader expected error, but it was nil")
-//}
+	key := "header_key"
+	expectedValue := "header_value"
 
-//actualValue := err.Error()
+	req.Header.Add(key, expectedValue)
 
-//// Check the status code is what we expect.
-//if expectedValue != actualValue {
-//t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
-//expectedValue, actualValue)
-//}
-//}
+	actualValue, err := HeaderValue(req, key)
+
+	if err != nil {
+		t.Fatalf("GetHeader returned error: %v",
+			err)
+	}
+
+	// Check the status code is what we expect.
+	if expectedValue != actualValue {
+		t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
+			expectedValue, actualValue)
+	}
+}
+
+func TestGetHeader_MissingHeader(t *testing.T) {
+	req := httptest.NewRequest("GET", "/auth", nil)
+
+	expectedValue := headerMissing
+
+	key := "header_key"
+
+	_, err := HeaderValue(req, key)
+
+	if err == nil {
+		t.Fatalf("GetHeader expected error, but it was nil")
+	}
+
+	actualValue := err.Error()
+
+	// Check the status code is what we expect.
+	if expectedValue != actualValue {
+		t.Fatalf("GetHeader returned wrong value: expected %v, actual %v",
+			expectedValue, actualValue)
+	}
+}

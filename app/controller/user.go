@@ -5,16 +5,18 @@ import (
 	"log"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func UserAuth(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(POST) {
+	if !request.IsMethod(env.Request, POST) {
 		return response.MethodNotAllowed()
 	}
 
 	auth := &model.User{}
-	err := env.Request.Form.Map(auth)
+	err := form.ModelValue(env.Request, auth)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -35,7 +37,7 @@ func UserAuth(env *model.Env) *response.Message {
 	}
 
 	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, email))
+		return response.NotFound(email)
 	}
 
 	uID, err := env.DB.UserAuth(auth.Email, auth.Password)
@@ -51,16 +53,16 @@ func UserAuth(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	return response.Created(authorized, token)
+	return response.Created(authToken, token)
 }
 
 func UserCreate(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(POST) {
+	if !request.IsMethod(env.Request, POST) {
 		return response.MethodNotAllowed()
 	}
 
 	usr := &model.User{}
-	err := env.Request.Form.Map(usr)
+	err := form.ModelValue(env.Request, usr)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -98,5 +100,5 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	return response.Created(fmt.Sprintf(formatCreated, user), id)
+	return response.Created(user, id)
 }

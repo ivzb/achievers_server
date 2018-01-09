@@ -1,13 +1,15 @@
 package controller
 
-//func TestQuestsIndex(t *testing.T) {
-//run(t, questsIndexTests)
-//}
+import "testing"
 
-//func TestQuestSingle(t *testing.T) {
-//run(t, questSingleTests)
-//}
+func TestQuestsIndex(t *testing.T) {
+	run(t, questsIndexTests)
+}
 
-//func TestQuestCreate(t *testing.T) {
-//run(t, questCreateTests)
-//}
+func TestQuestSingle(t *testing.T) {
+	run(t, questSingleTests)
+}
+
+func TestQuestCreate(t *testing.T) {
+	run(t, questCreateTests)
+}

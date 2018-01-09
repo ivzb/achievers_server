@@ -4,15 +4,17 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func QuestsIndex(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := env.Request.Form.IntValue(page)
+	pg, err := form.IntValue(env.Request, page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -29,11 +31,11 @@ func QuestsIndex(env *model.Env) *response.Message {
 	}
 
 	if len(qsts) == 0 {
-		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+		return response.NotFound(page)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, quests),
+		quests,
 		len(qsts),
 		qsts)
 }
@@ -43,7 +45,7 @@ func QuestSingle(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, err := env.Request.Form.StringValue(id)
+	qstID, err := form.StringValue(env.Request, id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -56,7 +58,7 @@ func QuestSingle(env *model.Env) *response.Message {
 	}
 
 	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, quest))
+		return response.NotFound(quest)
 	}
 
 	qst, err := env.DB.QuestSingle(qstID)
@@ -66,7 +68,7 @@ func QuestSingle(env *model.Env) *response.Message {
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, quest),
+		quest,
 		1,
 		qst)
 }
@@ -77,7 +79,7 @@ func QuestCreate(env *model.Env) *response.Message {
 	}
 
 	qst := &model.Quest{}
-	err := env.Request.Form.Map(qst)
+	err := form.ModelValue(env.Request, qst)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -106,7 +108,7 @@ func QuestCreate(env *model.Env) *response.Message {
 	}
 
 	if !involvementExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, involvementID))
+		return response.NotFound(involvementID)
 	}
 
 	questTypeExists, err := env.DB.QuestTypeExists(qst.QuestTypeID)
@@ -116,10 +118,10 @@ func QuestCreate(env *model.Env) *response.Message {
 	}
 
 	if !questTypeExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, questTypeID))
+		return response.NotFound(questTypeID)
 	}
 
-	qst.AuthorID = env.Request.UserID
+	qst.AuthorID = env.UserID
 
 	id, err := env.DB.QuestCreate(qst)
 
@@ -127,8 +129,7 @@ func QuestCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	return response.Ok(
-		fmt.Sprintf(formatCreated, quest),
-		1,
+	return response.Created(
+		quest,
 		id)
 }

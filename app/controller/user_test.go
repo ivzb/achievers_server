@@ -1,9 +1,11 @@
 package controller
 
-//func TestUserAuth(t *testing.T) {
-//run(t, userAuthTests)
-//}
+import "testing"
 
-//func TestUserCreate(t *testing.T) {
-//run(t, userCreateTests)
-//}
+func TestUserAuth(t *testing.T) {
+	run(t, userAuthTests)
+}
+
+func TestUserCreate(t *testing.T) {
+	run(t, userCreateTests)
+}

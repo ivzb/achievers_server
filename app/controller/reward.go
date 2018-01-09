@@ -4,18 +4,24 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func RewardsIndex(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := env.Request.Form.IntValue(page)
+	pg, err := form.IntValue(env.Request, page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
+	}
+
+	if pg < 0 {
+		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
 	}
 
 	rwds, err := env.DB.RewardsAll(pg)
@@ -25,21 +31,21 @@ func RewardsIndex(env *model.Env) *response.Message {
 	}
 
 	if len(rwds) == 0 {
-		return response.NotFound(fmt.Sprintf(formatNotFound, page))
+		return response.NotFound(page)
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, rewards),
+		rewards,
 		len(rwds),
 		rwds)
 }
 
 func RewardSingle(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(GET) {
+	if !request.IsMethod(env.Request, GET) {
 		return response.MethodNotAllowed()
 	}
 
-	rwdID, err := env.Request.Form.StringValue(id)
+	rwdID, err := form.StringValue(env.Request, id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -52,7 +58,7 @@ func RewardSingle(env *model.Env) *response.Message {
 	}
 
 	if !exists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, reward))
+		return response.NotFound(reward)
 	}
 
 	rwd, err := env.DB.RewardSingle(rwdID)
@@ -62,18 +68,18 @@ func RewardSingle(env *model.Env) *response.Message {
 	}
 
 	return response.Ok(
-		fmt.Sprintf(formatFound, reward),
+		reward,
 		1,
 		rwd)
 }
 
 func RewardCreate(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(POST) {
+	if !request.IsMethod(env.Request, POST) {
 		return response.MethodNotAllowed()
 	}
 
 	rwd := &model.Reward{}
-	err := env.Request.Form.Map(rwd)
+	err := form.ModelValue(env.Request, rwd)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -102,10 +108,10 @@ func RewardCreate(env *model.Env) *response.Message {
 	}
 
 	if !rewardTypeExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, rewardTypeID))
+		return response.NotFound(rewardTypeID)
 	}
 
-	rwd.AuthorID = env.Request.UserID
+	rwd.AuthorID = env.UserID
 
 	id, err := env.DB.RewardCreate(rwd)
 
@@ -113,8 +119,7 @@ func RewardCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	return response.Ok(
-		fmt.Sprintf(formatCreated, reward),
-		1,
+	return response.Created(
+		reward,
 		id)
 }

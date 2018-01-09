@@ -1,8 +1,11 @@
 package model
 
+import "net/http"
+
 type Env struct {
-	Request *Request
+	Request *http.Request
 	DB      DBSourcer
 	Log     Logger
 	Token   Tokener
+	UserID  string
 }

@@ -1,5 +1,7 @@
 package controller
 
-//func TestHomeIndex(t *testing.T) {
-//run(t, homeIndexTests)
-//}
+import "testing"
+
+func TestHomeIndex(t *testing.T) {
+	run(t, homeIndexTests)
+}

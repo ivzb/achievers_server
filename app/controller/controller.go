@@ -47,6 +47,7 @@ const (
 	questAchievement = "quest_achievement"
 	home             = "home"
 	welcome          = "welcome"
+	authToken        = "auth_token"
 
 	nonNegative = 0
 	positive    = 1

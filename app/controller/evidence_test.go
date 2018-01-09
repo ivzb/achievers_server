@@ -1,13 +1,15 @@
 package controller
 
-//func TestEvidencesIndex(t *testing.T) {
-//run(t, evidencesIndexTests)
-//}
+import "testing"
 
-//func TestEvidenceSingle(t *testing.T) {
-//run(t, evidenceSingleTests)
-//}
+func TestEvidencesIndex(t *testing.T) {
+	run(t, evidencesIndexTests)
+}
 
-//func TestEvidenceCreate(t *testing.T) {
-//run(t, evidenceCreateTests)
-//}
+func TestEvidenceSingle(t *testing.T) {
+	run(t, evidenceSingleTests)
+}
+
+func TestEvidenceCreate(t *testing.T) {
+	run(t, evidenceCreateTests)
+}

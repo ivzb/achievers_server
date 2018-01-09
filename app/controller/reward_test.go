@@ -1,13 +1,15 @@
 package controller
 
-//func TestRewardsIndex(t *testing.T) {
-//run(t, rewardsIndexTests)
-//}
+import "testing"
 
-//func TestRewardSingle(t *testing.T) {
-//run(t, rewardSingleTests)
-//}
+func TestRewardsIndex(t *testing.T) {
+	run(t, rewardsIndexTests)
+}
 
-//func TestRewardCreate(t *testing.T) {
-//run(t, rewardCreateTests)
-//}
+func TestRewardSingle(t *testing.T) {
+	run(t, rewardSingleTests)
+}
+
+func TestRewardCreate(t *testing.T) {
+	run(t, rewardCreateTests)
+}

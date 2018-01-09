@@ -4,16 +4,18 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func QuestAchievementCreate(env *model.Env) *response.Message {
-	if !env.Request.IsMethod(POST) {
+	if !request.IsMethod(env.Request, POST) {
 		return response.MethodNotAllowed()
 	}
 
 	qstAch := &model.QuestAchievement{}
-	err := env.Request.Form.Map(qstAch)
+	err := form.ModelValue(env.Request, qstAch)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -35,7 +37,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if !qstExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, questID))
+		return response.NotFound(questID)
 	}
 
 	achExists, err := env.DB.AchievementExists(qstAch.AchievementID)
@@ -46,7 +48,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if !achExists {
-		return response.NotFound(fmt.Sprintf(formatNotFound, achievementID))
+		return response.NotFound(achievementID)
 	}
 
 	achQstExists, err := env.DB.QuestAchievementExists(qstAch.QuestID, qstAch.AchievementID)
@@ -60,7 +62,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, questAchievement))
 	}
 
-	qstAch.AuthorID = env.Request.UserID
+	qstAch.AuthorID = env.UserID
 
 	id, err := env.DB.QuestAchievementCreate(qstAch)
 
@@ -69,8 +71,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	return response.Ok(
-		fmt.Sprintf(formatCreated, questAchievement),
-		1,
+	return response.Created(
+		questAchievement,
 		id)
 }
