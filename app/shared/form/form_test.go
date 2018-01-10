@@ -176,7 +176,11 @@ func TestModelValue_InvalidContentType(t *testing.T) {
 }
 
 //func TestModelValue_InvalidForm(t *testing.T) {
-//req := httptest.NewRequest("GET", "/auth?asd&", nil)
+//req, _ := http.NewRequest(
+//"POST",
+//"/test",
+//nil,
+//)
 
 //req.Header = http.Header{}
 //req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -186,6 +190,131 @@ func TestModelValue_InvalidContentType(t *testing.T) {
 //err := ModelValue(req, actual)
 
 //if err == nil {
-//t.Error("Map should have returned unsupported error")
+//t.Error("ModelValue should have returned error")
 //}
 //}
+
+func TestStringValue_ValidString(t *testing.T) {
+	expectedTitle := "Mock"
+
+	form := url.Values{}
+	form.Add("title", expectedTitle)
+
+	req := httptest.NewRequest("GET", "/test", strings.NewReader(form.Encode()))
+
+	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	actualTitle, err := StringValue(req, "title")
+
+	if err != nil {
+		t.Errorf("StringValue returned unexpected error: %v",
+			err)
+	}
+
+	formatUnexpected := "StringValue returned unexpected %s: got %v want %v"
+
+	if expectedTitle != actualTitle {
+		t.Errorf(formatUnexpected, "title", expectedTitle, actualTitle)
+	}
+}
+
+func TestStringValue_MissingString(t *testing.T) {
+	expected := ""
+
+	form := url.Values{}
+
+	req := httptest.NewRequest("GET", "/test", strings.NewReader(form.Encode()))
+
+	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	actual, err := StringValue(req, "title")
+
+	if err == nil {
+		t.Errorf("StringValue should have returned an error, but didn't")
+	}
+
+	formatUnexpected := "StringValue returned unexpected %s: got %v want %v"
+
+	if expected != actual {
+		t.Errorf(formatUnexpected, "title", expected, actual)
+	}
+}
+
+func TestIntValue_ValidInt(t *testing.T) {
+	expectedID := 5
+
+	form := url.Values{}
+	form.Add("id", strconv.Itoa(expectedID))
+
+	req := httptest.NewRequest("GET", "/test", strings.NewReader(form.Encode()))
+
+	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	actualID, err := IntValue(req, "id")
+
+	if err != nil {
+		t.Errorf("IntValue returned unexpected error: %v",
+			err)
+	}
+
+	formatUnexpected := "IntValue returned unexpected %s: got %v want %v"
+
+	if expectedID != actualID {
+		t.Errorf(formatUnexpected, "id", expectedID, actualID)
+	}
+}
+
+func TestIntValue_MissingInt(t *testing.T) {
+	expectedID := 0
+
+	form := url.Values{}
+
+	req := httptest.NewRequest("GET", "/test", strings.NewReader(form.Encode()))
+
+	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	actualID, err := IntValue(req, "id")
+
+	if err == nil {
+		t.Errorf("IntValue should have returned an error, but didn't")
+	}
+
+	formatUnexpected := "IntValue returned unexpected %s: got %v want %v"
+
+	if expectedID != actualID {
+		t.Errorf(formatUnexpected, "id", expectedID, actualID)
+	}
+}
+
+func TestIntValue_InvalidInt(t *testing.T) {
+	expectedID := 0
+
+	form := url.Values{}
+	form.Add("id", "five")
+
+	req := httptest.NewRequest("GET", "/test", strings.NewReader(form.Encode()))
+
+	req.Form = form
+	req.Header = http.Header{}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	actualID, err := IntValue(req, "id")
+
+	if err == nil {
+		t.Errorf("IntValue should have returned an error, but didn't")
+	}
+
+	formatUnexpected := "IntValue returned unexpected %s: got %v want %v"
+
+	if expectedID != actualID {
+		t.Errorf(formatUnexpected, "id", expectedID, actualID)
+	}
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http/pprof"
 
 	"github.com/ivzb/achievers_server/app/controller"
 	"github.com/ivzb/achievers_server/app/middleware/app"
@@ -57,6 +58,8 @@ func main() {
 
 	http.Handle("/", anonChain(env, controller.HomeIndex))
 
+	http.HandleFunc("/debug/profile", pprof.Profile)
+
 	http.Handle("/user/auth", anonChain(env, controller.UserAuth))
 	http.Handle("/user/create", anonChain(env, controller.UserCreate))
 
@@ -79,7 +82,7 @@ func main() {
 
 	http.Handle("/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func authChain(env *model.Env, handler app.Handler) http.Handler {
