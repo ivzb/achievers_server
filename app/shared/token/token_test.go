@@ -11,7 +11,7 @@ import (
 func TestEnsureExists_NonExisting(t *testing.T) {
 	info := &Info{Path: "token.pem"}
 
-	if file.Exist(info.Path) {
+	if file.Exists(info.Path) {
 		err := os.Remove(info.Path)
 
 		if err != nil {
@@ -25,7 +25,7 @@ func TestEnsureExists_NonExisting(t *testing.T) {
 		t.Fatalf("EnsureExists returned error: %v", err)
 	}
 
-	if !file.Exist(info.Path) {
+	if !file.Exists(info.Path) {
 		t.Fatalf("Token file does not exist but it should have been created")
 	}
 
@@ -35,7 +35,7 @@ func TestEnsureExists_NonExisting(t *testing.T) {
 func TestEnsureExists_Existing(t *testing.T) {
 	info := &Info{Path: "token.pem"}
 
-	if !file.Exist(info.Path) {
+	if !file.Exists(info.Path) {
 		content := []byte{1, 2, 3}
 		err := ioutil.WriteFile(info.Path, content, 0600)
 
@@ -50,7 +50,7 @@ func TestEnsureExists_Existing(t *testing.T) {
 		t.Fatalf("EnsureExists returned error: %v", err)
 	}
 
-	if !file.Exist(info.Path) {
+	if !file.Exists(info.Path) {
 		t.Fatalf("Token file does not exist but it should have been created")
 	}
 

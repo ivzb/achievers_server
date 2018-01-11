@@ -1,6 +1,8 @@
 package mock
 
 type DB struct {
+	UUIDMock UUID
+
 	UserExistsMock      UserExists
 	UserEmailExistsMock UserEmailExists
 	UserCreateMock      UserCreate
@@ -37,4 +39,13 @@ type DB struct {
 	InvolvementExistsMock InvolvementExists
 
 	MultimediaTypeExistsMock MultimediaTypeExists
+}
+
+type UUID struct {
+	UUID string
+	Err  error
+}
+
+func (mock *DB) UUID() (string, error) {
+	return mock.UUIDMock.UUID, mock.UUIDMock.Err
 }

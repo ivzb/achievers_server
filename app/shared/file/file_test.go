@@ -29,7 +29,7 @@ func TestRead_NonExistingFile(t *testing.T) {
 }
 
 func TestExist_Existing(t *testing.T) {
-	exist := Exist("file.mock")
+	exist := Exists("file.mock")
 
 	if exist == false {
 		t.Fatalf("Exist should return true")
@@ -37,7 +37,7 @@ func TestExist_Existing(t *testing.T) {
 }
 
 func TestExist_NonExisting(t *testing.T) {
-	exist := Exist("non_existing_file.mock")
+	exist := Exists("non_existing_file.mock")
 
 	if exist == true {
 		t.Fatalf("Exist should return false")

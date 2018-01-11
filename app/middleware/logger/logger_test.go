@@ -8,6 +8,7 @@ import (
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -21,7 +22,8 @@ func TestLoggerHandler_Log(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &model.Env{
-		Log: &mock.Logger{},
+		Log:    &mock.Logger{},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}

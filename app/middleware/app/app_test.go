@@ -7,6 +7,7 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -15,7 +16,7 @@ func testHandler(env *model.Env) *response.Message {
 }
 
 func jsonErrorHandler(env *model.Env) *response.Message {
-	return &response.Message{http.StatusOK, func() {}}
+	return &response.Message{http.StatusOK, func() {}, response.TypeJSON}
 }
 
 func TestAppHandler_ValidHandler(t *testing.T) {
@@ -26,6 +27,7 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
+		Config: &config.Config{},
 	}
 
 	app := App{env, testHandler}
@@ -56,6 +58,7 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
+		Config: &config.Config{},
 	}
 
 	app := App{env, jsonErrorHandler}

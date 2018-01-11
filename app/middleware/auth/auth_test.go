@@ -9,6 +9,7 @@ import (
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -29,6 +30,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
 		},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}
@@ -57,8 +59,9 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &model.Env{
-		DB:    &mock.DB{},
-		Token: &mock.Tokener{},
+		DB:     &mock.DB{},
+		Token:  &mock.Tokener{},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}
@@ -92,6 +95,7 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{Dec: "", Err: errors.New("decryption error")},
 		},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}
@@ -127,6 +131,7 @@ func TestAuthHandler_DBError(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
 		},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}
@@ -162,6 +167,7 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
 		},
+		Config: &config.Config{},
 	}
 
 	app := app.App{Env: env, Handler: testHandler}
