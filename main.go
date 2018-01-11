@@ -50,9 +50,10 @@ func main() {
 	log := model.NewLogger()
 
 	env := &model.Env{
-		DB:    db,
-		Log:   log,
-		Token: token,
+		DB:     db,
+		Log:    log,
+		Token:  token,
+		Config: conf,
 	}
 
 	http.Handle("/", anonChain(env, controller.HomeIndex))
@@ -80,6 +81,9 @@ func main() {
 	http.Handle("/quest/create", authChain(env, controller.QuestCreate))
 
 	http.Handle("/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
+
+	http.Handle("/file", authChain(env, controller.FileSingle))
+	http.Handle("/file/create", authChain(env, controller.FileCreate))
 
 	port := strconv.Itoa(conf.Server.HTTPPort)
 	log.Message("started@:" + port)

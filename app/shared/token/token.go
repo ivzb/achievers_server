@@ -14,7 +14,7 @@ type Info struct {
 }
 
 func (info *Info) EnsureExists() error {
-	if !file.Exist(info.Path) {
+	if !file.Exists(info.Path) {
 		dirs := path.Dir(info.Path)
 		os.MkdirAll(dirs, 0777)
 

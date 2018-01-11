@@ -19,6 +19,8 @@ const (
 
 // DBSourcer contains all available DAO functions
 type DBSourcer interface {
+	UUID() (string, error)
+
 	UserExists(id string) (bool, error)
 	UserEmailExists(email string) (bool, error)
 	UserCreate(user *User) (string, error)

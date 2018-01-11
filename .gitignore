@@ -76,6 +76,7 @@ src/cmd/hgpatch/hgpatch
 doc/codelab/wiki/*.bin
 /bin/
 /pkg/
+/tmp/*
 
 /rsa/*
 *.out

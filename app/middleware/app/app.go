@@ -15,12 +15,24 @@ type App struct {
 	Handler Handler
 }
 
-func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	app.Env.Request = r
+func (app App) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	size := app.Env.Config.Server.MaxBytesReader // in Mb's
+	req.Body = http.MaxBytesReader(w, req.Body, size)
 
-	response := app.Handler(app.Env)
+	app.Env.Request = req
 
-	js, err := json.Marshal(response.Result)
+	resp := app.Handler(app.Env)
+
+	switch resp.Type {
+	case response.TypeFile:
+		serveFile(w, req, resp)
+	default:
+		serveJSON(w, resp)
+	}
+}
+
+func serveJSON(w http.ResponseWriter, resp *response.Message) {
+	js, err := json.Marshal(resp.Result)
 
 	if err != nil {
 		http.Error(w, "JSON Error: "+err.Error(), http.StatusInternalServerError)
@@ -28,6 +40,11 @@ func (app App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(response.StatusCode)
+	w.WriteHeader(resp.StatusCode)
 	w.Write(js)
+}
+
+func serveFile(w http.ResponseWriter, r *http.Request, msg *response.Message) {
+	filepath := msg.Result.(string)
+	http.ServeFile(w, r, filepath)
 }

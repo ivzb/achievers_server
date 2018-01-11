@@ -3,6 +3,7 @@ package form
 import (
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -66,6 +67,14 @@ func IntValue(r *http.Request, key string) (int, error) {
 	}
 
 	return castedValue, nil
+}
+
+// MultipartFile returns multipart file by key and error if not found
+func MultipartFile(r *http.Request, key string) (multipart.File, *multipart.FileHeader, error) {
+	r.ParseMultipartForm(0)
+	file, header, err := r.FormFile(key)
+
+	return file, header, err
 }
 
 // prevent running on types other than struct

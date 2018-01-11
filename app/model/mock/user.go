@@ -34,6 +34,6 @@ func (mock *DB) UserCreate(user *model.User) (string, error) {
 	return mock.UserCreateMock.ID, mock.UserCreateMock.Err
 }
 
-func (mock *DB) UserAuth(string, string) (string, error) {
+func (mock *DB) UserAuth(auth *model.Auth) (string, error) {
 	return mock.UserAuthMock.ID, mock.UserAuthMock.Err
 }

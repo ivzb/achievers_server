@@ -3,6 +3,7 @@ package file
 import (
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"os"
 )
 
@@ -22,11 +23,28 @@ func Read(path string) ([]byte, error) {
 	return bytes, err
 }
 
-// Exist file
-func Exist(path string) bool {
+// Exists file
+func Exists(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	}
 
 	return true
+}
+
+// Store file
+func Create(path string, file multipart.File) error {
+	out, err := os.Create(path)
+
+	defer file.Close()
+
+	if err != nil {
+		return err
+	}
+
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+
+	return err
 }

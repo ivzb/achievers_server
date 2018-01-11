@@ -13,10 +13,16 @@ var (
 	formatCreated       = "%s created"
 )
 
+const (
+	TypeJSON = 0
+	TypeFile = 1
+)
+
 // Message is the return type of all handlers
 type Message struct {
 	StatusCode int
 	Result     interface{}
+	Type       int
 }
 
 // Core Response
@@ -47,6 +53,14 @@ func Ok(
 
 	message := fmt.Sprintf(formatFound, key)
 	return send(http.StatusOK, message, length, results)
+}
+
+// File sends response with status code 2000
+func File(
+	key string,
+	results interface{}) *Message {
+
+	return &Message{200, results, TypeFile}
 }
 
 // Created sends response with status code 201
@@ -118,5 +132,5 @@ func send(
 		}
 	}
 
-	return &Message{status, result}
+	return &Message{status, result, TypeJSON}
 }
