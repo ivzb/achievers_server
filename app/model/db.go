@@ -22,7 +22,7 @@ type DBSourcer interface {
 	UserExists(id string) (bool, error)
 	UserEmailExists(email string) (bool, error)
 	UserCreate(user *User) (string, error)
-	UserAuth(string, string) (string, error)
+	UserAuth(auth *Auth) (string, error)
 
 	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)

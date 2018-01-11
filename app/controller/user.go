@@ -15,7 +15,7 @@ func UserAuth(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	auth := &model.User{}
+	auth := &model.Auth{}
 	err := form.ModelValue(env.Request, auth)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func UserAuth(env *model.Env) *response.Message {
 		return response.NotFound(email)
 	}
 
-	uID, err := env.DB.UserAuth(auth.Email, auth.Password)
+	uID, err := env.DB.UserAuth(auth)
 
 	if err != nil {
 		log.Println(err)

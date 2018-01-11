@@ -89,7 +89,7 @@ CREATE TABLE user (
     first_name VARCHAR(50) NOT NULL,
     last_name  VARCHAR(50) NOT NULL,
     email      VARCHAR(100) NOT NULL,
-    password   CHAR(60) NOT NULL,
+    password   BINARY(60) NOT NULL,
     
     user_status_id TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
     

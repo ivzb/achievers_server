@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/shared/database"
+	"github.com/ivzb/achievers_server/app/shared/server"
 	"github.com/ivzb/achievers_server/app/shared/token"
 )
 
@@ -16,8 +17,8 @@ import (
 type Config struct {
 	Database database.Info `json:"Database"`
 	// Email    email.SMTPInfo  `json:"Email"`
-	// Server   server.Server   `json:"Server"`
-	Token token.Info `json:"Token"`
+	Server server.Info `json:"Server"`
+	Token  token.Info  `json:"Token"`
 }
 
 // New config instance

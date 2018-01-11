@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http/pprof"
+	"strconv"
 
 	"github.com/ivzb/achievers_server/app/controller"
 	"github.com/ivzb/achievers_server/app/middleware/app"
@@ -54,8 +55,6 @@ func main() {
 		Token: token,
 	}
 
-	log.Message("started@:8080")
-
 	http.Handle("/", anonChain(env, controller.HomeIndex))
 
 	http.HandleFunc("/debug/profile", pprof.Profile)
@@ -82,7 +81,9 @@ func main() {
 
 	http.Handle("/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
 
-	http.ListenAndServe(":80", nil)
+	port := strconv.Itoa(conf.Server.HTTPPort)
+	log.Message("started@:" + port)
+	http.ListenAndServe(":"+port, nil)
 }
 
 func authChain(env *model.Env, handler app.Handler) http.Handler {
