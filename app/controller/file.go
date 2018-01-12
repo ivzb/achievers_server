@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/file"
@@ -16,13 +15,13 @@ func FileSingle(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, err := form.StringValue(env.Request, id)
+	filename, err := form.StringValue(env.Request, id)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
 	}
 
-	path := fmt.Sprintf("%s/%s.jpg", env.Config.Server.FileStorage, id)
+	path := fmt.Sprintf("%s/%s", env.Config.Server.FileStorage, filename)
 	exists := file.Exists(path)
 
 	if !exists {
@@ -37,7 +36,7 @@ func FileCreate(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	multipart, header, err := form.MultipartFile(env.Request, "file")
+	multipart, _, err := form.MultipartFile(env.Request, "file")
 
 	if err != nil {
 		env.Log.Error(err)
@@ -51,9 +50,7 @@ func FileCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	ext := filepath.Ext(header.Filename)
-
-	path := fmt.Sprintf("%s/%s%s", env.Config.Server.FileStorage, filename, ext)
+	path := fmt.Sprintf("%s/%s", env.Config.Server.FileStorage, filename)
 	err = file.Create(path, multipart)
 
 	if err != nil {
