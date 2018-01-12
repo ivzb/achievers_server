@@ -56,10 +56,7 @@ func Ok(
 }
 
 // File sends response with status code 2000
-func File(
-	key string,
-	results interface{}) *Message {
-
+func File(results interface{}) *Message {
 	return &Message{200, results, TypeFile}
 }
 

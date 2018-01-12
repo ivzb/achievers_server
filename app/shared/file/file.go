@@ -32,11 +32,11 @@ func Exists(path string) bool {
 	return true
 }
 
-// Store file
+// Create a file
 func Create(path string, file multipart.File) error {
-	out, err := os.Create(path)
-
 	defer file.Close()
+
+	out, err := os.Create(path)
 
 	if err != nil {
 		return err

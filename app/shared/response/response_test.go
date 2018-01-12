@@ -156,6 +156,24 @@ func TestOk(t *testing.T) {
 	}
 }
 
+func TestFile(t *testing.T) {
+	status := http.StatusOK
+	expectedResult := "path_to_file"
+
+	response := File(expectedResult)
+
+	// Check the status code is what we expect.
+	if status != response.StatusCode {
+		fail(t, "OK", status, response.StatusCode)
+	}
+
+	actualResult := response.Result.(string)
+
+	if !cmp.Equal(expectedResult, actualResult) {
+		fail(t, "response.File", expectedResult, actualResult)
+	}
+}
+
 func TestCreated(t *testing.T) {
 	status := http.StatusCreated
 

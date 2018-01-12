@@ -48,7 +48,6 @@ const (
 	home             = "home"
 	welcome          = "welcome"
 	authToken        = "auth_token"
-	file             = "file"
 
 	nonNegative = 0
 	positive    = 1

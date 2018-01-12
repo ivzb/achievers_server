@@ -11,7 +11,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env) *response.Message {
+func testOkHandler(env *model.Env) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
@@ -19,7 +19,15 @@ func jsonErrorHandler(env *model.Env) *response.Message {
 	return &response.Message{http.StatusOK, func() {}, response.TypeJSON}
 }
 
-func TestAppHandler_ValidHandler(t *testing.T) {
+func testFileHandler(env *model.Env) *response.Message {
+	return &response.Message{
+		StatusCode: 200,
+		Result:     ".",
+		Type:       response.TypeFile,
+	}
+}
+
+func TestAppHandler_ValidJSONHandler(t *testing.T) {
 	req := httptest.NewRequest("GET", "/mock", nil)
 	rr := httptest.NewRecorder()
 
@@ -30,7 +38,7 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 		Config: &config.Config{},
 	}
 
-	app := App{env, testHandler}
+	app := App{env, testOkHandler}
 
 	var handler http.Handler = App(app)
 
@@ -50,7 +58,7 @@ func TestAppHandler_ValidHandler(t *testing.T) {
 	}
 }
 
-func TestAppHandler_InvalidJSON(t *testing.T) {
+func TestAppHandler_InvalidJSONHandler(t *testing.T) {
 	req := httptest.NewRequest("GET", "/mock", nil)
 	rr := httptest.NewRecorder()
 
@@ -82,5 +90,29 @@ func TestAppHandler_InvalidJSON(t *testing.T) {
 
 	if actualBody != expectedBody {
 		t.Errorf("handler returned unexpected body: got %v want %v", actualBody, expectedBody)
+	}
+}
+
+func TestAppHandler_ValidFileHandler(t *testing.T) {
+	req := httptest.NewRequest("GET", "/mock", nil)
+	rr := httptest.NewRecorder()
+
+	env := &model.Env{
+		Token: &mock.Tokener{
+			DecryptMock: mock.Decrypt{"decrypted", nil},
+		},
+		Config: &config.Config{},
+	}
+
+	app := App{env, testFileHandler}
+
+	var handler http.Handler = App(app)
+
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code is what we expect.
+	if status := rr.Code; status != http.StatusMovedPermanently {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
 	}
 }
