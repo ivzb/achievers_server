@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func QuestAchievementCreate(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, POST) {
+	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
 
@@ -22,11 +23,11 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if qstAch.QuestID == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, questID))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
 	}
 
 	if qstAch.AchievementID == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, achievementID))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
 	}
 
 	qstExists, err := env.DB.QuestExists(qstAch.QuestID)
@@ -37,7 +38,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if !qstExists {
-		return response.NotFound(questID)
+		return response.NotFound(consts.QuestID)
 	}
 
 	achExists, err := env.DB.AchievementExists(qstAch.AchievementID)
@@ -48,7 +49,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if !achExists {
-		return response.NotFound(achievementID)
+		return response.NotFound(consts.AchievementID)
 	}
 
 	achQstExists, err := env.DB.QuestAchievementExists(qstAch.QuestID, qstAch.AchievementID)
@@ -59,7 +60,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	if achQstExists {
-		return response.BadRequest(fmt.Sprintf(formatAlreadyExists, questAchievement))
+		return response.BadRequest(fmt.Sprintf(consts.FormatAlreadyExists, consts.QuestAchievement))
 	}
 
 	qstAch.AuthorID = env.UserID
@@ -72,6 +73,6 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 	}
 
 	return response.Created(
-		questAchievement,
+		consts.QuestAchievement,
 		id)
 }

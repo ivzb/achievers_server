@@ -6,37 +6,38 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func achievementSingleForm() *map[string]string {
 	return &map[string]string{
-		id: mockID,
+		consts.ID: mockID,
 	}
 }
 
 var achievementSingleTests = []*test{
 	constructAchievementSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, id),
-		form:               mapWithout(achievementSingleForm(), id),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(achievementSingleForm(), consts.ID),
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement exists db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementSingleForm(),
 		db: &mock.DB{
 			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
@@ -44,10 +45,10 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement does not exist",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, achievement),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Achievement),
 		form:               achievementSingleForm(),
 		db: &mock.DB{
 			AchievementExistsMock: mock.AchievementExists{Bool: false},
@@ -55,10 +56,10 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement single db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementSingleForm(),
 		db: &mock.DB{
 			AchievementExistsMock: mock.AchievementExists{Bool: true},
@@ -67,10 +68,10 @@ var achievementSingleTests = []*test{
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement single OK",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievement),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievement),
 		form:               achievementSingleForm(),
 		db: &mock.DB{
 			AchievementExistsMock: mock.AchievementExists{Bool: true},

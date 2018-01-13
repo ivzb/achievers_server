@@ -1,8 +1,11 @@
 package request
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func TestIsMethod_ValidMethod(t *testing.T) {
@@ -58,7 +61,7 @@ func TestGetHeader_ValidHeader(t *testing.T) {
 func TestGetHeader_MissingHeader(t *testing.T) {
 	req := httptest.NewRequest("GET", "/auth", nil)
 
-	expectedValue := headerMissing
+	expectedValue := fmt.Sprintf(consts.FormatMissing, consts.Header)
 
 	key := "header_key"
 

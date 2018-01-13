@@ -7,11 +7,12 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func achievementsIndexForm() *map[string]string {
 	return &map[string]string{
-		page: mockPage,
+		consts.Page: mockPage,
 	}
 }
 
@@ -20,39 +21,39 @@ var achievementsIndexArgs = []string{"9"}
 var achievementsIndexTests = []*test{
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 		args:               achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
-		purpose:            "missing form page",
-		requestMethod:      GET,
+		purpose:            "missing form consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, page),
-		form:               mapWithout(achievementsIndexForm(), page),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Page),
+		form:               mapWithout(achievementsIndexForm(), consts.Page),
 		args:               achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
-		purpose:            "invalid page",
-		requestMethod:      GET,
+		purpose:            "invalid consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatInvalid, page),
+		responseMessage:    fmt.Sprintf(consts.FormatInvalid, consts.Page),
 		form: &map[string]string{
-			page: "-1",
+			consts.Page: "-1",
 		},
 		args: achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
 		purpose:            "db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsIndexForm(),
 		db: &mock.DB{
 			AchievementsAllMock: mock.AchievementsAll{Err: mockDbErr},
@@ -60,11 +61,11 @@ var achievementsIndexTests = []*test{
 		args: achievementsIndexArgs,
 	}),
 	constructAchievementsIndexTest(&testInput{
-		purpose:            "no results on page",
-		requestMethod:      GET,
+		purpose:            "no results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, page),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               achievementsIndexForm(),
 		db: &mock.DB{
 			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(0)},
@@ -72,11 +73,11 @@ var achievementsIndexTests = []*test{
 		args: []string{"0"},
 	}),
 	constructAchievementsIndexTest(&testInput{
-		purpose:            "4 results on page",
-		requestMethod:      GET,
+		purpose:            "4 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsIndexForm(),
 		db: &mock.DB{
 			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(4)},
@@ -84,11 +85,11 @@ var achievementsIndexTests = []*test{
 		args: []string{"4"},
 	}),
 	constructAchievementsIndexTest(&testInput{
-		purpose:            "9 results on page",
-		requestMethod:      GET,
+		purpose:            "9 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsIndexForm(),
 		db: &mock.DB{
 			AchievementsAllMock: mock.AchievementsAll{Achs: mock.Achievements(9)},

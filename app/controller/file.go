@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/file"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
@@ -11,11 +12,11 @@ import (
 )
 
 func FileSingle(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, GET) {
+	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	filename, err := form.StringValue(env.Request, id)
+	filename, err := form.StringValue(env.Request, consts.ID)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -25,18 +26,18 @@ func FileSingle(env *model.Env) *response.Message {
 	exists := file.Exists(path)
 
 	if !exists {
-		return response.NotFound(id)
+		return response.NotFound(consts.ID)
 	}
 
 	return response.File(path)
 }
 
 func FileCreate(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, POST) {
+	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
 
-	multipart, _, err := form.MultipartFile(env.Request, "file")
+	multipart, _, err := form.MultipartFile(env.Request, consts.File)
 
 	if err != nil {
 		env.Log.Error(err)

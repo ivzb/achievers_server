@@ -7,12 +7,13 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func achievementsByQuestIDForm() *map[string]string {
 	return &map[string]string{
-		page: mockPage,
-		id:   mockID,
+		consts.Page: mockPage,
+		consts.ID:   mockID,
 	}
 }
 
@@ -20,49 +21,49 @@ var achievementsByQuestIDArgs = []string{"9"}
 
 var achievementsByQuestIDTests = []*test{
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "invalid request method",
-		requestMethod:      POST,
+		purpose:            "invalconsts.ID request method",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 		args:               achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "missing page",
-		requestMethod:      GET,
+		purpose:            "missing consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, page),
-		form:               mapWithout(achievementsByQuestIDForm(), page),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Page),
+		form:               mapWithout(achievementsByQuestIDForm(), consts.Page),
 		args:               achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "invalid page",
-		requestMethod:      GET,
+		purpose:            "invalconsts.ID consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatInvalid, page),
+		responseMessage:    fmt.Sprintf(consts.FormatInvalid, consts.Page),
 		form: &map[string]string{
-			page: "-1",
+			consts.Page: "-1",
 		},
 		args: achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "missing id",
-		requestMethod:      GET,
+		purpose:            "missing consts.ID",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, id),
-		form:               mapWithout(achievementsByQuestIDForm(), id),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(achievementsByQuestIDForm(), consts.ID),
 		args:               achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "questExists db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
@@ -70,11 +71,11 @@ var achievementsByQuestIDTests = []*test{
 		args: achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "id does not exist",
-		requestMethod:      GET,
+		purpose:            "consts.ID does not exist",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, id),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Bool: false},
@@ -83,10 +84,10 @@ var achievementsByQuestIDTests = []*test{
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
 		purpose:            "db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock:           mock.QuestExists{Bool: true},
@@ -95,11 +96,11 @@ var achievementsByQuestIDTests = []*test{
 		args: achievementsByQuestIDArgs,
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "no results on page",
-		requestMethod:      GET,
+		purpose:            "no results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, page),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock:           mock.QuestExists{Bool: true},
@@ -108,11 +109,11 @@ var achievementsByQuestIDTests = []*test{
 		args: []string{"0"},
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "4 results on page",
-		requestMethod:      GET,
+		purpose:            "4 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock:           mock.QuestExists{Bool: true},
@@ -121,11 +122,11 @@ var achievementsByQuestIDTests = []*test{
 		args: []string{"4"},
 	}),
 	constructAchievementsByQuestIDTest(&testInput{
-		purpose:            "9 results on page",
-		requestMethod:      GET,
+		purpose:            "9 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, achievements),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsByQuestIDForm(),
 		db: &mock.DB{
 			QuestExistsMock:           mock.QuestExists{Bool: true},

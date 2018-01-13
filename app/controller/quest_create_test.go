@@ -6,29 +6,30 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func questCreateForm() *map[string]string {
 	return &map[string]string{
-		title:         mockTitle,
-		pictureURL:    mockPictureURL,
-		involvementID: mockInvolvementID,
-		questTypeID:   mockQuestTypeID,
+		consts.Title:         mockTitle,
+		consts.PictureURL:    mockPictureURL,
+		consts.InvolvementID: mockInvolvementID,
+		consts.QuestTypeID:   mockQuestTypeID,
 	}
 }
 
 var questCreateTests = []*test{
 	constructQuestCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -36,43 +37,43 @@ var questCreateTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructQuestCreateTest(&testInput{
-		purpose:            "missing form title",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Title",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, title),
-		form:               mapWithout(questCreateForm(), title),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		form:               mapWithout(questCreateForm(), consts.Title),
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
-		form:               mapWithout(questCreateForm(), pictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		form:               mapWithout(questCreateForm(), consts.PictureURL),
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form involvement_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
-		form:               mapWithout(questCreateForm(), involvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.InvolvementID),
+		form:               mapWithout(questCreateForm(), consts.InvolvementID),
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "missing form quest_type_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, questTypeID),
-		form:               mapWithout(questCreateForm(), questTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.QuestTypeID),
+		form:               mapWithout(questCreateForm(), consts.QuestTypeID),
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "involvement exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
@@ -80,10 +81,10 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "involvement does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.InvolvementID),
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
@@ -91,10 +92,10 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest_type_id exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
@@ -103,10 +104,10 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest_type_id does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, questTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.QuestTypeID),
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
@@ -115,10 +116,10 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest create db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
@@ -128,10 +129,10 @@ var questCreateTests = []*test{
 	}),
 	constructQuestCreateTest(&testInput{
 		purpose:            "quest create ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, quest),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Quest),
 		form:               questCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},

@@ -6,29 +6,30 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func userCreateForm() *map[string]string {
 	return &map[string]string{
-		firstName: mockFirstName,
-		lastName:  mockLastName,
-		email:     mockEmail,
-		password:  mockPassword,
+		consts.FirstName: mockFirstName,
+		consts.LastName:  mockLastName,
+		consts.Email:     mockEmail,
+		consts.Password:  mockPassword,
 	}
 }
 
 var userCreateTests = []*test{
 	constructUserCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -37,53 +38,53 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form first_name",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, firstName),
-		form:               mapWithout(userCreateForm(), firstName),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.FirstName),
+		form:               mapWithout(userCreateForm(), consts.FirstName),
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form last_name",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, lastName),
-		form:               mapWithout(userCreateForm(), lastName),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.LastName),
+		form:               mapWithout(userCreateForm(), consts.LastName),
 	}),
 	constructUserCreateTest(&testInput{
-		purpose:            "missing form email",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Email",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, email),
-		form:               mapWithout(userCreateForm(), email),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Email),
+		form:               mapWithout(userCreateForm(), consts.Email),
 	}),
 	constructUserCreateTest(&testInput{
-		purpose:            "missing form password",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Password",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, password),
-		form:               mapWithout(userCreateForm(), password),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Password),
+		form:               mapWithout(userCreateForm(), consts.Password),
 	}),
 	constructUserCreateTest(&testInput{
-		purpose:            "user email exists db error",
-		requestMethod:      POST,
+		purpose:            "user consts.Email exists db error",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
 		},
 	}),
 	constructUserCreateTest(&testInput{
-		purpose:            "user email exists",
-		requestMethod:      POST,
+		purpose:            "user consts.Email exists",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatAlreadyExists, email),
+		responseMessage:    fmt.Sprintf(consts.FormatAlreadyExists, consts.Email),
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
@@ -91,10 +92,10 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user create db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
@@ -103,10 +104,10 @@ var userCreateTests = []*test{
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "user create ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, user),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.User),
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},

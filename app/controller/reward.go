@@ -4,24 +4,25 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
 func RewardsIndex(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, GET) {
+	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := form.IntValue(env.Request, page)
+	pg, err := form.IntValue(env.Request, consts.Page)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
 	}
 
 	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(formatInvalid, page))
+		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
 	}
 
 	rwds, err := env.DB.RewardsAll(pg)
@@ -31,21 +32,21 @@ func RewardsIndex(env *model.Env) *response.Message {
 	}
 
 	if len(rwds) == 0 {
-		return response.NotFound(page)
+		return response.NotFound(consts.Page)
 	}
 
 	return response.Ok(
-		rewards,
+		consts.Rewards,
 		len(rwds),
 		rwds)
 }
 
 func RewardSingle(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, GET) {
+	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	rwdID, err := form.StringValue(env.Request, id)
+	rwdID, err := form.StringValue(env.Request, consts.ID)
 
 	if err != nil {
 		return response.BadRequest(err.Error())
@@ -58,7 +59,7 @@ func RewardSingle(env *model.Env) *response.Message {
 	}
 
 	if !exists {
-		return response.NotFound(reward)
+		return response.NotFound(consts.Reward)
 	}
 
 	rwd, err := env.DB.RewardSingle(rwdID)
@@ -68,13 +69,13 @@ func RewardSingle(env *model.Env) *response.Message {
 	}
 
 	return response.Ok(
-		reward,
+		consts.Reward,
 		1,
 		rwd)
 }
 
 func RewardCreate(env *model.Env) *response.Message {
-	if !request.IsMethod(env.Request, POST) {
+	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
 
@@ -86,19 +87,19 @@ func RewardCreate(env *model.Env) *response.Message {
 	}
 
 	if rwd.Title == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, title))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
 	}
 
 	if rwd.Description == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, description))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Description))
 	}
 
 	if rwd.PictureURL == "" {
-		return response.BadRequest(fmt.Sprintf(formatMissing, pictureURL))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
 	}
 
 	if rwd.RewardTypeID == 0 {
-		return response.BadRequest(fmt.Sprintf(formatMissing, rewardTypeID))
+		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.RewardTypeID))
 	}
 
 	rewardTypeExists, err := env.DB.RewardTypeExists(rwd.RewardTypeID)
@@ -108,7 +109,7 @@ func RewardCreate(env *model.Env) *response.Message {
 	}
 
 	if !rewardTypeExists {
-		return response.NotFound(rewardTypeID)
+		return response.NotFound(consts.RewardTypeID)
 	}
 
 	rwd.AuthorID = env.UserID
@@ -120,6 +121,6 @@ func RewardCreate(env *model.Env) *response.Message {
 	}
 
 	return response.Created(
-		reward,
+		consts.Reward,
 		id)
 }

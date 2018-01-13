@@ -6,29 +6,30 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func achievementCreateForm() *map[string]string {
 	return &map[string]string{
-		title:         mockTitle,
-		description:   mockDescription,
-		pictureURL:    mockPictureURL,
-		involvementID: mockInvolvementID,
+		consts.Title:         mockTitle,
+		consts.Description:   mockDescription,
+		consts.PictureURL:    mockPictureURL,
+		consts.InvolvementID: mockInvolvementID,
 	}
 }
 
 var achievementCreateTests = []*test{
 	constructAchievementCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -36,43 +37,43 @@ var achievementCreateTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructAchievementCreateTest(&testInput{
-		purpose:            "missing form title",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Title",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, title),
-		form:               mapWithout(achievementCreateForm(), title),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		form:               mapWithout(achievementCreateForm(), consts.Title),
 	}),
 	constructAchievementCreateTest(&testInput{
-		purpose:            "missing form description",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Description",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, description),
-		form:               mapWithout(achievementCreateForm(), description),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Description),
+		form:               mapWithout(achievementCreateForm(), consts.Description),
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
-		form:               mapWithout(achievementCreateForm(), pictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		form:               mapWithout(achievementCreateForm(), consts.PictureURL),
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "missing form involvement_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, involvementID),
-		form:               mapWithout(achievementCreateForm(), involvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.InvolvementID),
+		form:               mapWithout(achievementCreateForm(), consts.InvolvementID),
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "involvement exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
@@ -80,10 +81,10 @@ var achievementCreateTests = []*test{
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "involvement does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, involvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.InvolvementID),
 		form:               achievementCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
@@ -91,10 +92,10 @@ var achievementCreateTests = []*test{
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "achievement create db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
@@ -103,10 +104,10 @@ var achievementCreateTests = []*test{
 	}),
 	constructAchievementCreateTest(&testInput{
 		purpose:            "achievement create ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, achievement),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Achievement),
 		form:               achievementCreateForm(),
 		db: &mock.DB{
 			InvolvementExistsMock: mock.InvolvementExists{Bool: true},

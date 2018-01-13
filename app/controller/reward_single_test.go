@@ -6,37 +6,38 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func rewardSingleForm() *map[string]string {
 	return &map[string]string{
-		id: mockID,
+		consts.ID: mockID,
 	}
 }
 
 var rewardSingleTests = []*test{
 	constructRewardSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, id),
-		form:               mapWithout(rewardSingleForm(), id),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(rewardSingleForm(), consts.ID),
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "reward exists db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardSingleForm(),
 		db: &mock.DB{
 			RewardExistsMock: mock.RewardExists{Err: mockDbErr},
@@ -44,10 +45,10 @@ var rewardSingleTests = []*test{
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "reward does not exist",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, reward),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Reward),
 		form:               rewardSingleForm(),
 		db: &mock.DB{
 			RewardExistsMock: mock.RewardExists{Bool: false},
@@ -55,10 +56,10 @@ var rewardSingleTests = []*test{
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "reward single db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardSingleForm(),
 		db: &mock.DB{
 			RewardExistsMock: mock.RewardExists{Bool: true},
@@ -67,10 +68,10 @@ var rewardSingleTests = []*test{
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "reward single OK",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, reward),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Reward),
 		form:               rewardSingleForm(),
 		db: &mock.DB{
 			RewardExistsMock: mock.RewardExists{Bool: true},

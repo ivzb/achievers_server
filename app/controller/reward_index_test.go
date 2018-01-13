@@ -7,11 +7,12 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func rewardsIndexForm() *map[string]string {
 	return &map[string]string{
-		page: mockPage,
+		consts.Page: mockPage,
 	}
 }
 
@@ -20,39 +21,39 @@ var rewardsIndexArgs = []string{"9"}
 var rewardsIndexTests = []*test{
 	constructRewardsIndexTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 		args:               rewardsIndexArgs,
 	}),
 	constructRewardsIndexTest(&testInput{
-		purpose:            "missing page",
-		requestMethod:      GET,
+		purpose:            "missing consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, page),
-		form:               mapWithout(rewardsIndexForm(), page),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Page),
+		form:               mapWithout(rewardsIndexForm(), consts.Page),
 		args:               rewardsIndexArgs,
 	}),
 	constructRewardsIndexTest(&testInput{
-		purpose:            "invalid page",
-		requestMethod:      GET,
+		purpose:            "invalid consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatInvalid, page),
+		responseMessage:    fmt.Sprintf(consts.FormatInvalid, consts.Page),
 		form: &map[string]string{
-			page: "-1",
+			consts.Page: "-1",
 		},
 		args: rewardsIndexArgs,
 	}),
 	constructRewardsIndexTest(&testInput{
 		purpose:            "db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
 			RewardsAllMock: mock.RewardsAll{Err: mockDbErr},
@@ -60,11 +61,11 @@ var rewardsIndexTests = []*test{
 		args: rewardsIndexArgs,
 	}),
 	constructRewardsIndexTest(&testInput{
-		purpose:            "no results on page",
-		requestMethod:      GET,
+		purpose:            "no results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, page),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
 			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(0)},
@@ -72,11 +73,11 @@ var rewardsIndexTests = []*test{
 		args: []string{"0"},
 	}),
 	constructRewardsIndexTest(&testInput{
-		purpose:            "4 results on page",
-		requestMethod:      GET,
+		purpose:            "4 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, rewards),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Rewards),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
 			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(4)},
@@ -84,11 +85,11 @@ var rewardsIndexTests = []*test{
 		args: []string{"4"},
 	}),
 	constructRewardsIndexTest(&testInput{
-		purpose:            "9 results on page",
-		requestMethod:      GET,
+		purpose:            "9 results on consts.Page",
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, rewards),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Rewards),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
 			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(9)},

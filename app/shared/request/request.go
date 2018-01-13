@@ -2,14 +2,10 @@ package request
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
-)
 
-const (
-	headerMissing    = "header is missing"
-	formatMissing    = "missing %s"
-	formatInvalid    = "invalid %s"
-	methodNotAllowed = "method not allowed"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 // IsMethod returns whether actual request method equals expected one
@@ -24,7 +20,7 @@ func HeaderValue(r *http.Request, key string) (string, error) {
 	value := r.Header.Get(key)
 
 	if value == "" {
-		return "", errors.New(headerMissing)
+		return "", errors.New(fmt.Sprintf(consts.FormatMissing, consts.Header))
 	}
 
 	return value, nil

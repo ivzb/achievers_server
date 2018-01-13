@@ -3,14 +3,8 @@ package response
 import (
 	"fmt"
 	"net/http"
-)
 
-var (
-	methodNotAllowed    = "method not allowed"
-	internalServerError = "an error occurred, please try again later"
-	formatNotFound      = "%s not found"
-	formatFound         = "%s found"
-	formatCreated       = "%s created"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 const (
@@ -51,7 +45,7 @@ func Ok(
 	length int,
 	results interface{}) *Message {
 
-	message := fmt.Sprintf(formatFound, key)
+	message := fmt.Sprintf(consts.FormatFound, key)
 	return send(http.StatusOK, message, length, results)
 }
 
@@ -65,7 +59,7 @@ func Created(
 	key string,
 	results interface{}) *Message {
 
-	message := fmt.Sprintf(formatCreated, key)
+	message := fmt.Sprintf(consts.FormatCreated, key)
 	return send(http.StatusCreated, message, 1, results)
 }
 
@@ -81,18 +75,18 @@ func Unauthorized(message string) *Message {
 
 // NotFound sends response with status code 404
 func NotFound(key string) *Message {
-	message := fmt.Sprintf(formatNotFound, key)
+	message := fmt.Sprintf(consts.FormatNotFound, key)
 	return sendError(http.StatusNotFound, message)
 }
 
 // MethodNotAllowed sends response with status code 405
 func MethodNotAllowed() *Message {
-	return sendError(http.StatusMethodNotAllowed, methodNotAllowed)
+	return sendError(http.StatusMethodNotAllowed, consts.MethodNotAllowed)
 }
 
 // InternalServerError sends response with status code 500
 func InternalServerError() *Message {
-	return sendError(http.StatusInternalServerError, internalServerError)
+	return sendError(http.StatusInternalServerError, consts.FriendlyErrorMessage)
 }
 
 // sendError calls Send by without a count or results

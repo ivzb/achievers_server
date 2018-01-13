@@ -6,29 +6,30 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func rewardCreateForm() *map[string]string {
 	return &map[string]string{
-		title:        mockTitle,
-		description:  mockDescription,
-		pictureURL:   mockPictureURL,
-		rewardTypeID: mockRewardTypeID,
+		consts.Title:        mockTitle,
+		consts.Description:  mockDescription,
+		consts.PictureURL:   mockPictureURL,
+		consts.RewardTypeID: mockRewardTypeID,
 	}
 }
 
 var rewardCreateTests = []*test{
 	constructRewardCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -36,43 +37,43 @@ var rewardCreateTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form title",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Title",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, title),
-		form:               mapWithout(rewardCreateForm(), title),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		form:               mapWithout(rewardCreateForm(), consts.Title),
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form description",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Description",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, description),
-		form:               mapWithout(rewardCreateForm(), description),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Description),
+		form:               mapWithout(rewardCreateForm(), consts.Description),
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form picture_url",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
-		form:               mapWithout(rewardCreateForm(), pictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		form:               mapWithout(rewardCreateForm(), consts.PictureURL),
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "missing form reward_type_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, rewardTypeID),
-		form:               mapWithout(rewardCreateForm(), rewardTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.RewardTypeID),
+		form:               mapWithout(rewardCreateForm(), consts.RewardTypeID),
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward_type exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Err: mockDbErr},
@@ -80,10 +81,10 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward_type does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, rewardTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.RewardTypeID),
 		form:               rewardCreateForm(),
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: false},
@@ -91,10 +92,10 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward create db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
@@ -103,10 +104,10 @@ var rewardCreateTests = []*test{
 	}),
 	constructRewardCreateTest(&testInput{
 		purpose:            "reward create ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, reward),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Reward),
 		form:               rewardCreateForm(),
 		db: &mock.DB{
 			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},

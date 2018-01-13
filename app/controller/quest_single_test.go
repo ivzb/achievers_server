@@ -6,37 +6,38 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func questSingleForm() *map[string]string {
 	return &map[string]string{
-		id: mockID,
+		consts.ID: mockID,
 	}
 }
 
 var questSingleTests = []*test{
 	constructQuestSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, id),
-		form:               mapWithout(questSingleForm(), id),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(questSingleForm(), consts.ID),
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest exists db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questSingleForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
@@ -44,10 +45,10 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest does not exist",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, quest),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Quest),
 		form:               questSingleForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Bool: false},
@@ -55,10 +56,10 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest single db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questSingleForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Bool: true},
@@ -67,10 +68,10 @@ var questSingleTests = []*test{
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest single OK",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, quest),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Quest),
 		form:               questSingleForm(),
 		db: &mock.DB{
 			QuestExistsMock: mock.QuestExists{Bool: true},

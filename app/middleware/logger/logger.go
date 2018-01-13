@@ -8,10 +8,6 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-const (
-	friendlyError = "an error occurred, please try again later"
-)
-
 // Handler will log the HTTP requests
 func Handler(app app.App) app.App {
 	prevHandler := app.Handler

@@ -6,37 +6,38 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func evidenceSingleForm() *map[string]string {
 	return &map[string]string{
-		id: mockID,
+		consts.ID: mockID,
 	}
 }
 
 var evidenceSingleTests = []*test{
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "missing id",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, id),
-		form:               mapWithout(evidenceSingleForm(), id),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(evidenceSingleForm(), consts.ID),
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence exists db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
 			EvidenceExistsMock: mock.EvidenceExists{Err: mockDbErr},
@@ -44,10 +45,10 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence does not exist",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, evidence),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Evidence),
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
 			EvidenceExistsMock: mock.EvidenceExists{Bool: false},
@@ -55,10 +56,10 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single db error",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
 			EvidenceExistsMock: mock.EvidenceExists{Bool: true},
@@ -67,10 +68,10 @@ var evidenceSingleTests = []*test{
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence single OK",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
-		responseMessage:    fmt.Sprintf(formatFound, evidence),
+		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Evidence),
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
 			EvidenceExistsMock: mock.EvidenceExists{Bool: true},

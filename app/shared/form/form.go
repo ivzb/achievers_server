@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/conv"
 )
 
@@ -19,9 +20,6 @@ const (
 var (
 	errNotStruct        = errors.New("model is not a struct")
 	errWrongContentType = errors.New("content-type of request is incorrect")
-
-	formatMissing = "missing %s"
-	formatInvalid = "invalid %s"
 )
 
 // Map form values to model and returns error if model is not struct, wrong content type or parse error
@@ -46,7 +44,7 @@ func StringValue(r *http.Request, key string) (string, error) {
 	value := r.FormValue(key)
 
 	if value == "" {
-		return "", errors.New(fmt.Sprintf(formatMissing, key))
+		return "", errors.New(fmt.Sprintf(consts.FormatMissing, key))
 	}
 
 	return value, nil
@@ -63,7 +61,7 @@ func IntValue(r *http.Request, key string) (int, error) {
 	castedValue, err := strconv.Atoi(value)
 
 	if err != nil {
-		return 0, errors.New(fmt.Sprintf(formatInvalid, key))
+		return 0, errors.New(fmt.Sprintf(consts.FormatInvalid, key))
 	}
 
 	return castedValue, nil

@@ -6,27 +6,28 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func userAuthForm() *map[string]string {
 	return &map[string]string{
-		email:    mockEmail,
-		password: mockPassword,
+		consts.Email:    mockEmail,
+		consts.Password: mockPassword,
 	}
 }
 
 var userAuthTests = []*test{
 	constructUserAuthTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -34,38 +35,38 @@ var userAuthTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructUserAuthTest(&testInput{
-		purpose:            "missing form email",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Email",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, email),
-		form:               mapWithout(userAuthForm(), email),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Email),
+		form:               mapWithout(userAuthForm(), consts.Email),
 	}),
 	constructUserAuthTest(&testInput{
-		purpose:            "missing form password",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Password",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, password),
-		form:               mapWithout(userAuthForm(), password),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Password),
+		form:               mapWithout(userAuthForm(), consts.Password),
 	}),
 	constructUserAuthTest(&testInput{
-		purpose:            "user email exists db error",
-		requestMethod:      POST,
+		purpose:            "user consts.Email exists db error",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
 		},
 	}),
 	constructUserAuthTest(&testInput{
-		purpose:            "user email does not exist",
-		requestMethod:      POST,
+		purpose:            "user consts.Email does not exist",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, email),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Email),
 		form:               userAuthForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
@@ -73,10 +74,10 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user auth db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
@@ -85,10 +86,10 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "encrypt error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
@@ -100,10 +101,10 @@ var userAuthTests = []*test{
 	}),
 	constructUserAuthTest(&testInput{
 		purpose:            "user auth ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, authToken),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.AuthToken),
 		form:               userAuthForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: true},

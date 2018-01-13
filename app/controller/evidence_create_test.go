@@ -6,30 +6,31 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 func evidenceCreateForm() *map[string]string {
 	return &map[string]string{
-		title:            mockTitle,
-		pictureURL:       mockPictureURL,
-		_url:             mockURL,
-		multimediaTypeID: mockMultimediaTypeID,
-		achievementID:    mockAchievementID,
+		consts.Title:            mockTitle,
+		consts.PictureURL:       mockPictureURL,
+		consts.URL:              mockURL,
+		consts.MultimediaTypeID: mockMultimediaTypeID,
+		consts.AchievementID:    mockAchievementID,
 	}
 }
 
 var evidenceCreateTests = []*test{
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "invalid request method",
-		requestMethod:      GET,
+		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
-		responseMessage:    methodNotAllowed,
+		responseMessage:    consts.MethodNotAllowed,
 		form:               &map[string]string{},
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "former error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "content-type of request is incorrect",
@@ -37,51 +38,51 @@ var evidenceCreateTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructEvidenceCreateTest(&testInput{
-		purpose:            "missing form title",
-		requestMethod:      POST,
+		purpose:            "missing form consts.Title",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, title),
-		form:               mapWithout(evidenceCreateForm(), title),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		form:               mapWithout(evidenceCreateForm(), consts.Title),
 	}),
 	constructEvidenceCreateTest(&testInput{
-		purpose:            "missing form picture_url",
-		requestMethod:      POST,
+		purpose:            "missing form pictureconsts.URL",
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, pictureURL),
-		form:               mapWithout(evidenceCreateForm(), pictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		form:               mapWithout(evidenceCreateForm(), consts.PictureURL),
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form url",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, _url),
-		form:               mapWithout(evidenceCreateForm(), _url),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.URL),
+		form:               mapWithout(evidenceCreateForm(), consts.URL),
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form multimedia_type_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, multimediaTypeID),
-		form:               mapWithout(evidenceCreateForm(), multimediaTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.MultimediaTypeID),
+		form:               mapWithout(evidenceCreateForm(), consts.MultimediaTypeID),
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "missing form achievement_id",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(formatMissing, achievementID),
-		form:               mapWithout(evidenceCreateForm(), achievementID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AchievementID),
+		form:               mapWithout(evidenceCreateForm(), consts.AchievementID),
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "multimediaType exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Err: mockDbErr},
@@ -89,10 +90,10 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "multimediaType does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, multimediaTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.MultimediaTypeID),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: false},
@@ -100,10 +101,10 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "achievement exists db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
@@ -112,10 +113,10 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "achievement does not exist",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(formatNotFound, achievementID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AchievementID),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
@@ -124,10 +125,10 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "evidence create db error",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusInternalServerError,
-		responseMessage:    friendlyErrorMessage,
+		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
@@ -137,10 +138,10 @@ var evidenceCreateTests = []*test{
 	}),
 	constructEvidenceCreateTest(&testInput{
 		purpose:            "evidence create ok",
-		requestMethod:      POST,
+		requestMethod:      consts.POST,
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusCreated,
-		responseMessage:    fmt.Sprintf(formatCreated, evidence),
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Evidence),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
 			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
