@@ -11,10 +11,9 @@ import (
 
 func userCreateForm() *map[string]string {
 	return &map[string]string{
-		consts.FirstName: mockFirstName,
-		consts.LastName:  mockLastName,
-		consts.Email:     mockEmail,
-		consts.Password:  mockPassword,
+		consts.Name:     mockName,
+		consts.Email:    mockEmail,
+		consts.Password: mockPassword,
 	}
 }
 
@@ -35,22 +34,6 @@ var userCreateTests = []*test{
 		responseMessage:    "content-type of request is incorrect",
 		form:               &map[string]string{},
 		removeHeaders:      true,
-	}),
-	constructUserCreateTest(&testInput{
-		purpose:            "missing form first_name",
-		requestMethod:      consts.POST,
-		responseType:       Core,
-		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.FirstName),
-		form:               mapWithout(userCreateForm(), consts.FirstName),
-	}),
-	constructUserCreateTest(&testInput{
-		purpose:            "missing form last_name",
-		requestMethod:      consts.POST,
-		responseType:       Core,
-		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.LastName),
-		form:               mapWithout(userCreateForm(), consts.LastName),
 	}),
 	constructUserCreateTest(&testInput{
 		purpose:            "missing form consts.Email",
@@ -99,7 +82,21 @@ var userCreateTests = []*test{
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+			ProfileCreateMock:   mock.ProfileCreate{ID: mockID},
 			UserCreateMock:      mock.UserCreate{Err: mockDbErr},
+		},
+	}),
+	constructUserCreateTest(&testInput{
+		purpose:            "profile create db error",
+		requestMethod:      consts.POST,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    consts.FriendlyErrorMessage,
+		form:               userCreateForm(),
+		db: &mock.DB{
+			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+			UserCreateMock:      mock.UserCreate{ID: mockID},
+			ProfileCreateMock:   mock.ProfileCreate{Err: mockDbErr},
 		},
 	}),
 	constructUserCreateTest(&testInput{
@@ -111,6 +108,7 @@ var userCreateTests = []*test{
 		form:               userCreateForm(),
 		db: &mock.DB{
 			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+			ProfileCreateMock:   mock.ProfileCreate{ID: mockID},
 			UserCreateMock:      mock.UserCreate{ID: mockID},
 		},
 	}),

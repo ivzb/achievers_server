@@ -12,7 +12,7 @@ type Quest struct {
 
 	InvolvementID string `json:"involvement_id"`
 	QuestTypeID   uint8  `json:"quest_type_id"`
-	AuthorID      string `json:"author_id"`
+	UserID        string `json:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -28,7 +28,7 @@ func (db *DB) QuestSingle(id string) (*Quest, error) {
 
 	qst.ID = id
 
-	row := db.QueryRow("SELECT `title`, `picture_url`, `involvement_id`, `quest_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := db.QueryRow("SELECT `title`, `picture_url`, `involvement_id`, `quest_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM quest "+
 		"WHERE id = ? "+
 		"LIMIT 1", id)
@@ -38,7 +38,7 @@ func (db *DB) QuestSingle(id string) (*Quest, error) {
 		&qst.PictureURL,
 		&qst.InvolvementID,
 		&qst.QuestTypeID,
-		&qst.AuthorID,
+		&qst.UserID,
 		&qst.CreatedAt,
 		&qst.UpdatedAt,
 		&qst.DeletedAt)
@@ -53,7 +53,7 @@ func (db *DB) QuestSingle(id string) (*Quest, error) {
 func (db *DB) QuestsAll(page int) ([]*Quest, error) {
 	offset := limit * page
 
-	rows, err := db.Query("SELECT `id`, `title`, `picture_url`, `involvement_id`, `quest_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := db.Query("SELECT `id`, `title`, `picture_url`, `involvement_id`, `quest_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM quest "+
 		"ORDER BY `created_at` DESC "+
 		"LIMIT ? OFFSET ?", limit, offset)
@@ -74,7 +74,7 @@ func (db *DB) QuestsAll(page int) ([]*Quest, error) {
 			&qst.PictureURL,
 			&qst.InvolvementID,
 			&qst.QuestTypeID,
-			&qst.AuthorID,
+			&qst.UserID,
 			&qst.CreatedAt,
 			&qst.UpdatedAt,
 			&qst.DeletedAt)
@@ -94,11 +94,11 @@ func (db *DB) QuestsAll(page int) ([]*Quest, error) {
 }
 
 func (db *DB) QuestCreate(quest *Quest) (string, error) {
-	return create(db, `INSERT INTO quest (id, title, picture_url, involvement_id, quest_type_id, author_id)
+	return create(db, `INSERT INTO quest (id, title, picture_url, involvement_id, quest_type_id, user_id)
         VALUES(?, ?, ?, ?, ?, ?)`,
 		quest.Title,
 		quest.PictureURL,
 		quest.InvolvementID,
 		quest.QuestTypeID,
-		quest.AuthorID)
+		quest.UserID)
 }

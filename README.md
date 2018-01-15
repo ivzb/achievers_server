@@ -116,7 +116,6 @@ source {path_to_sql_script}
 ```
 
 ## TODO
-1. extract consts from controller/controller.go to shared/consts.go
-2. implement constructTest for shared/ similar to this in controller/
-3. implement router with following format: router.GET("path", handler, middleware)
-4. extract framework models from app models
+1. implement constructTest for shared/ similar to this in controller/
+2. implement router with following format: router.GET("path", handler, middleware)
+3. extract framework models from app models

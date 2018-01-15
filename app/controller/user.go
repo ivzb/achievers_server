@@ -33,6 +33,7 @@ func UserAuth(env *model.Env) *response.Message {
 	exists, err := env.DB.UserEmailExists(auth.Email)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -43,12 +44,14 @@ func UserAuth(env *model.Env) *response.Message {
 	uID, err := env.DB.UserAuth(auth)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
 	token, err := env.Token.Encrypt(uID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -67,13 +70,8 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if usr.FirstName == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.FirstName))
-	}
-
-	if usr.LastName == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.LastName))
-	}
+	prfl := &model.Profile{}
+	_ = form.ModelValue(env.Request, prfl)
 
 	if usr.Email == "" {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Email))
@@ -86,6 +84,7 @@ func UserCreate(env *model.Env) *response.Message {
 	exists, err := env.DB.UserEmailExists(usr.Email)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -93,11 +92,19 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatAlreadyExists, consts.Email))
 	}
 
-	id, err := env.DB.UserCreate(usr)
+	userID, err := env.DB.UserCreate(usr)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	return response.Created(consts.User, id)
+	_, err = env.DB.ProfileCreate(prfl, userID)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
+	}
+
+	return response.Created(consts.User, userID)
 }

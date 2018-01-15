@@ -26,6 +26,11 @@ type DBSourcer interface {
 	UserCreate(user *User) (string, error)
 	UserAuth(auth *Auth) (string, error)
 
+	ProfileExists(id string) (bool, error)
+	ProfileSingle(id string) (*Profile, error)
+	ProfileByUserID(userID string) (*Profile, error)
+	ProfileCreate(profile *Profile, userID string) (string, error)
+
 	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)
 	AchievementsAll(page int) ([]*Achievement, error)

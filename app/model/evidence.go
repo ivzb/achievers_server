@@ -11,7 +11,7 @@ type Evidence struct {
 
 	MultimediaTypeID uint8  `json:"multimedia_type_id"`
 	AchievementID    string `json:"achievement_id"`
-	AuthorID         string `json:"author_id"`
+	UserID           string `json:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -27,7 +27,7 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 
 	evd.ID = id
 
-	row := db.QueryRow("SELECT `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := db.QueryRow("SELECT `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM evidence "+
 		"WHERE id = ? "+
 		"LIMIT 1", id)
@@ -38,7 +38,7 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 		&evd.URL,
 		&evd.MultimediaTypeID,
 		&evd.AchievementID,
-		&evd.AuthorID,
+		&evd.UserID,
 		&evd.CreatedAt,
 		&evd.UpdatedAt,
 		&evd.DeletedAt)
@@ -53,7 +53,7 @@ func (db *DB) EvidenceSingle(id string) (*Evidence, error) {
 func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 	offset := limit * page
 
-	rows, err := db.Query("SELECT `id`, `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := db.Query("SELECT `id`, `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM evidence "+
 		"ORDER BY `created_at` DESC "+
 		"LIMIT ? OFFSET ?", limit, offset)
@@ -75,7 +75,7 @@ func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 			&evd.URL,
 			&evd.MultimediaTypeID,
 			&evd.AchievementID,
-			&evd.AuthorID,
+			&evd.UserID,
 			&evd.CreatedAt,
 			&evd.UpdatedAt,
 			&evd.DeletedAt)
@@ -96,12 +96,12 @@ func (db *DB) EvidencesAll(page int) ([]*Evidence, error) {
 
 // EvidenceCreate saves evidence object to db
 func (db *DB) EvidenceCreate(evidence *Evidence) (string, error) {
-	return create(db, `INSERT INTO evidence (id, title, picture_url, url, multimedia_type_id, achievement_id, author_id)
+	return create(db, `INSERT INTO evidence (id, title, picture_url, url, multimedia_type_id, achievement_id, user_id)
         VALUES(?, ?, ?, ?, ?, ?, ?)`,
 		evidence.Title,
 		evidence.PictureURL,
 		evidence.URL,
 		evidence.MultimediaTypeID,
 		evidence.AchievementID,
-		evidence.AuthorID)
+		evidence.UserID)
 }

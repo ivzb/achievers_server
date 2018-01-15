@@ -8,6 +8,11 @@ type DB struct {
 	UserCreateMock      UserCreate
 	UserAuthMock        UserAuth
 
+	ProfileExistsMock   ProfileExists
+	ProfileSingleMock   ProfileSingle
+	ProfileByUserIDMock ProfileByUserID
+	ProfileCreateMock   ProfileCreate
+
 	AchievementExistsMock     AchievementExists
 	AchievementSingleMock     AchievementSingle
 	AchievementsAllMock       AchievementsAll

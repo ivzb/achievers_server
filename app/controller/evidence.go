@@ -126,7 +126,7 @@ func EvidenceCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.AchievementID)
 	}
 
-	evd.AuthorID = env.UserID
+	evd.UserID = env.UserID
 
 	id, err := env.DB.EvidenceCreate(evd)
 

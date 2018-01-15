@@ -12,7 +12,7 @@ type Reward struct {
 	PictureURL  string `json:"picture_url"`
 
 	RewardTypeID uint8  `json:"reward_type_id"`
-	AuthorID     string `json:"author_id"`
+	UserID       string `json:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -28,7 +28,7 @@ func (db *DB) RewardSingle(id string) (*Reward, error) {
 
 	rwd.ID = id
 
-	row := db.QueryRow("SELECT `title`, `description`, `picture_url`, `reward_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := db.QueryRow("SELECT `title`, `description`, `picture_url`, `reward_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM reward "+
 		"WHERE id = ? "+
 		"LIMIT 1", id)
@@ -38,7 +38,7 @@ func (db *DB) RewardSingle(id string) (*Reward, error) {
 		&rwd.Description,
 		&rwd.PictureURL,
 		&rwd.RewardTypeID,
-		&rwd.AuthorID,
+		&rwd.UserID,
 		&rwd.CreatedAt,
 		&rwd.UpdatedAt,
 		&rwd.DeletedAt)
@@ -53,7 +53,7 @@ func (db *DB) RewardSingle(id string) (*Reward, error) {
 func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 	offset := limit * page
 
-	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `reward_type_id`, `author_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `reward_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
 		"FROM reward "+
 		"ORDER BY `created_at` DESC "+
 		"LIMIT ? OFFSET ?", limit, offset)
@@ -74,7 +74,7 @@ func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 			&rwd.Description,
 			&rwd.PictureURL,
 			&rwd.RewardTypeID,
-			&rwd.AuthorID,
+			&rwd.UserID,
 			&rwd.CreatedAt,
 			&rwd.UpdatedAt,
 			&rwd.DeletedAt)
@@ -94,11 +94,11 @@ func (db *DB) RewardsAll(page int) ([]*Reward, error) {
 }
 
 func (db *DB) RewardCreate(reward *Reward) (string, error) {
-	return create(db, `INSERT INTO reward(id, title, description, picture_url, reward_type_id, author_id)
+	return create(db, `INSERT INTO reward(id, title, description, picture_url, reward_type_id, user_id)
         VALUES(?, ?, ?, ?, ?, ?)`,
 		reward.Title,
 		reward.Description,
 		reward.PictureURL,
 		reward.RewardTypeID,
-		reward.AuthorID)
+		reward.UserID)
 }

@@ -9,10 +9,8 @@ import (
 type User struct {
 	ID string `json:"id"`
 
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 
 	StatusID uint8 `json:"status_id"`
 
@@ -67,9 +65,9 @@ func (db *DB) UserCreate(user *User) (string, error) {
 		return "", err
 	}
 
-	result, err := db.Exec(`INSERT INTO user (id, first_name, last_name, email, password)
-        VALUES(?, ?, ?, ?, ?)`,
-		id, user.FirstName, user.LastName, user.Email, hashedPassword)
+	result, err := db.Exec(`INSERT INTO user (id, email, password)
+        VALUES(?, ?, ?)`,
+		id, user.Email, hashedPassword)
 
 	if err != nil {
 		return "", err

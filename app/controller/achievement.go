@@ -159,7 +159,7 @@ func AchievementCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.InvolvementID)
 	}
 
-	ach.AuthorID = env.UserID
+	ach.UserID = env.UserID
 
 	id, err := env.DB.AchievementCreate(ach)
 

@@ -9,7 +9,7 @@ type QuestAchievement struct {
 
 	QuestID       string `json:"quest_id"`
 	AchievementID string `json:"achievement_id"`
-	AuthorID      string `json:"author_id"`
+	UserID        string `json:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -21,9 +21,9 @@ func (db *DB) QuestAchievementExists(questID string, achievementID string) (bool
 }
 
 func (db *DB) QuestAchievementCreate(qstAch *QuestAchievement) (string, error) {
-	return create(db, `INSERT INTO quest_achievement (id, quest_id, achievement_id, author_id)
+	return create(db, `INSERT INTO quest_achievement (id, quest_id, achievement_id, user_id)
         VALUES(?, ?, ?, ?)`,
 		qstAch.QuestID,
 		qstAch.AchievementID,
-		qstAch.AuthorID)
+		qstAch.UserID)
 }

@@ -112,7 +112,7 @@ func RewardCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.RewardTypeID)
 	}
 
-	rwd.AuthorID = env.UserID
+	rwd.UserID = env.UserID
 
 	id, err := env.DB.RewardCreate(rwd)
 

@@ -28,6 +28,7 @@ func QuestsIndex(env *model.Env) *response.Message {
 	qsts, err := env.DB.QuestsAll(pg)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -55,6 +56,7 @@ func QuestSingle(env *model.Env) *response.Message {
 	exists, err := env.DB.QuestExists(qstID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -65,6 +67,7 @@ func QuestSingle(env *model.Env) *response.Message {
 	qst, err := env.DB.QuestSingle(qstID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -105,6 +108,7 @@ func QuestCreate(env *model.Env) *response.Message {
 	involvementExists, err := env.DB.InvolvementExists(qst.InvolvementID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -115,6 +119,7 @@ func QuestCreate(env *model.Env) *response.Message {
 	questTypeExists, err := env.DB.QuestTypeExists(qst.QuestTypeID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -122,11 +127,12 @@ func QuestCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.QuestTypeID)
 	}
 
-	qst.AuthorID = env.UserID
+	qst.UserID = env.UserID
 
 	id, err := env.DB.QuestCreate(qst)
 
 	if err != nil || id == "" {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 

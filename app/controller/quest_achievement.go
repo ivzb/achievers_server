@@ -63,7 +63,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatAlreadyExists, consts.QuestAchievement))
 	}
 
-	qstAch.AuthorID = env.UserID
+	qstAch.UserID = env.UserID
 
 	id, err := env.DB.QuestAchievementCreate(qstAch)
 
