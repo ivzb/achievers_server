@@ -60,33 +60,33 @@ func main() {
 
 	http.HandleFunc("/debug/profile", pprof.Profile)
 
-	http.Handle("/user/auth", anonChain(env, controller.UserAuth))
-	http.Handle("/user/create", anonChain(env, controller.UserCreate))
+	http.Handle("/v1/user/auth", anonChain(env, controller.UserAuth))
+	http.Handle("/v1/user/create", anonChain(env, controller.UserCreate))
 
-	http.Handle("/profile", authChain(env, controller.ProfileSingle))
-	http.Handle("/profile/me", authChain(env, controller.ProfileMe))
+	http.Handle("/v1/profile", authChain(env, controller.ProfileSingle))
+	http.Handle("/v1/profile/me", authChain(env, controller.ProfileMe))
 
-	http.Handle("/achievement", authChain(env, controller.AchievementSingle))
-	http.Handle("/achievements", authChain(env, controller.AchievementsIndex))
-	http.Handle("/achievements/quest", authChain(env, controller.AchievementsByQuestID))
-	http.Handle("/achievement/create", authChain(env, controller.AchievementCreate))
+	http.Handle("/v1/achievement", authChain(env, controller.AchievementSingle))
+	http.Handle("/v1/achievements", authChain(env, controller.AchievementsIndex))
+	http.Handle("/v1/achievements/quest", authChain(env, controller.AchievementsByQuestID))
+	http.Handle("/v1/achievement/create", authChain(env, controller.AchievementCreate))
 
-	http.Handle("/evidence", authChain(env, controller.EvidenceSingle))
-	http.Handle("/evidences", authChain(env, controller.EvidencesIndex))
-	http.Handle("/evidence/create", authChain(env, controller.EvidenceCreate))
+	http.Handle("/v1/evidence", authChain(env, controller.EvidenceSingle))
+	http.Handle("/v1/evidences", authChain(env, controller.EvidencesIndex))
+	http.Handle("/v1/evidence/create", authChain(env, controller.EvidenceCreate))
 
-	http.Handle("/reward", authChain(env, controller.RewardSingle))
-	http.Handle("/rewards", authChain(env, controller.RewardsIndex))
-	http.Handle("/reward/create", authChain(env, controller.RewardCreate))
+	http.Handle("/v1/reward", authChain(env, controller.RewardSingle))
+	http.Handle("/v1/rewards", authChain(env, controller.RewardsIndex))
+	http.Handle("/v1/reward/create", authChain(env, controller.RewardCreate))
 
-	http.Handle("/quest", authChain(env, controller.QuestSingle))
-	http.Handle("/quests", authChain(env, controller.QuestsIndex))
-	http.Handle("/quest/create", authChain(env, controller.QuestCreate))
+	http.Handle("/v1/quest", authChain(env, controller.QuestSingle))
+	http.Handle("/v1/quests", authChain(env, controller.QuestsIndex))
+	http.Handle("/v1/quest/create", authChain(env, controller.QuestCreate))
 
-	http.Handle("/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
+	http.Handle("/v1/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
 
-	http.Handle("/file", authChain(env, controller.FileSingle))
-	http.Handle("/file/create", authChain(env, controller.FileCreate))
+	http.Handle("/v1/file", authChain(env, controller.FileSingle))
+	http.Handle("/v1/file/create", authChain(env, controller.FileCreate))
 
 	port := strconv.Itoa(conf.Server.HTTPPort)
 	log.Message("started@:" + port)
