@@ -209,7 +209,7 @@ func assertCoreResponse(
 	rec *httptest.ResponseRecorder,
 	test *test) {
 
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s"}`, test.response.statusCode, test.response.message)
+	expected := fmt.Sprintf(`{"message":"%s"}`, test.response.message)
 	actual := rec.Body.String()
 
 	if actual != expected {
@@ -222,8 +222,7 @@ func assertRetrieveResponse(
 	rec *httptest.ResponseRecorder,
 	test *test) {
 
-	expected := fmt.Sprintf(`{"status":%d,"message":"%s","results":%s}`,
-		test.response.statusCode,
+	expected := fmt.Sprintf(`{"message":"%s","results":%s}`,
 		test.response.message,
 		test.response.results)
 

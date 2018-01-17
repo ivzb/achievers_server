@@ -51,7 +51,7 @@ func TestAppHandler_ValidJSONHandler(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":200,"message":"ok found","results":"OK"}`
+	expected := `{"message":"ok found","results":"OK"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)

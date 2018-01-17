@@ -40,7 +40,6 @@ func TestSend_MultipleResults(t *testing.T) {
 	length := len(results)
 
 	expectedResult := &Retrieve{
-		Status:  status,
 		Message: message,
 		Results: results,
 	}
@@ -69,7 +68,6 @@ func TestSend_NoResults(t *testing.T) {
 	length := 5
 
 	expectedResult := &Change{
-		Status:   status,
 		Message:  message,
 		Affected: length,
 	}
@@ -98,7 +96,6 @@ func TestSend_ZeroLength(t *testing.T) {
 	length := 0
 
 	expectedResult := &Core{
-		Status:  status,
 		Message: message,
 	}
 
@@ -124,7 +121,6 @@ func TestSendError(t *testing.T) {
 	message := "response_message"
 
 	expectedResult := &Core{
-		Status:  status,
 		Message: message,
 	}
 

@@ -46,7 +46,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":201,"message":"auth_token created","results":"auth token here"}`
+	expected := `{"message":"auth_token created","results":"auth token here"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: \ngot %v \nwant %v",
 			rr.Body.String(), expected)
@@ -77,7 +77,7 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":401,"message":"missing auth_token"}`
+	expected := `{"message":"missing auth_token"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
@@ -111,7 +111,7 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":401,"message":"invalid auth_token"}`
+	expected := `{"message":"invalid auth_token"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -147,7 +147,7 @@ func TestAuthHandler_DBError(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":500,"message":"an error occurred, please try again later"}`
+	expected := `{"message":"an error occurred, please try again later"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
@@ -183,7 +183,7 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 	}
 
 	// Check the response body is what we expect.
-	expected := `{"status":401,"message":"invalid auth_token"}`
+	expected := `{"message":"invalid auth_token"}`
 	if rec.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rec.Body.String(), expected)
