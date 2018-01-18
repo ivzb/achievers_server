@@ -22,6 +22,38 @@ Build and run from the root directory. Open your REST client to: http://localhos
 
 To create a user, send a POST request to http://localhost/user with the following fields: first_name, last_name, email, and password.
 
+## Quick Start with Docker
+
+Build and run the image
+
+Invoke Docker from the achievers_server package directory to build an image using the Dockerfile: 
+
+```
+$ docker build -t achievers_server .
+```
+
+This will fetch the golang base image from Docker Hub, copy the package source to it, build the package inside it, and tag the resulting image as achievers_server.
+
+To run a container from the resulting image:
+
+```
+$ docker run --publish 8080:8080 --name achievers_server --rm achievers_server
+```
+
+The --publish flag tells docker to publish the container's port 8080 on the external port 8080.
+
+The --name flag gives our container a predictable name to make it easier to work with.
+
+The --rm flag tells docker to remove the container image when the outyet server exits. 
+
+With the container running, open http://localhost:8080/ in a web browser and you should see welcome message.
+
+Now that we've verified that the image works, shut down the running container from another terminal window:
+
+```
+$ docker stop test
+```
+
 ## Available Endpoints
 
 The following endpoints are available:
@@ -116,6 +148,7 @@ source {path_to_sql_script}
 ```
 
 ## TODO
+0. improve paging concept (pass afterID)
 1. implement constructTest for shared/ similar to this in controller/
 2. implement router with following format: router.GET("path", handler, middleware)
 3. extract framework models from app models

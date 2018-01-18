@@ -22,6 +22,7 @@ const (
 	AchievementID    = "achievement_id"
 	Achievements     = "achievements"
 	AuthToken        = "auth_token"
+	AfterID          = "after_id"
 	Description      = "description"
 	Email            = "email"
 	Evidence         = "evidence"

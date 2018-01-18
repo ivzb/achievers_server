@@ -5,6 +5,7 @@
 			"Username":  "root",
 			"Password":  "",
 			"Name":      "achievers",
+			"Hostname_docker":  "docker.for.mac.localhost",
 			"Hostname":  "127.0.0.1",
 			"Port":      3306,
 			"Parameter": "?parseTime=true"
@@ -21,7 +22,7 @@
 		"Hostname":  "",
 		"UseHTTP":   true,
 		"UseHTTPS":  false,
-		"HTTPPort":  80,
+		"HTTPPort":  8080,
 		"HTTPSPort": 443,
         "FileStorage": "tmp",
 		"CertFile":  "tls/server.crt",

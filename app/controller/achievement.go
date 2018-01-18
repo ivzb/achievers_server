@@ -15,6 +15,19 @@ func AchievementsIndex(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
+	afterID, err := form.StringValue(env.Request, consts.AfterID)
+
+	if err == nil {
+		afterExists, err := env.DB.AchievementExists(afterID)
+
+		if err != nil {
+			env.Log.Error(err)
+			return response.InternalServerError()
+		} else if !afterExists {
+			return response.NotFound(consts.AfterID)
+		}
+	}
+
 	pg, err := form.IntValue(env.Request, consts.Page)
 
 	if err != nil {
@@ -25,6 +38,7 @@ func AchievementsIndex(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
 	}
 
+	// todo: pass afterID
 	achs, err := env.DB.AchievementsAll(pg)
 
 	if err != nil {
