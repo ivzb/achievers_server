@@ -13,11 +13,13 @@ type DB struct {
 	ProfileByUserIDMock ProfileByUserID
 	ProfileCreateMock   ProfileCreate
 
-	AchievementExistsMock     AchievementExists
-	AchievementSingleMock     AchievementSingle
-	AchievementsAllMock       AchievementsAll
-	AchievementsByQuestIDMock AchievementsByQuestID
-	AchievementCreateMock     AchievementCreate
+	AchievementExistsMock           AchievementExists
+	AchievementSingleMock           AchievementSingle
+	AchievementsLastIDMock          AchievementsLastID
+	AchievementsAfterMock           AchievementsAfter
+	AchievementsByQuestIDLastIDMock AchievementsByQuestIDLastID
+	AchievementsByQuestIDAfterMock  AchievementsByQuestIDAfter
+	AchievementCreateMock           AchievementCreate
 
 	EvidenceExistsMock EvidenceExists
 	EvidenceSingleMock EvidenceSingle

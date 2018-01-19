@@ -67,8 +67,10 @@ func main() {
 	http.Handle("/v1/profile/me", authChain(env, controller.ProfileMe))
 
 	http.Handle("/v1/achievement", authChain(env, controller.AchievementSingle))
-	http.Handle("/v1/achievements", authChain(env, controller.AchievementsIndex))
-	http.Handle("/v1/achievements/quest", authChain(env, controller.AchievementsByQuestID))
+	http.Handle("/v1/achievements/last", authChain(env, controller.AchievementsLast))
+	http.Handle("/v1/achievements/after", authChain(env, controller.AchievementsAfter))
+	http.Handle("/v1/achievements/quest/after", authChain(env, controller.AchievementsByQuestIDAfter))
+	http.Handle("/v1/achievements/quest/last", authChain(env, controller.AchievementsByQuestIDLast))
 	http.Handle("/v1/achievement/create", authChain(env, controller.AchievementCreate))
 
 	http.Handle("/v1/evidence", authChain(env, controller.EvidenceSingle))

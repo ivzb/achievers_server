@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -18,6 +19,10 @@ type Achievement struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
 }
+
+const (
+	selectArgs = "`id`, `title`, `description`, `picture_url`, `involvement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "
+)
 
 func (db *DB) AchievementExists(id string) (bool, error) {
 	return exists(db, "achievement", "id", id)
@@ -50,16 +55,58 @@ func (db *DB) AchievementSingle(id string) (*Achievement, error) {
 	return ach, nil
 }
 
-func (db *DB) AchievementsByQuestID(questID string, page int) ([]*Achievement, error) {
-	offset := limit * page
+func (db *DB) AchievementsLastID() (string, error) {
+	var id string
 
-	rows, err := db.Query("SELECT `a`.`id`, `a`.`title`, `a`.`description`, `a`.`picture_url`, `a`.`involvement_id`, `a`.`user_id`, `a`.`created_at`, `a`.`updated_at`, `a`.`deleted_at` "+
-		"FROM achievement AS a "+
+	row := db.QueryRow("SELECT `id` " +
+		"FROM achievement " +
+		"ORDER BY `created_at` DESC " +
+		"LIMIT 1")
+
+	err := row.Scan(&id)
+
+	if err == sql.ErrNoRows {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (db *DB) AchievementsByQuestIDLastID(questID string) (string, error) {
+	var id string
+
+	row := db.QueryRow("SELECT `a`.`id` "+
+		"FROM achievement as a "+
 		"INNER JOIN quest_achievement as qa "+
 		"ON a.id = qa.achievement_id "+
 		"WHERE qa.quest_id = ? "+
 		"ORDER BY `a`.`created_at` DESC "+
-		"LIMIT ? OFFSET ?", questID, limit, offset)
+		"LIMIT 1", questID)
+
+	err := row.Scan(&id)
+
+	if err == sql.ErrNoRows {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (db *DB) AchievementsByQuestIDAfter(questID string, afterID string) ([]*Achievement, error) {
+	rows, err := db.Query("SELECT `a`.`id`, `a`.`title`, `a`.`description`, `a`.`picture_url`, `a`.`involvement_id`, `a`.`user_id`, `a`.`created_at`, `a`.`updated_at`, `a`.`deleted_at` "+
+		"FROM achievement as a "+
+		"INNER JOIN quest_achievement as qa "+
+		"ON a.id = qa.achievement_id "+
+		"WHERE qa.quest_id = ? AND a.created_at <= "+
+		"  (SELECT `created_at` "+
+		"   FROM achievement "+
+		"   WHERE `id` = ?) "+
+		"ORDER BY `a`.`created_at` DESC "+
+		"LIMIT ?", questID, afterID, limit)
 
 	if err != nil {
 		return nil, err
@@ -96,13 +143,15 @@ func (db *DB) AchievementsByQuestID(questID string, page int) ([]*Achievement, e
 	return achs, nil
 }
 
-func (db *DB) AchievementsAll(page int) ([]*Achievement, error) {
-	offset := limit * page
-
-	rows, err := db.Query("SELECT `id`, `title`, `description`, `picture_url`, `involvement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+func (db *DB) AchievementsAfter(afterID string) ([]*Achievement, error) {
+	rows, err := db.Query("SELECT "+selectArgs+
 		"FROM achievement "+
+		"WHERE `created_at` <= "+
+		"  (SELECT `created_at` "+
+		"   FROM achievement "+
+		"   WHERE `id` = ?) "+
 		"ORDER BY `created_at` DESC "+
-		"LIMIT ? OFFSET ?", limit, offset)
+		"LIMIT ?", afterID, limit)
 
 	if err != nil {
 		return nil, err

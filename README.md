@@ -51,7 +51,7 @@ With the container running, open http://localhost:8080/ in a web browser and you
 Now that we've verified that the image works, shut down the running container from another terminal window:
 
 ```
-$ docker stop test
+$ docker stop achievers_server 
 ```
 
 ## Available Endpoints
@@ -148,7 +148,7 @@ source {path_to_sql_script}
 ```
 
 ## TODO
-0. improve paging concept (pass afterID)
+0. replace paging concept with later/after as implemented in achievement controller
 1. implement constructTest for shared/ similar to this in controller/
 2. implement router with following format: router.GET("path", handler, middleware)
 3. extract framework models from app models

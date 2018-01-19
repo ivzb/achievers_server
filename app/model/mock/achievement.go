@@ -16,12 +16,22 @@ type AchievementSingle struct {
 	Err error
 }
 
-type AchievementsAll struct {
+type AchievementsLastID struct {
+	ID  string
+	Err error
+}
+
+type AchievementsAfter struct {
 	Achs []*model.Achievement
 	Err  error
 }
 
-type AchievementsByQuestID struct {
+type AchievementsByQuestIDLastID struct {
+	ID  string
+	Err error
+}
+
+type AchievementsByQuestIDAfter struct {
 	Achs []*model.Achievement
 	Err  error
 }
@@ -65,12 +75,20 @@ func (mock *DB) AchievementSingle(id string) (*model.Achievement, error) {
 	return mock.AchievementSingleMock.Ach, mock.AchievementSingleMock.Err
 }
 
-func (mock *DB) AchievementsAll(page int) ([]*model.Achievement, error) {
-	return mock.AchievementsAllMock.Achs, mock.AchievementsAllMock.Err
+func (mock *DB) AchievementsLastID() (string, error) {
+	return mock.AchievementsLastIDMock.ID, mock.AchievementsLastIDMock.Err
 }
 
-func (mock *DB) AchievementsByQuestID(questID string, page int) ([]*model.Achievement, error) {
-	return mock.AchievementsByQuestIDMock.Achs, mock.AchievementsByQuestIDMock.Err
+func (mock *DB) AchievementsAfter(id string) ([]*model.Achievement, error) {
+	return mock.AchievementsAfterMock.Achs, mock.AchievementsAfterMock.Err
+}
+
+func (mock *DB) AchievementsByQuestIDLastID(questID string) (string, error) {
+	return mock.AchievementsByQuestIDLastIDMock.ID, mock.AchievementsByQuestIDLastIDMock.Err
+}
+
+func (mock *DB) AchievementsByQuestIDAfter(questID string, afterID string) ([]*model.Achievement, error) {
+	return mock.AchievementsByQuestIDAfterMock.Achs, mock.AchievementsByQuestIDAfterMock.Err
 }
 
 func (mock *DB) AchievementCreate(achievement *model.Achievement) (string, error) {

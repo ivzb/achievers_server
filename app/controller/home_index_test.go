@@ -23,7 +23,7 @@ var homeIndexTests = []*test{
 		responseType:       Retrieve,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Home),
-		form:               achievementsByQuestIDForm(),
+		form:               &map[string]string{},
 	}),
 }
 

@@ -33,8 +33,10 @@ type DBSourcer interface {
 
 	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)
-	AchievementsAll(page int) ([]*Achievement, error)
-	AchievementsByQuestID(questID string, page int) ([]*Achievement, error)
+	AchievementsLastID() (string, error)
+	AchievementsAfter(afterID string) ([]*Achievement, error)
+	AchievementsByQuestIDAfter(questID string, afterID string) ([]*Achievement, error)
+	AchievementsByQuestIDLastID(questID string) (string, error)
 	AchievementCreate(achievement *Achievement) (string, error)
 
 	EvidenceExists(id string) (bool, error)

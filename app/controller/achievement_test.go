@@ -4,12 +4,20 @@ import (
 	"testing"
 )
 
-func TestAchievementsIndex(t *testing.T) {
-	run(t, achievementsIndexTests)
+func TestAchievementsAfter(t *testing.T) {
+	run(t, achievementsAfterTests)
 }
 
-func TestAchievementsByQuestID(t *testing.T) {
-	run(t, achievementsByQuestIDTests)
+func TestAchievementsLatest(t *testing.T) {
+	run(t, achievementsLatestTests)
+}
+
+func TestAchievementsByQuestIDAfter(t *testing.T) {
+	run(t, achievementsByQuestIDAfterTests)
+}
+
+func TestAchievementsByQuestIDLast(t *testing.T) {
+	run(t, achievementsByQuestIDLastTests)
 }
 
 func TestAchievementSingle(t *testing.T) {
