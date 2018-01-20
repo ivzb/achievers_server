@@ -12,7 +12,7 @@ func ProfileMe(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	prfl, err := env.DB.ProfileByUserID(env.UserID)
+	prfl, err := env.DB.Profile().ProfileByUserID(env.UserID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -36,7 +36,7 @@ func ProfileSingle(env *model.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	exists, err := env.DB.ProfileExists(prflID)
+	exists, err := env.DB.Profile().ProfileExists(prflID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -47,7 +47,7 @@ func ProfileSingle(env *model.Env) *response.Message {
 		return response.NotFound(consts.Profile)
 	}
 
-	prfl, err := env.DB.ProfileSingle(prflID)
+	prfl, err := env.DB.Profile().ProfileSingle(prflID)
 
 	if err != nil {
 		env.Log.Error(err)

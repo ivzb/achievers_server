@@ -40,22 +40,28 @@ func AchievementsAfter(env *model.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, err := form.StringValue(env.Request, consts.AfterID)
+	id, respErr := getFormString(env, consts.AfterID)
 
-	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AfterID))
+	if respErr != nil {
+		return respErr
 	}
 
-	exists, err := env.DB.AchievementExists(id)
+	//id, err := form.StringValue(env.Request, consts.AfterID)
 
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
+	//if err != nil {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AfterID))
+	//}
 
-	if !exists {
-		return response.NotFound(consts.ID)
-	}
+	//exists, err := env.DB.AchievementExists(id)
+
+	//if err != nil {
+	//env.Log.Error(err)
+	//return response.InternalServerError()
+	//}
+
+	//if !exists {
+	//return response.NotFound(consts.ID)
+	//}
 
 	achs, err := env.DB.AchievementsAfter(id)
 

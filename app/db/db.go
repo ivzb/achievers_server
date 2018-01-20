@@ -1,4 +1,4 @@
-package model
+package db
 
 import (
 	"crypto/rand"
@@ -26,10 +26,7 @@ type DBSourcer interface {
 	UserCreate(user *User) (string, error)
 	UserAuth(auth *Auth) (string, error)
 
-	ProfileExists(id string) (bool, error)
-	ProfileSingle(id string) (*Profile, error)
-	ProfileByUserID(userID string) (*Profile, error)
-	ProfileCreate(profile *Profile, userID string) (string, error)
+	Profile() Profiler
 
 	AchievementExists(id string) (bool, error)
 	AchievementSingle(id string) (*Achievement, error)
@@ -97,6 +94,11 @@ func (db *DB) UUID() (string, error) {
 	}
 
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+}
+
+// Profile returns profiler interface
+func (db *DB) Profile() Profiler {
+	return &Profile{}
 }
 
 // exists checks whether row in specified table exists by column and value

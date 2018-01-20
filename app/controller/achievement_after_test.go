@@ -57,7 +57,7 @@ var achievementsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
 			AchievementExistsMock: mock.AchievementExists{Bool: false},

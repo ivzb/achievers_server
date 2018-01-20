@@ -99,7 +99,7 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	_, err = env.DB.ProfileCreate(prfl, userID)
+	_, err = env.DB.Profile().ProfileCreate(prfl, userID)
 
 	if err != nil {
 		env.Log.Error(err)

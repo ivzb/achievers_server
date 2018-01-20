@@ -14,11 +14,11 @@ type Profile struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
-func (db *DB) ProfileExists(id string) (bool, error) {
+func (db *db.Profile) ProfileExists(id string) (bool, error) {
 	return exists(db, "profile", "id", id)
 }
 
-func (db *DB) ProfileSingle(id string) (*Profile, error) {
+func (db *db.Profile) ProfileSingle(id string) (*Profile, error) {
 	prfl := new(Profile)
 
 	prfl.ID = id
@@ -41,7 +41,7 @@ func (db *DB) ProfileSingle(id string) (*Profile, error) {
 	return prfl, nil
 }
 
-func (db *DB) ProfileByUserID(userID string) (*Profile, error) {
+func (db *db.Profile) ProfileByUserID(userID string) (*Profile, error) {
 	prfl := new(Profile)
 
 	row := db.QueryRow("SELECT `id`, `name`, `created_at`, `updated_at`, `deleted_at` "+
@@ -63,7 +63,7 @@ func (db *DB) ProfileByUserID(userID string) (*Profile, error) {
 	return prfl, nil
 }
 
-func (db *DB) ProfileCreate(profile *Profile, userID string) (string, error) {
+func (db *db.Profile) ProfileCreate(profile *Profile, userID string) (string, error) {
 	return create(db, `INSERT INTO profile (id, name, user_id)
         VALUES(?, ?, ?)`,
 		profile.Name,
