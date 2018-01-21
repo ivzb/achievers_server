@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/middleware/app"
-	"github.com/ivzb/achievers_server/app/model"
-	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/shared/env"
 )
 
 const (
@@ -55,7 +55,7 @@ type test struct {
 type testRequest struct {
 	method        string
 	form          *url.Values
-	env           *model.Env
+	env           *env.Env
 	removeHeaders bool
 }
 
@@ -92,15 +92,15 @@ func constructForm(m *map[string]string) *url.Values {
 	return form
 }
 
-func constructEnv(db *mock.DB, logger *mock.Logger, tokener *mock.Tokener) *model.Env {
-	return &model.Env{
+func constructEnv(db *mock.DB, logger *mock.Logger, tokener *mock.Tokener) *env.Env {
+	return &env.Env{
 		DB:    db,
 		Log:   logger,
 		Token: tokener,
 	}
 }
 
-func constructTestRequest(method string, form *url.Values, env *model.Env, removeHeaders bool) *testRequest {
+func constructTestRequest(method string, form *url.Values, env *env.Env, removeHeaders bool) *testRequest {
 	return &testRequest{
 		method,
 		form,

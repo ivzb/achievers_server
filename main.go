@@ -6,12 +6,15 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/controller"
+	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/middleware/auth"
 	"github.com/ivzb/achievers_server/app/middleware/logger"
-	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/config"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/file"
+	l "github.com/ivzb/achievers_server/app/shared/logger"
+	"github.com/ivzb/achievers_server/app/shared/token"
 
 	"net/http"
 	"os"
@@ -35,23 +38,23 @@ func main() {
 		log.Panic(err)
 	}
 
-	db, err := model.NewDB(conf.Database)
+	db, err := db.NewDB(conf.Database)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	token, err := model.NewTokener(conf.Token)
+	token, err := token.NewTokener(conf.Token)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	log := model.NewLogger()
+	logger := l.NewLogger()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB:     db,
-		Log:    log,
+		Log:    logger,
 		Token:  token,
 		Config: conf,
 	}
@@ -91,15 +94,15 @@ func main() {
 	http.Handle("/v1/file/create", authChain(env, controller.FileCreate))
 
 	port := strconv.Itoa(conf.Server.HTTPPort)
-	log.Message("started@:" + port)
+	logger.Message("started@:" + port)
 	http.ListenAndServe(":"+port, nil)
 }
 
-func authChain(env *model.Env, handler app.Handler) http.Handler {
+func authChain(env *env.Env, handler app.Handler) http.Handler {
 	return use(app.App{env, handler}, auth.Handler, logger.Handler)
 }
 
-func anonChain(env *model.Env, handler app.Handler) http.Handler {
+func anonChain(env *env.Env, handler app.Handler) http.Handler {
 	return use(app.App{env, handler}, logger.Handler)
 }
 

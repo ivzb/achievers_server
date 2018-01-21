@@ -5,12 +5,13 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func QuestAchievementCreate(env *model.Env) *response.Message {
+func QuestAchievementCreate(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -30,7 +31,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
 	}
 
-	qstExists, err := env.DB.QuestExists(qstAch.QuestID)
+	qstExists, err := env.DB.Quest().Exists(qstAch.QuestID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -41,7 +42,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.QuestID)
 	}
 
-	achExists, err := env.DB.AchievementExists(qstAch.AchievementID)
+	achExists, err := env.DB.Achievement().Exists(qstAch.AchievementID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -52,7 +53,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.AchievementID)
 	}
 
-	achQstExists, err := env.DB.QuestAchievementExists(qstAch.QuestID, qstAch.AchievementID)
+	achQstExists, err := env.DB.QuestAchievement().Exists(qstAch.QuestID, qstAch.AchievementID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -65,7 +66,7 @@ func QuestAchievementCreate(env *model.Env) *response.Message {
 
 	qstAch.UserID = env.UserID
 
-	id, err := env.DB.QuestAchievementCreate(qstAch)
+	id, err := env.DB.QuestAchievement().Create(qstAch)
 
 	if err != nil || id == "" {
 		env.Log.Error(err)

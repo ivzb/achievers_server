@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/ivzb/achievers_server/app/middleware/app"
-	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
@@ -14,7 +14,7 @@ import (
 func Handler(app app.App) app.App {
 	prevHandler := app.Handler
 
-	app.Handler = func(env *model.Env) *response.Message {
+	app.Handler = func(env *env.Env) *response.Message {
 		at, err := request.HeaderValue(app.Env.Request, consts.AuthToken)
 
 		if err != nil {
@@ -27,7 +27,7 @@ func Handler(app app.App) app.App {
 			return response.Unauthorized(fmt.Sprintf(consts.FormatInvalid, consts.AuthToken))
 		}
 
-		exists, err := app.Env.DB.UserExists(uID)
+		exists, err := app.Env.DB.User().Exists(uID)
 
 		if err != nil {
 			return response.InternalServerError()

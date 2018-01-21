@@ -15,15 +15,3 @@ type QuestAchievement struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt time.Time `json:"deleted_at"`
 }
-
-func (db *DB) QuestAchievementExists(questID string, achievementID string) (bool, error) {
-	return existsMultiple(db, "quest_achievement", []string{"quest_id", "achievement_id"}, []string{questID, achievementID})
-}
-
-func (db *DB) QuestAchievementCreate(qstAch *QuestAchievement) (string, error) {
-	return create(db, `INSERT INTO quest_achievement (id, quest_id, achievement_id, user_id)
-        VALUES(?, ?, ?, ?)`,
-		qstAch.QuestID,
-		qstAch.AchievementID,
-		qstAch.UserID)
-}

@@ -1,18 +1,18 @@
 package controller
 
 import (
-	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func ProfileMe(env *model.Env) *response.Message {
+func ProfileMe(env *env.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
 
-	prfl, err := env.DB.Profile().ProfileByUserID(env.UserID)
+	prfl, err := env.DB.Profile().SingleByUserID(env.UserID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -25,7 +25,7 @@ func ProfileMe(env *model.Env) *response.Message {
 		prfl)
 }
 
-func ProfileSingle(env *model.Env) *response.Message {
+func ProfileSingle(env *env.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
@@ -36,7 +36,7 @@ func ProfileSingle(env *model.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	exists, err := env.DB.Profile().ProfileExists(prflID)
+	exists, err := env.DB.Profile().Exists(prflID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -47,7 +47,7 @@ func ProfileSingle(env *model.Env) *response.Message {
 		return response.NotFound(consts.Profile)
 	}
 
-	prfl, err := env.DB.Profile().ProfileSingle(prflID)
+	prfl, err := env.DB.Profile().Single(prflID)
 
 	if err != nil {
 		env.Log.Error(err)

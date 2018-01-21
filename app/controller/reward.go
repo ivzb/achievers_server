@@ -5,12 +5,13 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func RewardsIndex(env *model.Env) *response.Message {
+func RewardsIndex(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -25,7 +26,7 @@ func RewardsIndex(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
 	}
 
-	rwds, err := env.DB.RewardsAll(pg)
+	rwds, err := env.DB.Reward().All(pg)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -41,7 +42,7 @@ func RewardsIndex(env *model.Env) *response.Message {
 		rwds)
 }
 
-func RewardSingle(env *model.Env) *response.Message {
+func RewardSingle(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -52,7 +53,7 @@ func RewardSingle(env *model.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	exists, err := env.DB.RewardExists(rwdID)
+	exists, err := env.DB.Reward().Exists(rwdID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -62,7 +63,7 @@ func RewardSingle(env *model.Env) *response.Message {
 		return response.NotFound(consts.Reward)
 	}
 
-	rwd, err := env.DB.RewardSingle(rwdID)
+	rwd, err := env.DB.Reward().Single(rwdID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -74,7 +75,7 @@ func RewardSingle(env *model.Env) *response.Message {
 		rwd)
 }
 
-func RewardCreate(env *model.Env) *response.Message {
+func RewardCreate(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -102,7 +103,7 @@ func RewardCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.RewardTypeID))
 	}
 
-	rewardTypeExists, err := env.DB.RewardTypeExists(rwd.RewardTypeID)
+	rewardTypeExists, err := env.DB.RewardType().Exists(rwd.RewardTypeID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -114,7 +115,7 @@ func RewardCreate(env *model.Env) *response.Message {
 
 	rwd.UserID = env.UserID
 
-	id, err := env.DB.RewardCreate(rwd)
+	id, err := env.DB.Reward().Create(rwd)
 
 	if err != nil || id == "" {
 		return response.InternalServerError()

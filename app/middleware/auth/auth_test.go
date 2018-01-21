@@ -6,14 +6,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/middleware/app"
-	"github.com/ivzb/achievers_server/app/model"
-	"github.com/ivzb/achievers_server/app/model/mock"
 	"github.com/ivzb/achievers_server/app/shared/config"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *model.Env) *response.Message {
+func testHandler(env *env.Env) *response.Message {
 	return response.Created("auth_token", "auth token here")
 }
 
@@ -23,7 +23,7 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB: &mock.DB{
 			UserExistsMock: mock.UserExists{Bool: true, Err: nil},
 		},
@@ -58,7 +58,7 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB:     &mock.DB{},
 		Token:  &mock.Tokener{},
 		Config: &config.Config{},
@@ -90,7 +90,7 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB: &mock.DB{},
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{Dec: "", Err: errors.New("decryption error")},
@@ -124,7 +124,7 @@ func TestAuthHandler_DBError(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB: &mock.DB{
 			UserExistsMock: mock.UserExists{Bool: false, Err: errors.New("user does not exist")},
 		},
@@ -160,7 +160,7 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		DB: &mock.DB{
 			UserExistsMock: mock.UserExists{Bool: false, Err: nil},
 		},

@@ -5,12 +5,13 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func UserAuth(env *model.Env) *response.Message {
+func UserAuth(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -30,7 +31,7 @@ func UserAuth(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Password))
 	}
 
-	exists, err := env.DB.UserEmailExists(auth.Email)
+	exists, err := env.DB.User().EmailExists(auth.Email)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -41,7 +42,7 @@ func UserAuth(env *model.Env) *response.Message {
 		return response.NotFound(consts.Email)
 	}
 
-	uID, err := env.DB.UserAuth(auth)
+	uID, err := env.DB.User().Auth(auth)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -58,7 +59,7 @@ func UserAuth(env *model.Env) *response.Message {
 	return response.Created(consts.AuthToken, token)
 }
 
-func UserCreate(env *model.Env) *response.Message {
+func UserCreate(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -81,7 +82,7 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Password))
 	}
 
-	exists, err := env.DB.UserEmailExists(usr.Email)
+	exists, err := env.DB.User().EmailExists(usr.Email)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -92,14 +93,14 @@ func UserCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatAlreadyExists, consts.Email))
 	}
 
-	userID, err := env.DB.UserCreate(usr)
+	userID, err := env.DB.User().Create(usr)
 
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	_, err = env.DB.Profile().ProfileCreate(prfl, userID)
+	_, err = env.DB.Profile().Create(prfl, userID)
 
 	if err != nil {
 		env.Log.Error(err)

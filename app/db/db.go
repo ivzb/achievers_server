@@ -17,50 +17,29 @@ const (
 	limit = 9
 )
 
+var (
+	ErrNoRows = sql.ErrNoRows
+)
+
 // DBSourcer contains all available DAO functions
 type DBSourcer interface {
 	UUID() (string, error)
 
-	UserExists(id string) (bool, error)
-	UserEmailExists(email string) (bool, error)
-	UserCreate(user *User) (string, error)
-	UserAuth(auth *Auth) (string, error)
-
+	User() Userer
 	Profile() Profiler
 
-	AchievementExists(id string) (bool, error)
-	AchievementSingle(id string) (*Achievement, error)
-	AchievementsLastID() (string, error)
-	AchievementsAfter(afterID string) ([]*Achievement, error)
-	AchievementsByQuestIDAfter(questID string, afterID string) ([]*Achievement, error)
-	AchievementsByQuestIDLastID(questID string) (string, error)
-	AchievementCreate(achievement *Achievement) (string, error)
+	Achievement() Achievementer
+	Evidence() Evidencer
+	Involvement() Involvementer
 
-	EvidenceExists(id string) (bool, error)
-	EvidenceSingle(id string) (*Evidence, error)
-	EvidencesAll(page int) ([]*Evidence, error)
-	EvidenceCreate(evidence *Evidence) (string, error)
+	Quest() Quester
+	QuestType() QuestTyper
+	QuestAchievement() QuestAchievementer
 
-	QuestExists(id string) (bool, error)
-	QuestSingle(id string) (*Quest, error)
-	QuestsAll(page int) ([]*Quest, error)
-	QuestCreate(quest *Quest) (string, error)
+	Reward() Rewarder
+	RewardType() RewardTyper
 
-	QuestTypeExists(id uint8) (bool, error)
-
-	QuestAchievementExists(questID string, achievementID string) (bool, error)
-	QuestAchievementCreate(qstAch *QuestAchievement) (string, error)
-
-	RewardExists(id string) (bool, error)
-	RewardSingle(id string) (*Reward, error)
-	RewardsAll(page int) ([]*Reward, error)
-	RewardCreate(reward *Reward) (string, error)
-
-	RewardTypeExists(id uint8) (bool, error)
-
-	InvolvementExists(id string) (bool, error)
-
-	MultimediaTypeExists(id uint8) (bool, error)
+	MultimediaType() MultimediaTyper
 }
 
 // DB struct holds the connection to DB
@@ -94,11 +73,6 @@ func (db *DB) UUID() (string, error) {
 	}
 
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
-}
-
-// Profile returns profiler interface
-func (db *DB) Profile() Profiler {
-	return &Profile{}
 }
 
 // exists checks whether row in specified table exists by column and value

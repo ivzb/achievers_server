@@ -6,11 +6,12 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func EvidencesIndex(env *model.Env) *response.Message {
+func EvidencesIndex(env *env.Env) *response.Message {
 	if env.Request.Method != "GET" {
 		return response.MethodNotAllowed()
 	}
@@ -25,7 +26,7 @@ func EvidencesIndex(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
 	}
 
-	evds, err := env.DB.EvidencesAll(pg)
+	evds, err := env.DB.Evidence().All(pg)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -41,7 +42,7 @@ func EvidencesIndex(env *model.Env) *response.Message {
 		evds)
 }
 
-func EvidenceSingle(env *model.Env) *response.Message {
+func EvidenceSingle(env *env.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
@@ -52,7 +53,7 @@ func EvidenceSingle(env *model.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	exists, err := env.DB.EvidenceExists(evdID)
+	exists, err := env.DB.Evidence().Exists(evdID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -62,7 +63,7 @@ func EvidenceSingle(env *model.Env) *response.Message {
 		return response.NotFound(consts.Evidence)
 	}
 
-	evd, err := env.DB.EvidenceSingle(evdID)
+	evd, err := env.DB.Evidence().Single(evdID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -74,7 +75,7 @@ func EvidenceSingle(env *model.Env) *response.Message {
 		evd)
 }
 
-func EvidenceCreate(env *model.Env) *response.Message {
+func EvidenceCreate(env *env.Env) *response.Message {
 	if env.Request.Method != "POST" {
 		return response.MethodNotAllowed()
 	}
@@ -106,7 +107,7 @@ func EvidenceCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
 	}
 
-	multimediaTypeExist, err := env.DB.MultimediaTypeExists(evd.MultimediaTypeID)
+	multimediaTypeExist, err := env.DB.MultimediaType().Exists(evd.MultimediaTypeID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -116,7 +117,7 @@ func EvidenceCreate(env *model.Env) *response.Message {
 		return response.NotFound(consts.MultimediaTypeID)
 	}
 
-	achievementExist, err := env.DB.AchievementExists(evd.AchievementID)
+	achievementExist, err := env.DB.Achievement().Exists(evd.AchievementID)
 
 	if err != nil {
 		return response.InternalServerError()
@@ -128,7 +129,7 @@ func EvidenceCreate(env *model.Env) *response.Message {
 
 	evd.UserID = env.UserID
 
-	id, err := env.DB.EvidenceCreate(evd)
+	id, err := env.DB.Evidence().Create(evd)
 
 	if err != nil || id == "" {
 		log.Println(err)

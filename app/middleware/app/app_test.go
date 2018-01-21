@@ -5,21 +5,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ivzb/achievers_server/app/model"
-	"github.com/ivzb/achievers_server/app/model/mock"
+	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/shared/config"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testOkHandler(env *model.Env) *response.Message {
+func testOkHandler(env *env.Env) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
-func jsonErrorHandler(env *model.Env) *response.Message {
+func jsonErrorHandler(env *env.Env) *response.Message {
 	return &response.Message{http.StatusOK, func() {}, response.TypeJSON}
 }
 
-func testFileHandler(env *model.Env) *response.Message {
+func testFileHandler(env *env.Env) *response.Message {
 	return &response.Message{
 		StatusCode: 200,
 		Result:     ".",
@@ -31,7 +31,7 @@ func TestAppHandler_ValidJSONHandler(t *testing.T) {
 	req := httptest.NewRequest("GET", "/mock", nil)
 	rr := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
@@ -62,7 +62,7 @@ func TestAppHandler_InvalidJSONHandler(t *testing.T) {
 	req := httptest.NewRequest("GET", "/mock", nil)
 	rr := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},
@@ -97,7 +97,7 @@ func TestAppHandler_ValidFileHandler(t *testing.T) {
 	req := httptest.NewRequest("GET", "/mock", nil)
 	rr := httptest.NewRecorder()
 
-	env := &model.Env{
+	env := &env.Env{
 		Token: &mock.Tokener{
 			DecryptMock: mock.Decrypt{"decrypted", nil},
 		},

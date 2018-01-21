@@ -5,24 +5,25 @@ import (
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func AchievementsLast(env *model.Env) *response.Message {
+func AchievementsLast(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	id, err := env.DB.AchievementsLastID()
+	id, err := env.DB.Achievement().LastID()
 
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	achs, err := env.DB.AchievementsAfter(id)
+	achs, err := env.DB.Achievement().After(id)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -35,7 +36,7 @@ func AchievementsLast(env *model.Env) *response.Message {
 		achs)
 }
 
-func AchievementsAfter(env *model.Env) *response.Message {
+func AchievementsAfter(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -63,7 +64,7 @@ func AchievementsAfter(env *model.Env) *response.Message {
 	//return response.NotFound(consts.ID)
 	//}
 
-	achs, err := env.DB.AchievementsAfter(id)
+	achs, err := env.DB.Achievement().After(id)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -76,7 +77,7 @@ func AchievementsAfter(env *model.Env) *response.Message {
 		achs)
 }
 
-func AchievementsByQuestIDLast(env *model.Env) *response.Message {
+func AchievementsByQuestIDLast(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -87,7 +88,7 @@ func AchievementsByQuestIDLast(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
 	}
 
-	qstExists, err := env.DB.QuestExists(qstID)
+	qstExists, err := env.DB.Quest().Exists(qstID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -98,14 +99,14 @@ func AchievementsByQuestIDLast(env *model.Env) *response.Message {
 		return response.NotFound(consts.QuestID)
 	}
 
-	afterID, err := env.DB.AchievementsByQuestIDLastID(qstID)
+	afterID, err := env.DB.Achievement().LastIDByQuestID(qstID)
 
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	achs, err := env.DB.AchievementsByQuestIDAfter(qstID, afterID)
+	achs, err := env.DB.Achievement().AfterByQuestID(qstID, afterID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -118,7 +119,7 @@ func AchievementsByQuestIDLast(env *model.Env) *response.Message {
 		achs)
 }
 
-func AchievementsByQuestIDAfter(env *model.Env) *response.Message {
+func AchievementsByQuestIDAfter(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -129,7 +130,7 @@ func AchievementsByQuestIDAfter(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
 	}
 
-	qstExists, err := env.DB.QuestExists(qstID)
+	qstExists, err := env.DB.Quest().Exists(qstID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -146,7 +147,7 @@ func AchievementsByQuestIDAfter(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AfterID))
 	}
 
-	exists, err := env.DB.AchievementExists(afterID)
+	exists, err := env.DB.Achievement().Exists(afterID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -157,7 +158,7 @@ func AchievementsByQuestIDAfter(env *model.Env) *response.Message {
 		return response.NotFound(consts.AfterID)
 	}
 
-	achs, err := env.DB.AchievementsByQuestIDAfter(qstID, afterID)
+	achs, err := env.DB.Achievement().AfterByQuestID(qstID, afterID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -170,7 +171,7 @@ func AchievementsByQuestIDAfter(env *model.Env) *response.Message {
 		achs)
 }
 
-func AchievementSingle(env *model.Env) *response.Message {
+func AchievementSingle(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -181,7 +182,7 @@ func AchievementSingle(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.ID))
 	}
 
-	achExists, err := env.DB.AchievementExists(achID)
+	achExists, err := env.DB.Achievement().Exists(achID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -192,7 +193,7 @@ func AchievementSingle(env *model.Env) *response.Message {
 		return response.NotFound(consts.Achievement)
 	}
 
-	ach, err := env.DB.AchievementSingle(achID)
+	ach, err := env.DB.Achievement().Single(achID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -205,7 +206,7 @@ func AchievementSingle(env *model.Env) *response.Message {
 		ach)
 }
 
-func AchievementCreate(env *model.Env) *response.Message {
+func AchievementCreate(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -233,7 +234,7 @@ func AchievementCreate(env *model.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.InvolvementID))
 	}
 
-	involvementExists, err := env.DB.InvolvementExists(ach.InvolvementID)
+	involvementExists, err := env.DB.Involvement().Exists(ach.InvolvementID)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -244,7 +245,7 @@ func AchievementCreate(env *model.Env) *response.Message {
 
 	ach.UserID = env.UserID
 
-	id, err := env.DB.AchievementCreate(ach)
+	id, err := env.DB.Achievement().Create(ach)
 
 	if err != nil || id == "" {
 		return response.InternalServerError()
