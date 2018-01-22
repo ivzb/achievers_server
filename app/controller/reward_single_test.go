@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -40,7 +41,9 @@ var rewardSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardSingleForm(),
 		db: &mock.DB{
-			RewardExistsMock: mock.RewardExists{Err: mockDbErr},
+			RewardMock: mock.Reward{
+				ExistsMock: mock.RewardExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructRewardSingleTest(&testInput{
@@ -51,7 +54,9 @@ var rewardSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Reward),
 		form:               rewardSingleForm(),
 		db: &mock.DB{
-			RewardExistsMock: mock.RewardExists{Bool: false},
+			RewardMock: mock.Reward{
+				ExistsMock: mock.RewardExists{Bool: false},
+			},
 		},
 	}),
 	constructRewardSingleTest(&testInput{
@@ -62,8 +67,10 @@ var rewardSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardSingleForm(),
 		db: &mock.DB{
-			RewardExistsMock: mock.RewardExists{Bool: true},
-			RewardSingleMock: mock.RewardSingle{Err: mockDbErr},
+			RewardMock: mock.Reward{
+				ExistsMock: mock.RewardExists{Bool: true},
+				SingleMock: mock.RewardSingle{Err: mockDbErr},
+			},
 		},
 	}),
 	constructRewardSingleTest(&testInput{
@@ -74,14 +81,16 @@ var rewardSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Reward),
 		form:               rewardSingleForm(),
 		db: &mock.DB{
-			RewardExistsMock: mock.RewardExists{Bool: true},
-			RewardSingleMock: mock.RewardSingle{Rwd: mock.Reward()},
+			RewardMock: mock.Reward{
+				ExistsMock: mock.RewardExists{Bool: true},
+				SingleMock: mock.RewardSingle{Rwd: generate.Reward()},
+			},
 		},
 	}),
 }
 
 func constructRewardSingleTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Reward())
+	responseResults, _ := json.Marshal(generate.Reward())
 
 	return constructTest(RewardSingle, testInput, responseResults)
 }

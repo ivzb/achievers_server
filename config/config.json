@@ -5,7 +5,7 @@
 			"Username":  "root",
 			"Password":  "",
 			"Name":      "achievers",
-			"Hostname_docker":  "docker.for.mac.localhost",
+			"HostnameDocker":  "docker.for.mac.host.internal",
 			"Hostname":  "127.0.0.1",
 			"Port":      3306,
 			"Parameter": "?parseTime=true"

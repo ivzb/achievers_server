@@ -58,7 +58,9 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -69,7 +71,9 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.QuestID),
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Bool: false},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: false},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -80,8 +84,12 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:       mock.QuestExists{Bool: true},
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -92,8 +100,12 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AchievementID),
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:       mock.QuestExists{Bool: true},
-			AchievementExistsMock: mock.AchievementExists{Bool: false},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: false},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -104,9 +116,15 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:            mock.QuestExists{Bool: true},
-			AchievementExistsMock:      mock.AchievementExists{Bool: true},
-			QuestAchievementExistsMock: mock.QuestAchievementExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			QuestAchievementMock: mock.QuestAchievement{
+				ExistsMock: mock.QuestAchievementExists{Err: mockDbErr},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -117,9 +135,15 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatAlreadyExists, consts.QuestAchievement),
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:            mock.QuestExists{Bool: true},
-			AchievementExistsMock:      mock.AchievementExists{Bool: true},
-			QuestAchievementExistsMock: mock.QuestAchievementExists{Bool: true},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
+			QuestAchievementMock: mock.QuestAchievement{
+				ExistsMock: mock.QuestAchievementExists{Bool: true},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -130,10 +154,16 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:            mock.QuestExists{Bool: true},
-			AchievementExistsMock:      mock.AchievementExists{Bool: true},
-			QuestAchievementExistsMock: mock.QuestAchievementExists{Bool: false},
-			QuestAchievementCreateMock: mock.QuestAchievementCreate{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
+			QuestAchievementMock: mock.QuestAchievement{
+				ExistsMock: mock.QuestAchievementExists{Bool: false},
+				CreateMock: mock.QuestAchievementCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -144,10 +174,16 @@ var questAchievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.QuestAchievement),
 		form:               questAchievementCreateForm(),
 		db: &mock.DB{
-			QuestExistsMock:            mock.QuestExists{Bool: true},
-			AchievementExistsMock:      mock.AchievementExists{Bool: true},
-			QuestAchievementExistsMock: mock.QuestAchievementExists{Bool: false},
-			QuestAchievementCreateMock: mock.QuestAchievementCreate{ID: mockID},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
+			QuestAchievementMock: mock.QuestAchievement{
+				ExistsMock: mock.QuestAchievementExists{Bool: false},
+				CreateMock: mock.QuestAchievementCreate{ID: mockID},
+			},
 		},
 	}),
 }

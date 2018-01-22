@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -40,7 +41,9 @@ var evidenceSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
-			EvidenceExistsMock: mock.EvidenceExists{Err: mockDbErr},
+			EvidenceMock: mock.Evidence{
+				ExistsMock: mock.EvidenceExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructEvidenceSingleTest(&testInput{
@@ -51,7 +54,9 @@ var evidenceSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Evidence),
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
-			EvidenceExistsMock: mock.EvidenceExists{Bool: false},
+			EvidenceMock: mock.Evidence{
+				ExistsMock: mock.EvidenceExists{Bool: false},
+			},
 		},
 	}),
 	constructEvidenceSingleTest(&testInput{
@@ -62,8 +67,10 @@ var evidenceSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
-			EvidenceExistsMock: mock.EvidenceExists{Bool: true},
-			EvidenceSingleMock: mock.EvidenceSingle{Err: mockDbErr},
+			EvidenceMock: mock.Evidence{
+				ExistsMock: mock.EvidenceExists{Bool: true},
+				SingleMock: mock.EvidenceSingle{Err: mockDbErr},
+			},
 		},
 	}),
 	constructEvidenceSingleTest(&testInput{
@@ -74,14 +81,16 @@ var evidenceSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Evidence),
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
-			EvidenceExistsMock: mock.EvidenceExists{Bool: true},
-			EvidenceSingleMock: mock.EvidenceSingle{Evd: mock.Evidence()},
+			EvidenceMock: mock.Evidence{
+				ExistsMock: mock.EvidenceExists{Bool: true},
+				SingleMock: mock.EvidenceSingle{Evd: generate.Evidence()},
+			},
 		},
 	}),
 }
 
 func constructEvidenceSingleTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Evidence())
+	responseResults, _ := json.Marshal(generate.Evidence())
 
 	return constructTest(EvidenceSingle, testInput, responseResults)
 }

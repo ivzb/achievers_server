@@ -59,7 +59,9 @@ var userCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userCreateForm(),
 		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
+			UserMock: mock.User{
+				EmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructUserCreateTest(&testInput{
@@ -70,7 +72,9 @@ var userCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatAlreadyExists, consts.Email),
 		form:               userCreateForm(),
 		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
+			UserMock: mock.User{
+				EmailExistsMock: mock.UserEmailExists{Bool: true},
+			},
 		},
 	}),
 	constructUserCreateTest(&testInput{
@@ -81,9 +85,13 @@ var userCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userCreateForm(),
 		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
-			ProfileCreateMock:   mock.ProfileCreate{ID: mockID},
-			UserCreateMock:      mock.UserCreate{Err: mockDbErr},
+			UserMock: mock.User{
+				EmailExistsMock: mock.UserEmailExists{Bool: false},
+				CreateMock:      mock.UserCreate{Err: mockDbErr},
+			},
+			ProfileMock: mock.Profile{
+				CreateMock: mock.ProfileCreate{ID: mockID},
+			},
 		},
 	}),
 	constructUserCreateTest(&testInput{
@@ -94,9 +102,13 @@ var userCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userCreateForm(),
 		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
-			UserCreateMock:      mock.UserCreate{ID: mockID},
-			ProfileCreateMock:   mock.ProfileCreate{Err: mockDbErr},
+			UserMock: mock.User{
+				EmailExistsMock: mock.UserEmailExists{Bool: false},
+				CreateMock:      mock.UserCreate{ID: mockID},
+			},
+			ProfileMock: mock.Profile{
+				CreateMock: mock.ProfileCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructUserCreateTest(&testInput{
@@ -107,9 +119,13 @@ var userCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.User),
 		form:               userCreateForm(),
 		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
-			ProfileCreateMock:   mock.ProfileCreate{ID: mockID},
-			UserCreateMock:      mock.UserCreate{ID: mockID},
+			UserMock: mock.User{
+				EmailExistsMock: mock.UserEmailExists{Bool: false},
+				CreateMock:      mock.UserCreate{ID: mockID},
+			},
+			ProfileMock: mock.Profile{
+				CreateMock: mock.ProfileCreate{ID: mockID},
+			},
 		},
 	}),
 }

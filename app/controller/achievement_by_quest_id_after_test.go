@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -46,7 +47,9 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Err: mockDbErr},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -58,7 +61,9 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.QuestID),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Bool: false},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: false},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -70,8 +75,12 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
 		form:               mapWithout(achievementsByQuestIDAfterForm(), consts.AfterID),
 		db: &mock.DB{
-			QuestExistsMock:       mock.QuestExists{Bool: true},
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -83,8 +92,12 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:       mock.QuestExists{Bool: true},
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -96,8 +109,12 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:       mock.QuestExists{Bool: true},
-			AchievementExistsMock: mock.AchievementExists{Bool: false},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: false},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -109,9 +126,13 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:                mock.QuestExists{Bool: true},
-			AchievementExistsMock:          mock.AchievementExists{Bool: true},
-			AchievementsByQuestIDAfterMock: mock.AchievementsByQuestIDAfter{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock:         mock.AchievementExists{Bool: true},
+				AfterByQuestIDMock: mock.AchievementsAfterByQuestID{Err: mockDbErr},
+			},
 		},
 		args: achievementsByQuestIDAfterArgs,
 	}),
@@ -123,9 +144,13 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:                mock.QuestExists{Bool: true},
-			AchievementExistsMock:          mock.AchievementExists{Bool: true},
-			AchievementsByQuestIDAfterMock: mock.AchievementsByQuestIDAfter{Achs: mock.Achievements(0)},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock:         mock.AchievementExists{Bool: true},
+				AfterByQuestIDMock: mock.AchievementsAfterByQuestID{Achs: generate.Achievements(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -137,9 +162,13 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:                mock.QuestExists{Bool: true},
-			AchievementExistsMock:          mock.AchievementExists{Bool: true},
-			AchievementsByQuestIDAfterMock: mock.AchievementsByQuestIDAfter{Achs: mock.Achievements(4)},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock:         mock.AchievementExists{Bool: true},
+				AfterByQuestIDMock: mock.AchievementsAfterByQuestID{Achs: generate.Achievements(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -151,9 +180,13 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
-			QuestExistsMock:                mock.QuestExists{Bool: true},
-			AchievementExistsMock:          mock.AchievementExists{Bool: true},
-			AchievementsByQuestIDAfterMock: mock.AchievementsByQuestIDAfter{Achs: mock.Achievements(9)},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock:         mock.AchievementExists{Bool: true},
+				AfterByQuestIDMock: mock.AchievementsAfterByQuestID{Achs: generate.Achievements(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -165,7 +198,7 @@ func constructAchievementsByQuestIDAfterTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Achievements(achievementsSize))
+		responseResults, _ = json.Marshal(generate.Achievements(achievementsSize))
 	}
 
 	return constructTest(AchievementsByQuestIDAfter, testInput, responseResults)

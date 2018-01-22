@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -56,7 +57,9 @@ var questsIndexTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questsIndexForm(),
 		db: &mock.DB{
-			QuestsAllMock: mock.QuestsAll{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				AllMock: mock.QuestsAll{Err: mockDbErr},
+			},
 		},
 		args: questsIndexArgs,
 	}),
@@ -68,7 +71,9 @@ var questsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               questsIndexForm(),
 		db: &mock.DB{
-			QuestsAllMock: mock.QuestsAll{Qsts: mock.Quests(0)},
+			QuestMock: mock.Quest{
+				AllMock: mock.QuestsAll{Qsts: generate.Quests(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -80,7 +85,9 @@ var questsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Quests),
 		form:               questsIndexForm(),
 		db: &mock.DB{
-			QuestsAllMock: mock.QuestsAll{Qsts: mock.Quests(4)},
+			QuestMock: mock.Quest{
+				AllMock: mock.QuestsAll{Qsts: generate.Quests(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -92,7 +99,9 @@ var questsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Quests),
 		form:               questsIndexForm(),
 		db: &mock.DB{
-			QuestsAllMock: mock.QuestsAll{Qsts: mock.Quests(9)},
+			QuestMock: mock.Quest{
+				AllMock: mock.QuestsAll{Qsts: generate.Quests(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -104,7 +113,7 @@ func constructQuestsIndexTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Quests(questsSize))
+		responseResults, _ = json.Marshal(generate.Quests(questsSize))
 	}
 
 	return constructTest(QuestsIndex, testInput, responseResults)

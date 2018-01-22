@@ -5,10 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/response"
+
+	mock "github.com/ivzb/achievers_server/app/shared/token/mock"
 )
 
 func testOkHandler(env *env.Env) *response.Message {

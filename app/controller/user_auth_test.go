@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
+	dMock "github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	tMock "github.com/ivzb/achievers_server/app/shared/token/mock"
 )
 
 func userAuthForm() *map[string]string {
@@ -57,8 +58,10 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
-		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Err: mockDbErr},
+		db: &dMock.DB{
+			UserMock: dMock.User{
+				EmailExistsMock: dMock.UserEmailExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructUserAuthTest(&testInput{
@@ -68,8 +71,10 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Email),
 		form:               userAuthForm(),
-		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: false},
+		db: &dMock.DB{
+			UserMock: dMock.User{
+				EmailExistsMock: dMock.UserEmailExists{Bool: false},
+			},
 		},
 	}),
 	constructUserAuthTest(&testInput{
@@ -79,9 +84,11 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
-		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
-			UserAuthMock:        mock.UserAuth{Err: mockDbErr},
+		db: &dMock.DB{
+			UserMock: dMock.User{
+				EmailExistsMock: dMock.UserEmailExists{Bool: true},
+				AuthMock:        dMock.UserAuth{Err: mockDbErr},
+			},
 		},
 	}),
 	constructUserAuthTest(&testInput{
@@ -91,12 +98,14 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               userAuthForm(),
-		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
-			UserAuthMock:        mock.UserAuth{ID: mockID},
+		db: &dMock.DB{
+			UserMock: dMock.User{
+				EmailExistsMock: dMock.UserEmailExists{Bool: true},
+				AuthMock:        dMock.UserAuth{ID: mockID},
+			},
 		},
-		tokener: &mock.Tokener{
-			EncryptMock: mock.Encrypt{Err: mockDbErr},
+		tokener: &tMock.Tokener{
+			EncryptMock: tMock.Encrypt{Err: mockDbErr},
 		},
 	}),
 	constructUserAuthTest(&testInput{
@@ -106,12 +115,14 @@ var userAuthTests = []*test{
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.AuthToken),
 		form:               userAuthForm(),
-		db: &mock.DB{
-			UserEmailExistsMock: mock.UserEmailExists{Bool: true},
-			UserAuthMock:        mock.UserAuth{ID: mockID},
+		db: &dMock.DB{
+			UserMock: dMock.User{
+				EmailExistsMock: dMock.UserEmailExists{Bool: true},
+				AuthMock:        dMock.UserAuth{ID: mockID},
+			},
 		},
-		tokener: &mock.Tokener{
-			EncryptMock: mock.Encrypt{Enc: mockEncrypt},
+		tokener: &tMock.Tokener{
+			EncryptMock: tMock.Encrypt{Enc: mockEncrypt},
 		},
 	}),
 }

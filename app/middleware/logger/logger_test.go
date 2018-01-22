@@ -5,10 +5,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/env"
+	"github.com/ivzb/achievers_server/app/shared/logger/mock"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 

@@ -14,7 +14,13 @@ go get github.com/ivzb/achievers_server
 
 ## Quick Start with MySQL
 
-Start MySQL and import config/mysql.sql to create the database and tables.
+Create database via executing sql script in mysql
+It is located in /config/mysql.sql
+Enter mysql and execute
+
+```
+source {path_to_sql_script}
+```
 
 Open config/config.json and edit the Database section so the connection information matches your MySQL instance.
 
@@ -135,16 +141,6 @@ View coverage result in html
 
 ```
 go tool cover -html=coverage.out
-```
-
-## DB
-
-Create database via executing sql script in mysql
-It is localted in /config/mysql.sql
-Enter mysql and execute
-
-```
-source {path_to_sql_script}
 ```
 
 ## TODO

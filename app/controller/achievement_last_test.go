@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -29,7 +30,9 @@ var achievementsLatestTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		db: &mock.DB{
-			AchievementsLastIDMock: mock.AchievementsLastID{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				LastIDMock: mock.AchievementsLastID{Err: mockDbErr},
+			},
 		},
 		args: achievementsLatestArgs,
 	}),
@@ -40,8 +43,10 @@ var achievementsLatestTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		db: &mock.DB{
-			AchievementsLastIDMock: mock.AchievementsLastID{ID: mockID},
-			AchievementsAfterMock:  mock.AchievementsAfter{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				LastIDMock: mock.AchievementsLastID{ID: mockID},
+				AfterMock:  mock.AchievementsAfter{Err: mockDbErr},
+			},
 		},
 		args: achievementsLatestArgs,
 	}),
@@ -52,8 +57,10 @@ var achievementsLatestTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		db: &mock.DB{
-			AchievementsLastIDMock: mock.AchievementsLastID{ID: mockID},
-			AchievementsAfterMock:  mock.AchievementsAfter{Achs: mock.Achievements(0)},
+			AchievementMock: mock.Achievement{
+				LastIDMock: mock.AchievementsLastID{ID: mockID},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -64,8 +71,10 @@ var achievementsLatestTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		db: &mock.DB{
-			AchievementsLastIDMock: mock.AchievementsLastID{ID: mockID},
-			AchievementsAfterMock:  mock.AchievementsAfter{Achs: mock.Achievements(4)},
+			AchievementMock: mock.Achievement{
+				LastIDMock: mock.AchievementsLastID{ID: mockID},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -76,8 +85,10 @@ var achievementsLatestTests = []*test{
 		responseStatusCode: http.StatusOK,
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		db: &mock.DB{
-			AchievementsLastIDMock: mock.AchievementsLastID{ID: mockID},
-			AchievementsAfterMock:  mock.AchievementsAfter{Achs: mock.Achievements(9)},
+			AchievementMock: mock.Achievement{
+				LastIDMock: mock.AchievementsLastID{ID: mockID},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -89,7 +100,7 @@ func constructAchievementsLatestTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Achievements(achievementsSize))
+		responseResults, _ = json.Marshal(generate.Achievements(achievementsSize))
 	}
 
 	return constructTest(AchievementsLast, testInput, responseResults)

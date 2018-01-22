@@ -6,11 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/response"
+
+	dMock "github.com/ivzb/achievers_server/app/db/mock"
+	tMock "github.com/ivzb/achievers_server/app/shared/token/mock"
 )
 
 func testHandler(env *env.Env) *response.Message {
@@ -24,11 +26,13 @@ func TestAuthHandler_ValidAuthToken(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &env.Env{
-		DB: &mock.DB{
-			UserExistsMock: mock.UserExists{Bool: true, Err: nil},
+		DB: &dMock.DB{
+			UserMock: dMock.User{
+				ExistsMock: dMock.UserExists{Bool: true, Err: nil},
+			},
 		},
-		Token: &mock.Tokener{
-			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
+		Token: &tMock.Tokener{
+			DecryptMock: tMock.Decrypt{Dec: "decrypted", Err: nil},
 		},
 		Config: &config.Config{},
 	}
@@ -59,8 +63,8 @@ func TestAuthHandler_MissingAuthToken(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	env := &env.Env{
-		DB:     &mock.DB{},
-		Token:  &mock.Tokener{},
+		DB:     &dMock.DB{},
+		Token:  &tMock.Tokener{},
 		Config: &config.Config{},
 	}
 
@@ -91,9 +95,9 @@ func TestAuthHandler_InvalidAuthToken(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &env.Env{
-		DB: &mock.DB{},
-		Token: &mock.Tokener{
-			DecryptMock: mock.Decrypt{Dec: "", Err: errors.New("decryption error")},
+		DB: &dMock.DB{},
+		Token: &tMock.Tokener{
+			DecryptMock: tMock.Decrypt{Dec: "", Err: errors.New("decryption error")},
 		},
 		Config: &config.Config{},
 	}
@@ -125,11 +129,13 @@ func TestAuthHandler_DBError(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &env.Env{
-		DB: &mock.DB{
-			UserExistsMock: mock.UserExists{Bool: false, Err: errors.New("user does not exist")},
+		DB: &dMock.DB{
+			UserMock: dMock.User{
+				ExistsMock: dMock.UserExists{Bool: false, Err: errors.New("user does not exist")},
+			},
 		},
-		Token: &mock.Tokener{
-			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
+		Token: &tMock.Tokener{
+			DecryptMock: tMock.Decrypt{Dec: "decrypted", Err: nil},
 		},
 		Config: &config.Config{},
 	}
@@ -161,11 +167,13 @@ func TestAuthHandler_UserDoesNotExist(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	env := &env.Env{
-		DB: &mock.DB{
-			UserExistsMock: mock.UserExists{Bool: false, Err: nil},
+		DB: &dMock.DB{
+			UserMock: dMock.User{
+				ExistsMock: dMock.UserExists{Bool: false, Err: nil},
+			},
 		},
-		Token: &mock.Tokener{
-			DecryptMock: mock.Decrypt{Dec: "decrypted", Err: nil},
+		Token: &tMock.Tokener{
+			DecryptMock: tMock.Decrypt{Dec: "decrypted", Err: nil},
 		},
 		Config: &config.Config{},
 	}

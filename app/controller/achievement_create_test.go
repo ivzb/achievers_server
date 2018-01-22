@@ -76,7 +76,9 @@ var achievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -87,7 +89,9 @@ var achievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.InvolvementID),
 		form:               achievementCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: false},
+			},
 		},
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -98,8 +102,12 @@ var achievementCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			AchievementCreateMock: mock.AchievementCreate{Err: mockDbErr},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				CreateMock: mock.AchievementCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -110,8 +118,12 @@ var achievementCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Achievement),
 		form:               achievementCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			AchievementCreateMock: mock.AchievementCreate{ID: mockID},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				CreateMock: mock.AchievementCreate{ID: mockID},
+			},
 		},
 	}),
 }

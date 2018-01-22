@@ -63,7 +63,9 @@ func (ctx *User) Create(user *model.User) (string, error) {
 
 	result, err := ctx.db.Exec(`INSERT INTO user (id, email, password)
         VALUES(?, ?, ?)`,
-		id, user.Email, hashedPassword)
+		id,
+		user.Email,
+		hashedPassword)
 
 	if err != nil {
 		return "", err

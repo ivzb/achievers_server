@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -40,7 +41,9 @@ var achievementSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementSingleForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructAchievementSingleTest(&testInput{
@@ -51,7 +54,9 @@ var achievementSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Achievement),
 		form:               achievementSingleForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: false},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: false},
+			},
 		},
 	}),
 	constructAchievementSingleTest(&testInput{
@@ -62,8 +67,10 @@ var achievementSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementSingleForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementSingleMock: mock.AchievementSingle{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				SingleMock: mock.AchievementSingle{Err: mockDbErr},
+			},
 		},
 	}),
 	constructAchievementSingleTest(&testInput{
@@ -74,14 +81,16 @@ var achievementSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievement),
 		form:               achievementSingleForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementSingleMock: mock.AchievementSingle{Ach: mock.Achievement()},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				SingleMock: mock.AchievementSingle{Ach: generate.Achievement()},
+			},
 		},
 	}),
 }
 
 func constructAchievementSingleTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Achievement())
+	responseResults, _ := json.Marshal(generate.Achievement())
 
 	return constructTest(AchievementSingle, testInput, responseResults)
 }

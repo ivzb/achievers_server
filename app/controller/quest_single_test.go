@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -40,7 +41,9 @@ var questSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questSingleForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestSingleTest(&testInput{
@@ -51,7 +54,9 @@ var questSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Quest),
 		form:               questSingleForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Bool: false},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: false},
+			},
 		},
 	}),
 	constructQuestSingleTest(&testInput{
@@ -62,8 +67,10 @@ var questSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questSingleForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Bool: true},
-			QuestSingleMock: mock.QuestSingle{Err: mockDbErr},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+				SingleMock: mock.QuestSingle{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestSingleTest(&testInput{
@@ -74,14 +81,16 @@ var questSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Quest),
 		form:               questSingleForm(),
 		db: &mock.DB{
-			QuestExistsMock: mock.QuestExists{Bool: true},
-			QuestSingleMock: mock.QuestSingle{Qst: mock.Quest()},
+			QuestMock: mock.Quest{
+				ExistsMock: mock.QuestExists{Bool: true},
+				SingleMock: mock.QuestSingle{Qst: generate.Quest()},
+			},
 		},
 	}),
 }
 
 func constructQuestSingleTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Quest())
+	responseResults, _ := json.Marshal(generate.Quest())
 
 	return constructTest(QuestSingle, testInput, responseResults)
 }

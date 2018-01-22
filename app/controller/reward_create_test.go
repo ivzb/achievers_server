@@ -76,7 +76,9 @@ var rewardCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
 		db: &mock.DB{
-			RewardTypeExistsMock: mock.RewardTypeExists{Err: mockDbErr},
+			RewardTypeMock: mock.RewardType{
+				ExistsMock: mock.RewardTypeExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructRewardCreateTest(&testInput{
@@ -87,7 +89,9 @@ var rewardCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.RewardTypeID),
 		form:               rewardCreateForm(),
 		db: &mock.DB{
-			RewardTypeExistsMock: mock.RewardTypeExists{Bool: false},
+			RewardTypeMock: mock.RewardType{
+				ExistsMock: mock.RewardTypeExists{Bool: false},
+			},
 		},
 	}),
 	constructRewardCreateTest(&testInput{
@@ -98,8 +102,12 @@ var rewardCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
 		db: &mock.DB{
-			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
-			RewardCreateMock:     mock.RewardCreate{Err: mockDbErr},
+			RewardTypeMock: mock.RewardType{
+				ExistsMock: mock.RewardTypeExists{Bool: true},
+			},
+			RewardMock: mock.Reward{
+				CreateMock: mock.RewardCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructRewardCreateTest(&testInput{
@@ -110,8 +118,12 @@ var rewardCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Reward),
 		form:               rewardCreateForm(),
 		db: &mock.DB{
-			RewardTypeExistsMock: mock.RewardTypeExists{Bool: true},
-			RewardCreateMock:     mock.RewardCreate{ID: mockID},
+			RewardTypeMock: mock.RewardType{
+				ExistsMock: mock.RewardTypeExists{Bool: true},
+			},
+			RewardMock: mock.Reward{
+				CreateMock: mock.RewardCreate{ID: mockID},
+			},
 		},
 	}),
 }

@@ -76,7 +76,9 @@ var questCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Err: mockDbErr},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestCreateTest(&testInput{
@@ -87,7 +89,9 @@ var questCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.InvolvementID),
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: false},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: false},
+			},
 		},
 	}),
 	constructQuestCreateTest(&testInput{
@@ -98,8 +102,12 @@ var questCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			QuestTypeExistsMock:   mock.QuestTypeExists{Err: mockDbErr},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			QuestTypeMock: mock.QuestType{
+				ExistsMock: mock.QuestTypeExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestCreateTest(&testInput{
@@ -110,8 +118,12 @@ var questCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.QuestTypeID),
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: false},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			QuestTypeMock: mock.QuestType{
+				ExistsMock: mock.QuestTypeExists{Bool: false},
+			},
 		},
 	}),
 	constructQuestCreateTest(&testInput{
@@ -122,9 +134,15 @@ var questCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: true},
-			QuestCreateMock:       mock.QuestCreate{Err: mockDbErr},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			QuestTypeMock: mock.QuestType{
+				ExistsMock: mock.QuestTypeExists{Bool: true},
+			},
+			QuestMock: mock.Quest{
+				CreateMock: mock.QuestCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructQuestCreateTest(&testInput{
@@ -135,9 +153,15 @@ var questCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Quest),
 		form:               questCreateForm(),
 		db: &mock.DB{
-			InvolvementExistsMock: mock.InvolvementExists{Bool: true},
-			QuestTypeExistsMock:   mock.QuestTypeExists{Bool: true},
-			QuestCreateMock:       mock.QuestCreate{ID: mockID},
+			InvolvementMock: mock.Involvement{
+				ExistsMock: mock.InvolvementExists{Bool: true},
+			},
+			QuestTypeMock: mock.QuestType{
+				ExistsMock: mock.QuestTypeExists{Bool: true},
+			},
+			QuestMock: mock.Quest{
+				CreateMock: mock.QuestCreate{ID: mockID},
+			},
 		},
 	}),
 }

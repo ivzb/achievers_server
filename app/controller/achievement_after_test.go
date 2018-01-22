@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -36,7 +37,9 @@ var achievementsAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
 		form:               mapWithout(achievementsAfterForm(), consts.AfterID),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 		args: achievementsAfterArgs,
 	}),
@@ -48,7 +51,9 @@ var achievementsAfterTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 		args: achievementsAfterArgs,
 	}),
@@ -60,7 +65,9 @@ var achievementsAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: false},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: false},
+			},
 		},
 		args: achievementsAfterArgs,
 	}),
@@ -72,8 +79,10 @@ var achievementsAfterTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementsAfterMock: mock.AchievementsAfter{Err: mockDbErr},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				AfterMock:  mock.AchievementsAfter{Err: mockDbErr},
+			},
 		},
 		args: achievementsAfterArgs,
 	}),
@@ -85,8 +94,10 @@ var achievementsAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementsAfterMock: mock.AchievementsAfter{Achs: mock.Achievements(0)},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -98,8 +109,10 @@ var achievementsAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementsAfterMock: mock.AchievementsAfter{Achs: mock.Achievements(4)},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -111,8 +124,10 @@ var achievementsAfterTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Achievements),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
-			AchievementExistsMock: mock.AchievementExists{Bool: true},
-			AchievementsAfterMock: mock.AchievementsAfter{Achs: mock.Achievements(9)},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+				AfterMock:  mock.AchievementsAfter{Achs: generate.Achievements(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -124,7 +139,7 @@ func constructAchievementsAfterTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Achievements(achievementsSize))
+		responseResults, _ = json.Marshal(generate.Achievements(achievementsSize))
 	}
 
 	return constructTest(AchievementsAfter, testInput, responseResults)

@@ -2,15 +2,15 @@ package mock
 
 import "github.com/ivzb/achievers_server/app/db"
 
-type InvolvementExists struct {
-	Bool bool
-	Err  error
-}
-
 type Involvement struct {
 	db *DB
 
 	ExistsMock InvolvementExists
+}
+
+type InvolvementExists struct {
+	Bool bool
+	Err  error
 }
 
 func (db *DB) Involvement() db.Involvementer {
@@ -20,7 +20,3 @@ func (db *DB) Involvement() db.Involvementer {
 func (ctx *Involvement) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
-
-//func (mock *DB) InvolvementExists(string) (bool, error) {
-//return mock.InvolvementExistsMock.Bool, mock.InvolvementExistsMock.Err
-//}

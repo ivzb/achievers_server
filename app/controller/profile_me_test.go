@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -30,7 +31,9 @@ var profileMeTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               profileMeForm(),
 		db: &mock.DB{
-			ProfileByUserIDMock: mock.ProfileByUserID{Err: mockDbErr},
+			ProfileMock: mock.Profile{
+				SingleByUserIDMock: mock.ProfileSingleByUserID{Err: mockDbErr},
+			},
 		},
 	}),
 	constructProfileMeTest(&testInput{
@@ -41,13 +44,15 @@ var profileMeTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Profile),
 		form:               profileMeForm(),
 		db: &mock.DB{
-			ProfileByUserIDMock: mock.ProfileByUserID{Prfl: mock.Profile()},
+			ProfileMock: mock.Profile{
+				SingleByUserIDMock: mock.ProfileSingleByUserID{Prfl: generate.Profile()},
+			},
 		},
 	}),
 }
 
 func constructProfileMeTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Profile())
+	responseResults, _ := json.Marshal(generate.Profile())
 
 	return constructTest(ProfileMe, testInput, responseResults)
 }

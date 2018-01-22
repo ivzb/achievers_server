@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -56,7 +57,9 @@ var evidencesIndexTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidencesIndexForm(),
 		db: &mock.DB{
-			EvidencesAllMock: mock.EvidencesAll{Err: mockDbErr},
+			EvidenceMock: mock.Evidence{
+				AllMock: mock.EvidencesAll{Err: mockDbErr},
+			},
 		},
 		args: evidencesIndexArgs,
 	}),
@@ -68,7 +71,9 @@ var evidencesIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               evidencesIndexForm(),
 		db: &mock.DB{
-			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(0)},
+			EvidenceMock: mock.Evidence{
+				AllMock: mock.EvidencesAll{Evds: generate.Evidences(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -80,7 +85,9 @@ var evidencesIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Evidences),
 		form:               evidencesIndexForm(),
 		db: &mock.DB{
-			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(4)},
+			EvidenceMock: mock.Evidence{
+				AllMock: mock.EvidencesAll{Evds: generate.Evidences(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -92,7 +99,9 @@ var evidencesIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Evidences),
 		form:               evidencesIndexForm(),
 		db: &mock.DB{
-			EvidencesAllMock: mock.EvidencesAll{Evds: mock.Evidences(9)},
+			EvidenceMock: mock.Evidence{
+				AllMock: mock.EvidencesAll{Evds: generate.Evidences(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -104,7 +113,7 @@ func constructEvidencesIndexTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Evidences(evidencesSize))
+		responseResults, _ = json.Marshal(generate.Evidences(evidencesSize))
 	}
 
 	return constructTest(EvidencesIndex, testInput, responseResults)

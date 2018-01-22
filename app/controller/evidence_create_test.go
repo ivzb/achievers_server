@@ -85,7 +85,9 @@ var evidenceCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Err: mockDbErr},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -96,7 +98,9 @@ var evidenceCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.MultimediaTypeID),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: false},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Bool: false},
+			},
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -107,8 +111,12 @@ var evidenceCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
-			AchievementExistsMock:    mock.AchievementExists{Err: mockDbErr},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -119,8 +127,12 @@ var evidenceCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AchievementID),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
-			AchievementExistsMock:    mock.AchievementExists{Bool: false},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: false},
+			},
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -131,9 +143,15 @@ var evidenceCreateTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
-			AchievementExistsMock:    mock.AchievementExists{Bool: true},
-			EvidenceCreateMock:       mock.EvidenceCreate{Err: mockDbErr},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
+			EvidenceMock: mock.Evidence{
+				CreateMock: mock.EvidenceCreate{Err: mockDbErr},
+			},
 		},
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -144,9 +162,15 @@ var evidenceCreateTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Evidence),
 		form:               evidenceCreateForm(),
 		db: &mock.DB{
-			MultimediaTypeExistsMock: mock.MultimediaTypeExists{Bool: true},
-			AchievementExistsMock:    mock.AchievementExists{Bool: true},
-			EvidenceCreateMock:       mock.EvidenceCreate{ID: mockID},
+			MultimediaTypeMock: mock.MultimediaType{
+				ExistsMock: mock.MultimediaTypeExists{Bool: true},
+			},
+			AchievementMock: mock.Achievement{
+				ExistsMock: mock.AchievementExists{Bool: true},
+			},
+			EvidenceMock: mock.Evidence{
+				CreateMock: mock.EvidenceCreate{ID: mockID},
+			},
 		},
 	}),
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -40,7 +41,9 @@ var profileSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               profileSingleForm(),
 		db: &mock.DB{
-			ProfileExistsMock: mock.ProfileExists{Err: mockDbErr},
+			ProfileMock: mock.Profile{
+				ExistsMock: mock.ProfileExists{Err: mockDbErr},
+			},
 		},
 	}),
 	constructProfileSingleTest(&testInput{
@@ -51,7 +54,9 @@ var profileSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Profile),
 		form:               profileSingleForm(),
 		db: &mock.DB{
-			ProfileExistsMock: mock.ProfileExists{Bool: false},
+			ProfileMock: mock.Profile{
+				ExistsMock: mock.ProfileExists{Bool: false},
+			},
 		},
 	}),
 	constructProfileSingleTest(&testInput{
@@ -62,8 +67,10 @@ var profileSingleTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               profileSingleForm(),
 		db: &mock.DB{
-			ProfileExistsMock: mock.ProfileExists{Bool: true},
-			ProfileSingleMock: mock.ProfileSingle{Err: mockDbErr},
+			ProfileMock: mock.Profile{
+				ExistsMock: mock.ProfileExists{Bool: true},
+				SingleMock: mock.ProfileSingle{Err: mockDbErr},
+			},
 		},
 	}),
 	constructProfileSingleTest(&testInput{
@@ -74,14 +81,16 @@ var profileSingleTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Profile),
 		form:               profileSingleForm(),
 		db: &mock.DB{
-			ProfileExistsMock: mock.ProfileExists{Bool: true},
-			ProfileSingleMock: mock.ProfileSingle{Prfl: mock.Profile()},
+			ProfileMock: mock.Profile{
+				ExistsMock: mock.ProfileExists{Bool: true},
+				SingleMock: mock.ProfileSingle{Prfl: generate.Profile()},
+			},
 		},
 	}),
 }
 
 func constructProfileSingleTest(testInput *testInput) *test {
-	responseResults, _ := json.Marshal(mock.Profile())
+	responseResults, _ := json.Marshal(generate.Profile())
 
 	return constructTest(ProfileSingle, testInput, responseResults)
 }

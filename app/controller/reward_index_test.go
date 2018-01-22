@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/ivzb/achievers_server/app/db/mock"
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -56,7 +57,9 @@ var rewardsIndexTests = []*test{
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
-			RewardsAllMock: mock.RewardsAll{Err: mockDbErr},
+			RewardMock: mock.Reward{
+				AllMock: mock.RewardsAll{Err: mockDbErr},
+			},
 		},
 		args: rewardsIndexArgs,
 	}),
@@ -68,7 +71,9 @@ var rewardsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Page),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
-			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(0)},
+			RewardMock: mock.Reward{
+				AllMock: mock.RewardsAll{Rwds: generate.Rewards(0)},
+			},
 		},
 		args: []string{"0"},
 	}),
@@ -80,7 +85,9 @@ var rewardsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Rewards),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
-			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(4)},
+			RewardMock: mock.Reward{
+				AllMock: mock.RewardsAll{Rwds: generate.Rewards(4)},
+			},
 		},
 		args: []string{"4"},
 	}),
@@ -92,7 +99,9 @@ var rewardsIndexTests = []*test{
 		responseMessage:    fmt.Sprintf(consts.FormatFound, consts.Rewards),
 		form:               rewardsIndexForm(),
 		db: &mock.DB{
-			RewardsAllMock: mock.RewardsAll{Rwds: mock.Rewards(9)},
+			RewardMock: mock.Reward{
+				AllMock: mock.RewardsAll{Rwds: generate.Rewards(9)},
+			},
 		},
 		args: []string{"9"},
 	}),
@@ -104,7 +113,7 @@ func constructRewardsIndexTest(testInput *testInput) *test {
 	var responseResults []byte
 
 	if err == nil {
-		responseResults, _ = json.Marshal(mock.Rewards(rewardsSize))
+		responseResults, _ = json.Marshal(generate.Rewards(rewardsSize))
 	}
 
 	return constructTest(RewardsIndex, testInput, responseResults)

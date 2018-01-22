@@ -10,9 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/shared/env"
+
+	dMock "github.com/ivzb/achievers_server/app/db/mock"
+	lMock "github.com/ivzb/achievers_server/app/shared/logger/mock"
+	tMock "github.com/ivzb/achievers_server/app/shared/token/mock"
 )
 
 const (
@@ -73,9 +76,9 @@ type testInput struct {
 	responseStatusCode int
 	responseMessage    string
 	form               *map[string]string
-	db                 *mock.DB
-	logger             *mock.Logger
-	tokener            *mock.Tokener
+	db                 *dMock.DB
+	logger             *lMock.Logger
+	tokener            *tMock.Tokener
 	args               []string
 	removeHeaders      bool
 }
@@ -92,7 +95,7 @@ func constructForm(m *map[string]string) *url.Values {
 	return form
 }
 
-func constructEnv(db *mock.DB, logger *mock.Logger, tokener *mock.Tokener) *env.Env {
+func constructEnv(db *dMock.DB, logger *lMock.Logger, tokener *tMock.Tokener) *env.Env {
 	return &env.Env{
 		DB:    db,
 		Log:   logger,

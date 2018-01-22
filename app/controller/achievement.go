@@ -239,7 +239,9 @@ func AchievementCreate(env *env.Env) *response.Message {
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
-	} else if !involvementExists {
+	}
+
+	if !involvementExists {
 		return response.NotFound(consts.InvolvementID)
 	}
 
@@ -248,6 +250,7 @@ func AchievementCreate(env *env.Env) *response.Message {
 	id, err := env.DB.Achievement().Create(ach)
 
 	if err != nil || id == "" {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
