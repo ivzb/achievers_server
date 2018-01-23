@@ -1,16 +1,16 @@
 package db
 
 import (
-	"crypto/rand"
 	"database/sql"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/ivzb/achievers_server/app/shared/database"
 
-	// MySQL DB driver
-	_ "github.com/go-sql-driver/mysql"
+	// Postgre DB driver
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -23,8 +23,6 @@ var (
 
 // DBSourcer contains all available DAO functions
 type DBSourcer interface {
-	UUID() (string, error)
-
 	User() Userer
 	Profile() Profiler
 
@@ -50,8 +48,8 @@ type DB struct {
 // NewDB creates connection to the database
 func NewDB(d database.Info) (*DB, error) {
 	switch d.Type {
-	case database.TypeMySQL:
-		db, err := sql.Open("mysql", database.DSN(d.MySQL))
+	case database.TypePostgre:
+		db, err := sql.Open("postgres", database.DSN(d.Postgre))
 		if err != nil {
 			return nil, err
 		}
@@ -64,20 +62,9 @@ func NewDB(d database.Info) (*DB, error) {
 	}
 }
 
-// UUID generates UUID for use as an ID
-func (db *DB) UUID() (string, error) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
-}
-
 // exists checks whether row in specified table exists by column and value
 func exists(db *DB, table string, column string, value string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s = ? LIMIT 1", table, column)
+	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", table, column)
 	stmt, err := db.Prepare(query)
 
 	if err != nil {
@@ -126,8 +113,9 @@ func scanArgs(values []string) []interface{} {
 func whereClause(columns []string) string {
 	placeholders := make([]string, 0, len(columns))
 
-	for _, column := range columns {
-		placeholders = append(placeholders, column+" = ?")
+	for i, column := range columns {
+
+		placeholders = append(placeholders, column+" = $"+strconv.Itoa(i+1))
 	}
 
 	return strings.Join(placeholders, " AND ")
@@ -135,23 +123,13 @@ func whereClause(columns []string) string {
 
 // create executes passed query and args
 func create(db *DB, query string, args ...interface{}) (string, error) {
-	id, err := db.UUID()
+	id := ""
+	query = query + " RETURNING id"
+	err := db.QueryRow(query, args...).Scan(&id)
 
 	if err != nil {
 		return "", err
 	}
 
-	args = append([]interface{}{id}, args...)
-
-	result, err := db.Exec(query, args...)
-
-	if err != nil {
-		return "", err
-	}
-
-	if _, err = result.RowsAffected(); err != nil {
-		return "", err
-	}
-
-	return args[0].(string), nil
+	return id, nil
 }

@@ -1,6 +1,8 @@
 package db
 
-import "github.com/ivzb/achievers_server/app/model"
+import (
+	"github.com/ivzb/achievers_server/app/model"
+)
 
 type Profiler interface {
 	Exists(id string) (bool, error)
@@ -26,9 +28,9 @@ func (ctx *Profile) Single(id string) (*model.Profile, error) {
 
 	prfl.ID = id
 
-	row := ctx.db.QueryRow("SELECT `name`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT name, created_at, updated_at, deleted_at "+
 		"FROM profile "+
-		"WHERE id = ? "+
+		"WHERE id = $1 "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
@@ -47,9 +49,9 @@ func (ctx *Profile) Single(id string) (*model.Profile, error) {
 func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
 	prfl := new(model.Profile)
 
-	row := ctx.db.QueryRow("SELECT `id`, `name`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT id, name, created_at, updated_at, deleted_at "+
 		"FROM profile "+
-		"WHERE user_id = ? "+
+		"WHERE user_id = $1 "+
 		"LIMIT 1", userID)
 
 	err := row.Scan(
@@ -67,8 +69,8 @@ func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
-	return create(ctx.db, `INSERT INTO profile (id, name, user_id)
-        VALUES(?, ?, ?)`,
+	return create(ctx.db, `INSERT INTO profile (name, user_id)
+		VALUES($1, $2)`,
 		profile.Name,
 		userID)
 }

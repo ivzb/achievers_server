@@ -12,14 +12,14 @@ import (
 func TestNewConfig_ValidBytes(t *testing.T) {
 	expectedConfig := &Config{
 		Database: database.Info{
-			Type: "MySQL",
-			MySQL: database.MySQLInfo{
-				Username:  "root",
+			Type: "Postgree",
+			Postgre: database.PostgreInfo{
+				Username:  "Admin",
 				Password:  "",
 				Name:      "achievers",
 				Hostname:  "127.0.0.1",
-				Port:      3306,
-				Parameter: "?parseTime=true",
+				Port:      5432,
+				Parameter: " sslmode=disable",
 			},
 		},
 		Token: token.Info{

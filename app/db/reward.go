@@ -26,9 +26,9 @@ func (ctx *Reward) Single(id string) (*model.Reward, error) {
 
 	rwd.ID = id
 
-	row := ctx.db.QueryRow("SELECT `title`, `description`, `picture_url`, `reward_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM reward "+
-		"WHERE id = ? "+
+		"WHERE id = $1 "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
@@ -51,10 +51,10 @@ func (ctx *Reward) Single(id string) (*model.Reward, error) {
 func (ctx *Reward) All(page int) ([]*model.Reward, error) {
 	offset := limit * page
 
-	rows, err := ctx.db.Query("SELECT `id`, `title`, `description`, `picture_url`, `reward_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := ctx.db.Query("SELECT id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM reward "+
-		"ORDER BY `created_at` DESC "+
-		"LIMIT ? OFFSET ?", limit, offset)
+		"ORDER BY created_at DESC "+
+		"LIMIT $1 OFFSET $2", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (ctx *Reward) All(page int) ([]*model.Reward, error) {
 
 func (ctx *Reward) Create(reward *model.Reward) (string, error) {
 	return create(ctx.db, `INSERT INTO reward(id, title, description, picture_url, reward_type_id, user_id)
-        VALUES(?, ?, ?, ?, ?, ?)`,
+		VALUES($1, $2, $3, $4, $5, $6)`,
 		reward.Title,
 		reward.Description,
 		reward.PictureURL,

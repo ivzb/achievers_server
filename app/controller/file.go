@@ -44,7 +44,7 @@ func FileCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	filename, err := env.DB.UUID()
+	filename, err := env.UUID.Generate()
 
 	if err != nil {
 		env.Log.Error(err)

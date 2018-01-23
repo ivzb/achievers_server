@@ -7,6 +7,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/logger"
 	"github.com/ivzb/achievers_server/app/shared/token"
+	"github.com/ivzb/achievers_server/app/shared/uuid"
 )
 
 type Env struct {
@@ -16,4 +17,5 @@ type Env struct {
 	Token   token.Tokener
 	Config  *config.Config
 	UserID  string
+	UUID    uuid.UUIDer
 }

@@ -8,20 +8,20 @@ import (
 type Type string
 
 const (
-	// TypeMySQL is MySQL
-	TypeMySQL Type = "MySQL"
+	// TypePostgre is Postgre
+	TypePostgre Type = "Postgre"
 )
 
 // Info contains the database configurations
 type Info struct {
 	// Database type
 	Type Type
-	// MySQL info if used
-	MySQL MySQLInfo
+	// Postgre info if used
+	Postgre PostgreInfo
 }
 
-// MySQLInfo is the details for the database connection
-type MySQLInfo struct {
+// PostgreInfo is the details for the database connection
+type PostgreInfo struct {
 	Username  string
 	Password  string
 	Name      string
@@ -31,9 +31,9 @@ type MySQLInfo struct {
 }
 
 // DSN returns the Data Source Name
-// Example: root:123@tcp(localhost:3306)/test?parseTime=true
-func DSN(mi MySQLInfo) string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s%s",
+// postgres://username:password@localhost:port/db_name?sslmode=disable
+func DSN(mi PostgreInfo) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?%s",
 		mi.Username,
 		mi.Password,
 		mi.Hostname,
@@ -41,17 +41,3 @@ func DSN(mi MySQLInfo) string {
 		mi.Name,
 		mi.Parameter)
 }
-
-// AffectedRows returns the number of rows affected by the query
-// Will panic if result does not exist
-// func AffectedRows(result sql.Result) int {
-// 	// If successful, get the number of affected rows
-// 	count, err := result.RowsAffected()
-// 	if err != nil { // Feature not supported
-// 		// Only show error for admin
-// 		log.Println(err)
-// 		return 1
-// 	}
-
-// 	return int(count)
-// }

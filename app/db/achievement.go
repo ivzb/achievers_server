@@ -33,9 +33,9 @@ func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
 
 	ach.ID = id
 
-	row := ctx.db.QueryRow("SELECT `title`, `description`, `picture_url`, `involvement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM achievement "+
-		"WHERE id = ? "+
+		"WHERE id = $1 "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
@@ -56,8 +56,8 @@ func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
 }
 
 func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
-	return create(ctx.db, `INSERT INTO achievement (id, title, description, picture_url, involvement_id, user_id)
-        VALUES(?, ?, ?, ?, ?, ?)`,
+	return create(ctx.db, `INSERT INTO achievement (title, description, picture_url, involvement_id, user_id)
+        VALUES($1, $2, $3, $4, $5)`,
 		achievement.Title,
 		achievement.Description,
 		achievement.PictureURL,
@@ -68,9 +68,9 @@ func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
 func (ctx *Achievement) LastID() (string, error) {
 	var id string
 
-	row := ctx.db.QueryRow("SELECT `id` " +
+	row := ctx.db.QueryRow("SELECT id " +
 		"FROM achievement " +
-		"ORDER BY `created_at` DESC " +
+		"ORDER BY created_at DESC " +
 		"LIMIT 1")
 
 	err := row.Scan(&id)
@@ -87,12 +87,12 @@ func (ctx *Achievement) LastID() (string, error) {
 func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 	var id string
 
-	row := ctx.db.QueryRow("SELECT `a`.`id` "+
+	row := ctx.db.QueryRow("SELECT a.id "+
 		"FROM achievement as a "+
 		"INNER JOIN quest_achievement as qa "+
 		"ON a.id = qa.achievement_id "+
-		"WHERE qa.quest_id = ? "+
-		"ORDER BY `a`.`created_at` DESC "+
+		"WHERE qa.quest_id = $1 "+
+		"ORDER BY a.created_at DESC "+
 		"LIMIT 1", questID)
 
 	err := row.Scan(&id)
@@ -107,15 +107,15 @@ func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 }
 
 func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
-	selectArgs := "`id`, `title`, `description`, `picture_url`, `involvement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "
+	selectArgs := "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at "
 	rows, err := ctx.db.Query("SELECT "+selectArgs+
 		"FROM achievement "+
-		"WHERE `created_at` <= "+
-		"  (SELECT `created_at` "+
+		"WHERE created_at <= "+
+		"  (SELECT created_at "+
 		"   FROM achievement "+
-		"   WHERE `id` = ?) "+
-		"ORDER BY `created_at` DESC "+
-		"LIMIT ?", afterID, limit)
+		"   WHERE id = $1) "+
+		"ORDER BY created_at DESC "+
+		"LIMIT $2", afterID, limit)
 
 	if err != nil {
 		return nil, err
@@ -153,16 +153,16 @@ func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
 }
 
 func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]*model.Achievement, error) {
-	rows, err := ctx.db.Query("SELECT `a`.`id`, `a`.`title`, `a`.`description`, `a`.`picture_url`, `a`.`involvement_id`, `a`.`user_id`, `a`.`created_at`, `a`.`updated_at`, `a`.`deleted_at` "+
+	rows, err := ctx.db.Query("SELECT a.id, a.title, a.description, a.picture_url, a.involvement_id, a.user_id, a.created_at, a.updated_at, a.deleted_at "+
 		"FROM achievement as a "+
 		"INNER JOIN quest_achievement as qa "+
 		"ON a.id = qa.achievement_id "+
-		"WHERE qa.quest_id = ? AND a.created_at <= "+
-		"  (SELECT `created_at` "+
+		"WHERE qa.quest_id = $1 AND a.created_at <= "+
+		"  (SELECT created_at "+
 		"   FROM achievement "+
-		"   WHERE `id` = ?) "+
-		"ORDER BY `a`.`created_at` DESC "+
-		"LIMIT ?", questID, afterID, limit)
+		"   WHERE id = $2) "+
+		"ORDER BY a.created_at DESC "+
+		"LIMIT $3", questID, afterID, limit)
 
 	if err != nil {
 		return nil, err

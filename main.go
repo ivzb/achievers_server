@@ -15,6 +15,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/file"
 	l "github.com/ivzb/achievers_server/app/shared/logger"
 	"github.com/ivzb/achievers_server/app/shared/token"
+	"github.com/ivzb/achievers_server/app/shared/uuid"
 
 	"net/http"
 	"os"
@@ -52,11 +53,14 @@ func main() {
 
 	logger := l.NewLogger()
 
+	uuid := uuid.NewUUID()
+
 	env := &env.Env{
 		DB:     db,
 		Log:    logger,
 		Token:  token,
 		Config: conf,
+		UUID:   uuid,
 	}
 
 	http.Handle("/", anonChain(env, controller.HomeIndex))

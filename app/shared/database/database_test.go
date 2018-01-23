@@ -5,19 +5,20 @@ import (
 	"testing"
 )
 
+// postgres://username:password@localhost:port/db_name?sslmode=disable
 func TestDSN_ValidMySQLInfo(t *testing.T) {
-	mi := MySQLInfo{
-		Username:  "root",
-		Password:  "123",
+	pi := PostgreInfo{
+		Username:  "Admin",
+		Password:  "",
 		Name:      "achievers",
 		Hostname:  "127.0.0.1",
-		Port:      3306,
-		Parameter: "?parseTime=true",
+		Port:      5432,
+		Parameter: " sslmode=disable",
 	}
 
-	expected := mi.Username + ":" + mi.Password + "@tcp(" + mi.Hostname + ":" + strconv.Itoa(mi.Port) + ")/" + mi.Name + mi.Parameter
+	expected := "postgres://" + pi.Username + ":" + pi.Password + "@" + pi.Hostname + ":" + strconv.Itoa(pi.Port) + "/" + pi.Name + "?" + pi.Parameter
 
-	actual := DSN(mi)
+	actual := DSN(pi)
 
 	if expected != actual {
 		t.Fatalf("DSN returned wrong value: \nexpected %v, \nactual %v",

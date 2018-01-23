@@ -29,7 +29,7 @@ func (ctx *User) EmailExists(email string) (bool, error) {
 }
 
 func (ctx *User) Auth(auth *model.Auth) (string, error) {
-	stmt, err := ctx.db.Prepare("SELECT id, password FROM user WHERE email = ? LIMIT 1")
+	stmt, err := ctx.db.Prepare("SELECT id, password FROM \"user\" WHERE email = $1 LIMIT 1")
 
 	if err != nil {
 		return "", err
@@ -49,29 +49,20 @@ func (ctx *User) Auth(auth *model.Auth) (string, error) {
 }
 
 func (ctx *User) Create(user *model.User) (string, error) {
-	id, err := ctx.db.UUID()
-
-	if err != nil {
-		return "", err
-	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		return "", err
 	}
 
-	result, err := ctx.db.Exec(`INSERT INTO user (id, email, password)
-        VALUES(?, ?, ?)`,
-		id,
+	id := ""
+	err = ctx.db.QueryRow(`INSERT INTO "user" (email, password)
+        VALUES($1, $2)
+		RETURNING id`,
 		user.Email,
-		hashedPassword)
+		hashedPassword).Scan(&id)
 
 	if err != nil {
-		return "", err
-	}
-
-	if _, err = result.RowsAffected(); err != nil {
 		return "", err
 	}
 

@@ -27,9 +27,9 @@ func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
 
 	evd.ID = id
 
-	row := ctx.db.QueryRow("SELECT `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM evidence "+
-		"WHERE id = ? "+
+		"WHERE id = $1 "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
@@ -53,7 +53,7 @@ func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
 // Create saves evidence object to db
 func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 	return create(ctx.db, `INSERT INTO evidence (id, title, picture_url, url, multimedia_type_id, achievement_id, user_id)
-        VALUES(?, ?, ?, ?, ?, ?, ?)`,
+		VALUES($1, $2, $3, $4, $5, $6, $7)`,
 		evidence.Title,
 		evidence.PictureURL,
 		evidence.URL,
@@ -65,10 +65,10 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 func (ctx *Evidence) All(page int) ([]*model.Evidence, error) {
 	offset := limit * page
 
-	rows, err := ctx.db.Query("SELECT `id`, `title`, `picture_url`, `url`, `multimedia_type_id`, `achievement_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := ctx.db.Query("SELECT id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM evidence "+
-		"ORDER BY `created_at` DESC "+
-		"LIMIT ? OFFSET ?", limit, offset)
+		"ORDER BY created_at DESC "+
+		"LIMIT $1 OFFSET $2", limit, offset)
 
 	if err != nil {
 		return nil, err

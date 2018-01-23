@@ -26,9 +26,9 @@ func (ctx *Quest) Single(id string) (*model.Quest, error) {
 
 	qst.ID = id
 
-	row := ctx.db.QueryRow("SELECT `title`, `picture_url`, `involvement_id`, `quest_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	row := ctx.db.QueryRow("SELECT title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM quest "+
-		"WHERE id = ? "+
+		"WHERE id = $1 "+
 		"LIMIT 1", id)
 
 	err := row.Scan(
@@ -51,10 +51,10 @@ func (ctx *Quest) Single(id string) (*model.Quest, error) {
 func (ctx *Quest) All(page int) ([]*model.Quest, error) {
 	offset := limit * page
 
-	rows, err := ctx.db.Query("SELECT `id`, `title`, `picture_url`, `involvement_id`, `quest_type_id`, `user_id`, `created_at`, `updated_at`, `deleted_at` "+
+	rows, err := ctx.db.Query("SELECT id, title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "+
 		"FROM quest "+
-		"ORDER BY `created_at` DESC "+
-		"LIMIT ? OFFSET ?", limit, offset)
+		"ORDER BY created_at DESC "+
+		"LIMIT $1 OFFSET $2 ", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (ctx *Quest) All(page int) ([]*model.Quest, error) {
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
 	return create(ctx.db, `INSERT INTO quest (id, title, picture_url, involvement_id, quest_type_id, user_id)
-        VALUES(?, ?, ?, ?, ?, ?)`,
+		VALUES($1, $2, $3, $4, $5, $6)`,
 		quest.Title,
 		quest.PictureURL,
 		quest.InvolvementID,

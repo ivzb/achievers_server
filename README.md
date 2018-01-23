@@ -12,21 +12,25 @@ To download, run the following command:
 go get github.com/ivzb/achievers_server
 ~~~
 
-## Quick Start with MySQL
+## Quick Start with PostgreSQL 
 
-Create database via executing sql script in mysql
-It is located in /config/mysql.sql
-Enter mysql and execute
+Please ensure all necessary plugins are available by following:
 
 ```
-source {path_to_sql_script}
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
-Open config/config.json and edit the Database section so the connection information matches your MySQL instance.
+Create database via executing sql script in postgre
+It is located in /config/postgre.sql
+Enter postgre and execute
+
+```
+\i {path_to_sql_script}
+```
+
+Open config/config.json and edit the Database section so the connection information matches your Postgre instance.
 
 Build and run from the root directory. Open your REST client to: http://localhost. You should see the welcome message and status 200.
-
-To create a user, send a POST request to http://localhost/user with the following fields: first_name, last_name, email, and password.
 
 ## Quick Start with Docker
 
@@ -147,4 +151,3 @@ go tool cover -html=coverage.out
 0. replace paging concept with later/after as implemented in achievement controller
 1. implement constructTest for shared/ similar to this in controller/
 2. implement router with following format: router.GET("path", handler, middleware)
-3. extract framework models from app models
