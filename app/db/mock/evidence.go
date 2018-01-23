@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type Evidence struct {
-	db *DB
-
 	ExistsMock EvidenceExists
 	SingleMock EvidenceSingle
 	CreateMock EvidenceCreate
@@ -32,10 +29,6 @@ type EvidencesAll struct {
 type EvidenceCreate struct {
 	ID  string
 	Err error
-}
-
-func (db *DB) Evidence() db.Evidencer {
-	return &Evidence{db: db}
 }
 
 func (ctx *Evidence) Exists(id string) (bool, error) {

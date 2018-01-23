@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type Quest struct {
-	db *DB
-
 	ExistsMock QuestExists
 	SingleMock QuestSingle
 	AllMock    QuestsAll
@@ -32,10 +29,6 @@ type QuestsAll struct {
 type QuestCreate struct {
 	ID  string
 	Err error
-}
-
-func (db *DB) Quest() db.Quester {
-	return &Quest{db: db}
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {

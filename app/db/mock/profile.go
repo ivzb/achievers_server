@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type Profile struct {
-	db *DB
-
 	ExistsMock         ProfileExists
 	SingleMock         ProfileSingle
 	SingleByUserIDMock ProfileSingleByUserID
@@ -34,10 +31,6 @@ type ProfileCreate struct {
 	Err error
 }
 
-func (db *DB) Profile() db.Profiler {
-	return &Profile{db: db}
-}
-
 func (ctx *Profile) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
@@ -47,7 +40,7 @@ func (ctx *Profile) Single(id string) (*model.Profile, error) {
 }
 
 func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
-	return ctx.SingleByUserIDMock.Prfl, ctx.SingleMock.Err
+	return ctx.SingleByUserIDMock.Prfl, ctx.SingleByUserIDMock.Err
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {

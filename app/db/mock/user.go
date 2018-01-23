@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type User struct {
-	db *DB
-
 	ExistsMock      UserExists
 	EmailExistsMock UserEmailExists
 	AuthMock        UserAuth
@@ -32,10 +29,6 @@ type UserCreate struct {
 type UserAuth struct {
 	ID  string
 	Err error
-}
-
-func (db *DB) User() db.Userer {
-	return &User{db: db}
 }
 
 func (ctx *User) Exists(id string) (bool, error) {

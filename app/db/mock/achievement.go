@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type Achievement struct {
-	db *DB
-
 	ExistsMock          AchievementExists
 	SingleMock          AchievementSingle
 	CreateMock          AchievementCreate
@@ -50,10 +47,6 @@ type AchievementsAfterByQuestID struct {
 type AchievementCreate struct {
 	ID  string
 	Err error
-}
-
-func (db *DB) Achievement() db.Achievementer {
-	return &Achievement{db: db}
 }
 
 func (ctx *Achievement) Exists(id string) (bool, error) {

@@ -1,13 +1,10 @@
 package mock
 
 import (
-	"github.com/ivzb/achievers_server/app/db"
 	"github.com/ivzb/achievers_server/app/model"
 )
 
 type Reward struct {
-	db *DB
-
 	ExistsMock RewardExists
 	SingleMock RewardSingle
 	AllMock    RewardsAll
@@ -32,10 +29,6 @@ type RewardsAll struct {
 type RewardCreate struct {
 	ID  string
 	Err error
-}
-
-func (db *DB) Reward() db.Rewarder {
-	return &Reward{db: db}
 }
 
 func (ctx *Reward) Exists(id string) (bool, error) {
