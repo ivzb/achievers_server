@@ -11,7 +11,7 @@ type Achievement struct {
 	Description string `json:"description"`
 	PictureURL  string `json:"picture_url"`
 
-	InvolvementID string `json:"involvement_id"`
+	InvolvementID uint8  `json:"involvement_id"`
 	UserID        string `json:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`

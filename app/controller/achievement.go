@@ -230,7 +230,7 @@ func AchievementCreate(env *env.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
 	}
 
-	if ach.InvolvementID == "" {
+	if ach.InvolvementID == 0 {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.InvolvementID))
 	}
 

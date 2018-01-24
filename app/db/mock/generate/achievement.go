@@ -22,7 +22,7 @@ func Achievement() *model.Achievement {
 		"title",
 		"desc",
 		"http://picture.jpg",
-		"3",
+		3,
 		"4e69c9ba-719c-ca7c-fb66-80ab235c8e39",
 		time.Date(2017, 12, 9, 15, 4, 23, 0, time.UTC),
 		time.Date(2017, 12, 9, 15, 4, 23, 0, time.UTC),

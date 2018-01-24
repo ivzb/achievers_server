@@ -10,7 +10,7 @@ type Quest struct {
 	Title      string `json:"title"`
 	PictureURL string `json:"picture_url"`
 
-	InvolvementID string `json:"involvement_id"`
+	InvolvementID uint8  `json:"involvement_id"`
 	QuestTypeID   uint8  `json:"quest_type_id"`
 	UserID        string `json:"user_id"`
 

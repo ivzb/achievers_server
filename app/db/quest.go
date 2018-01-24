@@ -92,8 +92,8 @@ func (ctx *Quest) All(page int) ([]*model.Quest, error) {
 }
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
-	return create(ctx.db, `INSERT INTO quest (id, title, picture_url, involvement_id, quest_type_id, user_id)
-		VALUES($1, $2, $3, $4, $5, $6)`,
+	return create(ctx.db, `INSERT INTO quest (title, picture_url, involvement_id, quest_type_id, user_id)
+		VALUES($1, $2, $3, $4, $5)`,
 		quest.Title,
 		quest.PictureURL,
 		quest.InvolvementID,

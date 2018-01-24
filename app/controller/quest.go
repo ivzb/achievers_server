@@ -98,7 +98,7 @@ func QuestCreate(env *env.Env) *response.Message {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
 	}
 
-	if qst.InvolvementID == "" {
+	if qst.InvolvementID == 0 {
 		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.InvolvementID))
 	}
 

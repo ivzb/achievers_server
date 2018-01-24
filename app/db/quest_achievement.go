@@ -20,8 +20,8 @@ func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool,
 }
 
 func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
-	return create(ctx.db, `INSERT INTO quest_achievement (id, quest_id, achievement_id, user_id)
-		VALUES($1, $2, $3, $4)`,
+	return create(ctx.db, `INSERT INTO quest_achievement (quest_id, achievement_id, user_id)
+		VALUES($1, $2, $3)`,
 		qstAch.QuestID,
 		qstAch.AchievementID,
 		qstAch.UserID)
