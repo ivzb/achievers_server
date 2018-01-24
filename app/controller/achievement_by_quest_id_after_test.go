@@ -37,6 +37,7 @@ var achievementsByQuestIDAfterTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.QuestID),
 		form:               mapWithout(achievementsByQuestIDAfterForm(), consts.QuestID),
+		db:                 &mock.DB{},
 		args:               achievementsByQuestIDAfterArgs,
 	}),
 	constructAchievementsByQuestIDAfterTest(&testInput{

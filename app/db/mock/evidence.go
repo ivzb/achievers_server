@@ -8,7 +8,8 @@ type Evidence struct {
 	ExistsMock EvidenceExists
 	SingleMock EvidenceSingle
 	CreateMock EvidenceCreate
-	AllMock    EvidencesAll
+	LastIDMock EvidencesLastID
+	AfterMock  EvidencesAfter
 }
 
 type EvidenceExists struct {
@@ -21,7 +22,12 @@ type EvidenceSingle struct {
 	Err error
 }
 
-type EvidencesAll struct {
+type EvidencesLastID struct {
+	ID  string
+	Err error
+}
+
+type EvidencesAfter struct {
 	Evds []*model.Evidence
 	Err  error
 }
@@ -43,6 +49,10 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }
 
-func (ctx *Evidence) All(page int) ([]*model.Evidence, error) {
-	return ctx.AllMock.Evds, ctx.AllMock.Err
+func (ctx *Evidence) LastID() (string, error) {
+	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
+}
+
+func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
+	return ctx.AfterMock.Evds, ctx.AfterMock.Err
 }

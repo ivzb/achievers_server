@@ -1,6 +1,7 @@
 package server
 
 type Info struct {
+	Version        string `json:"Version"`
 	Hostname       string `json:"Hostname"`
 	UseHTTP        bool   `json:"UseHTTP"`
 	UseHTTPS       bool   `json:"UseHTTPS"`

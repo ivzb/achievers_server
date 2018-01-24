@@ -44,7 +44,9 @@ func serveJSON(w http.ResponseWriter, resp *response.Message) {
 	w.Write(js)
 }
 
-func serveFile(w http.ResponseWriter, r *http.Request, msg *response.Message) {
-	filepath := msg.Result.(string)
+func serveFile(w http.ResponseWriter, r *http.Request, resp *response.Message) {
+	file := resp.Result.(*response.Core)
+	filepath := file.Message
+
 	http.ServeFile(w, r, filepath)
 }

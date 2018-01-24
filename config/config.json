@@ -19,6 +19,7 @@
 		"From": ""
 	},
 	"Server": {
+        "Version": "v1",
 		"Hostname":  "",
 		"UseHTTP":   true,
 		"UseHTTPS":  false,

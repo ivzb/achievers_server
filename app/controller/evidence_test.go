@@ -2,8 +2,12 @@ package controller
 
 import "testing"
 
-func TestEvidencesIndex(t *testing.T) {
-	run(t, evidencesIndexTests)
+func TestEvidencesAfter(t *testing.T) {
+	run(t, evidencesAfterTests)
+}
+
+func TestEvidencesLatest(t *testing.T) {
+	run(t, evidencesLatestTests)
 }
 
 func TestEvidenceSingle(t *testing.T) {

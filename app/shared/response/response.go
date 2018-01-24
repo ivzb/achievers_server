@@ -46,9 +46,13 @@ func Ok(
 	return send(http.StatusOK, message, length, results)
 }
 
-// File sends response with status code 2000
-func File(results interface{}) *Message {
-	return &Message{200, results, TypeFile}
+// File sends response with status code 200
+func File(results string) *Message {
+	result := &Core{
+		Message: results,
+	}
+
+	return &Message{http.StatusOK, result, TypeFile}
 }
 
 // Created sends response with status code 201

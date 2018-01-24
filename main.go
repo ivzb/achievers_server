@@ -67,35 +67,36 @@ func main() {
 
 	http.HandleFunc("/debug/profile", pprof.Profile)
 
-	http.Handle("/v1/user/auth", anonChain(env, controller.UserAuth))
-	http.Handle("/v1/user/create", anonChain(env, controller.UserCreate))
+	http.Handle("/"+conf.Server.Version+"/user/auth", anonChain(env, controller.UserAuth))
+	http.Handle("/"+conf.Server.Version+"/user/create", anonChain(env, controller.UserCreate))
 
-	http.Handle("/v1/profile", authChain(env, controller.ProfileSingle))
-	http.Handle("/v1/profile/me", authChain(env, controller.ProfileMe))
+	http.Handle("/"+conf.Server.Version+"/profile", authChain(env, controller.ProfileSingle))
+	http.Handle("/"+conf.Server.Version+"/profile/me", authChain(env, controller.ProfileMe))
 
-	http.Handle("/v1/achievement", authChain(env, controller.AchievementSingle))
-	http.Handle("/v1/achievements/last", authChain(env, controller.AchievementsLast))
-	http.Handle("/v1/achievements/after", authChain(env, controller.AchievementsAfter))
-	http.Handle("/v1/achievements/quest/after", authChain(env, controller.AchievementsByQuestIDAfter))
-	http.Handle("/v1/achievements/quest/last", authChain(env, controller.AchievementsByQuestIDLast))
-	http.Handle("/v1/achievement/create", authChain(env, controller.AchievementCreate))
+	http.Handle("/"+conf.Server.Version+"/achievement", authChain(env, controller.AchievementSingle))
+	http.Handle("/"+conf.Server.Version+"/achievements/last", authChain(env, controller.AchievementsLast))
+	http.Handle("/"+conf.Server.Version+"/achievements/after", authChain(env, controller.AchievementsAfter))
+	http.Handle("/"+conf.Server.Version+"/achievements/quest/after", authChain(env, controller.AchievementsByQuestIDAfter))
+	http.Handle("/"+conf.Server.Version+"/achievements/quest/last", authChain(env, controller.AchievementsByQuestIDLast))
+	http.Handle("/"+conf.Server.Version+"/achievement/create", authChain(env, controller.AchievementCreate))
 
-	http.Handle("/v1/evidence", authChain(env, controller.EvidenceSingle))
-	http.Handle("/v1/evidences", authChain(env, controller.EvidencesIndex))
-	http.Handle("/v1/evidence/create", authChain(env, controller.EvidenceCreate))
+	http.Handle("/"+conf.Server.Version+"/evidence", authChain(env, controller.EvidenceSingle))
+	http.Handle("/"+conf.Server.Version+"/evidences/last", authChain(env, controller.EvidencesLast))
+	http.Handle("/"+conf.Server.Version+"/evidences/after", authChain(env, controller.EvidencesAfter))
+	http.Handle("/"+conf.Server.Version+"/evidence/create", authChain(env, controller.EvidenceCreate))
 
-	http.Handle("/v1/reward", authChain(env, controller.RewardSingle))
-	http.Handle("/v1/rewards", authChain(env, controller.RewardsIndex))
-	http.Handle("/v1/reward/create", authChain(env, controller.RewardCreate))
+	http.Handle("/"+conf.Server.Version+"/reward", authChain(env, controller.RewardSingle))
+	http.Handle("/"+conf.Server.Version+"/rewards", authChain(env, controller.RewardsIndex))
+	http.Handle("/"+conf.Server.Version+"/reward/create", authChain(env, controller.RewardCreate))
 
-	http.Handle("/v1/quest", authChain(env, controller.QuestSingle))
-	http.Handle("/v1/quests", authChain(env, controller.QuestsIndex))
-	http.Handle("/v1/quest/create", authChain(env, controller.QuestCreate))
+	http.Handle("/"+conf.Server.Version+"/quest", authChain(env, controller.QuestSingle))
+	http.Handle("/"+conf.Server.Version+"/quests", authChain(env, controller.QuestsIndex))
+	http.Handle("/"+conf.Server.Version+"/quest/create", authChain(env, controller.QuestCreate))
 
-	http.Handle("/v1/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
+	http.Handle("/"+conf.Server.Version+"/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))
 
-	http.Handle("/v1/file", authChain(env, controller.FileSingle))
-	http.Handle("/v1/file/create", authChain(env, controller.FileCreate))
+	http.Handle("/"+conf.Server.Version+"/file", authChain(env, controller.FileSingle))
+	http.Handle("/"+conf.Server.Version+"/file/create", authChain(env, controller.FileCreate))
 
 	port := strconv.Itoa(conf.Server.HTTPPort)
 	logger.Message("started@:" + port)

@@ -41,28 +41,11 @@ func AchievementsAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.AfterID)
+	id, respErr := getFormString(env, consts.AfterID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
 	}
-
-	//id, err := form.StringValue(env.Request, consts.AfterID)
-
-	//if err != nil {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AfterID))
-	//}
-
-	//exists, err := env.DB.AchievementExists(id)
-
-	//if err != nil {
-	//env.Log.Error(err)
-	//return response.InternalServerError()
-	//}
-
-	//if !exists {
-	//return response.NotFound(consts.ID)
-	//}
 
 	achs, err := env.DB.Achievement().After(id)
 
@@ -82,21 +65,10 @@ func AchievementsByQuestIDLast(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, err := form.StringValue(env.Request, consts.QuestID)
+	qstID, respErr := getFormString(env, consts.QuestID, env.DB.Quest())
 
-	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
-	}
-
-	qstExists, err := env.DB.Quest().Exists(qstID)
-
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
-
-	if !qstExists {
-		return response.NotFound(consts.QuestID)
+	if respErr != nil {
+		return respErr
 	}
 
 	afterID, err := env.DB.Achievement().LastIDByQuestID(qstID)
@@ -124,38 +96,16 @@ func AchievementsByQuestIDAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, err := form.StringValue(env.Request, consts.QuestID)
+	qstID, respErr := getFormString(env, consts.QuestID, env.DB.Quest())
 
-	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
+	if respErr != nil {
+		return respErr
 	}
 
-	qstExists, err := env.DB.Quest().Exists(qstID)
+	afterID, respErr := getFormString(env, consts.AfterID, env.DB.Achievement())
 
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
-
-	if !qstExists {
-		return response.NotFound(consts.QuestID)
-	}
-
-	afterID, err := form.StringValue(env.Request, consts.AfterID)
-
-	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AfterID))
-	}
-
-	exists, err := env.DB.Achievement().Exists(afterID)
-
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
-
-	if !exists {
-		return response.NotFound(consts.AfterID)
+	if respErr != nil {
+		return respErr
 	}
 
 	achs, err := env.DB.Achievement().AfterByQuestID(qstID, afterID)
@@ -176,21 +126,10 @@ func AchievementSingle(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	achID, err := form.StringValue(env.Request, consts.ID)
+	achID, respErr := getFormString(env, consts.ID, env.DB.Achievement())
 
-	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.ID))
-	}
-
-	achExists, err := env.DB.Achievement().Exists(achID)
-
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
-
-	if !achExists {
-		return response.NotFound(consts.Achievement)
+	if respErr != nil {
+		return respErr
 	}
 
 	ach, err := env.DB.Achievement().Single(achID)

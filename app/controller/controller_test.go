@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/ivzb/achievers_server/app/middleware/app"
+	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/env"
 
 	dMock "github.com/ivzb/achievers_server/app/db/mock"
@@ -35,6 +38,7 @@ var (
 	mockToken            = "mock token"
 	mockURL              = "mock url"
 	mockEncrypt          = "mock encrypt"
+	mockFileID           = "."
 	mockAchievementID    = "mock achievement_id"
 	mockInvolvementID    = "3"
 	mockRewardTypeID     = "5"
@@ -79,6 +83,7 @@ type testInput struct {
 	db                 *dMock.DB
 	logger             *lMock.Logger
 	tokener            *tMock.Tokener
+	config             *config.Config
 	args               []string
 	removeHeaders      bool
 }
@@ -95,15 +100,30 @@ func constructForm(m *map[string]string) *url.Values {
 	return form
 }
 
-func constructEnv(db *dMock.DB, logger *lMock.Logger, tokener *tMock.Tokener) *env.Env {
+func constructMultipartForm(data string) io.Reader {
+	return ioutil.NopCloser(strings.NewReader(data))
+}
+
+func constructEnv(
+	db *dMock.DB,
+	logger *lMock.Logger,
+	tokener *tMock.Tokener,
+	config *config.Config) *env.Env {
+
 	return &env.Env{
-		DB:    db,
-		Log:   logger,
-		Token: tokener,
+		DB:     db,
+		Log:    logger,
+		Token:  tokener,
+		Config: config,
 	}
 }
 
-func constructTestRequest(method string, form *url.Values, env *env.Env, removeHeaders bool) *testRequest {
+func constructTestRequest(
+	method string,
+	form *url.Values,
+	env *env.Env,
+	removeHeaders bool) *testRequest {
+
 	return &testRequest{
 		method,
 		form,
@@ -123,13 +143,21 @@ func constructTestResponse(typ int, statusCode int, message string, results []by
 
 func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
+
 	req, _ := http.NewRequest(test.request.method, "/test", encodeForm(*test.request.form))
 
 	req.Form = *test.request.form
 
 	if !test.request.removeHeaders {
 		req.Header = http.Header{}
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+		contentType := "application/x-www-form-urlencoded"
+
+		//if test.request.multipartForm != nil {
+		//contentType = "multipart/form-data"
+		//}
+
+		req.Header.Add("Content-Type", contentType)
 	}
 
 	test.request.env.Request = req
@@ -168,7 +196,8 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 		request: constructTestRequest(
 			testInput.requestMethod,
 			constructForm(testInput.form),
-			constructEnv(testInput.db, testInput.logger, testInput.tokener),
+			//constructMultipartForm(testInput.multipartForm),
+			constructEnv(testInput.db, testInput.logger, testInput.tokener, testInput.config),
 			testInput.removeHeaders,
 		),
 		response: constructTestResponse(
@@ -180,9 +209,10 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 	}
 }
 
-func createRequest(form url.Values) (*httptest.ResponseRecorder, *http.Request) {
+func createRequest(form io.Reader) (*httptest.ResponseRecorder, *http.Request) {
 	rec := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/mock/path", encodeForm(form))
+
+	req, _ := http.NewRequest("POST", "/mock/path", form) //encodeForm(form))
 
 	req.Header = http.Header{}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")

@@ -1,13 +1,17 @@
 package db
 
-import "github.com/ivzb/achievers_server/app/model"
+import (
+	"github.com/ivzb/achievers_server/app/model"
+)
 
 type Evidencer interface {
 	Exists(id string) (bool, error)
 	Single(id string) (*model.Evidence, error)
 	Create(evidence *model.Evidence) (string, error)
 
-	All(page int) ([]*model.Evidence, error)
+	//All(page int) ([]*model.Evidence, error)
+	LastID() (string, error)
+	After(afterID string) ([]*model.Evidence, error)
 }
 
 type Evidence struct {
@@ -62,13 +66,35 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 		evidence.UserID)
 }
 
-func (ctx *Evidence) All(page int) ([]*model.Evidence, error) {
-	offset := limit * page
+func (ctx *Evidence) LastID() (string, error) {
+	var id string
 
-	rows, err := ctx.db.Query("SELECT id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "+
+	row := ctx.db.QueryRow("SELECT id " +
+		"FROM evidence " +
+		"ORDER BY created_at DESC " +
+		"LIMIT 1")
+
+	err := row.Scan(&id)
+
+	if err == ErrNoRows {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
+	selectArgs := "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "
+	rows, err := ctx.db.Query("SELECT "+selectArgs+
 		"FROM evidence "+
+		"WHERE created_at <= "+
+		"  (SELECT created_at "+
+		"   FROM evidence "+
+		"   WHERE id = $1) "+
 		"ORDER BY created_at DESC "+
-		"LIMIT $1 OFFSET $2", limit, offset)
+		"LIMIT $2", afterID, limit)
 
 	if err != nil {
 		return nil, err

@@ -8,32 +8,51 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
+	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func EvidencesIndex(env *env.Env) *response.Message {
-	if env.Request.Method != "GET" {
+func EvidencesLast(env *env.Env) *response.Message {
+	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := form.IntValue(env.Request, "page")
+	id, err := env.DB.Evidence().LastID()
 
 	if err != nil {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Page))
-	}
-
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
-	}
-
-	evds, err := env.DB.Evidence().All(pg)
-
-	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	if len(evds) == 0 {
-		return response.NotFound(consts.Page)
+	evds, err := env.DB.Evidence().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
+	}
+
+	return response.Ok(
+		consts.Evidences,
+		len(evds),
+		evds)
+}
+
+func EvidencesAfter(env *env.Env) *response.Message {
+	if !request.IsMethod(env.Request, consts.GET) {
+		return response.MethodNotAllowed()
+	}
+
+	id, respErr := getFormString(env, consts.AfterID, env.DB.Evidence())
+
+	if respErr != nil {
+		return respErr
+	}
+
+	evds, err := env.DB.Evidence().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(

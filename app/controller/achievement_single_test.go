@@ -32,6 +32,7 @@ var achievementSingleTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
 		form:               mapWithout(achievementSingleForm(), consts.ID),
+		db:                 &mock.DB{},
 	}),
 	constructAchievementSingleTest(&testInput{
 		purpose:            "achievement exists db error",
@@ -47,11 +48,11 @@ var achievementSingleTests = []*test{
 		},
 	}),
 	constructAchievementSingleTest(&testInput{
-		purpose:            "achievement does not exist",
+		purpose:            "id not found",
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Achievement),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               achievementSingleForm(),
 		db: &mock.DB{
 			AchievementMock: mock.Achievement{

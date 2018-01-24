@@ -23,7 +23,7 @@ func jsonErrorHandler(env *env.Env) *response.Message {
 func testFileHandler(env *env.Env) *response.Message {
 	return &response.Message{
 		StatusCode: 200,
-		Result:     ".",
+		Result:     &response.Core{Message: "."},
 		Type:       response.TypeFile,
 	}
 }

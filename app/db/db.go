@@ -40,6 +40,10 @@ type DBSourcer interface {
 	MultimediaType() MultimediaTyper
 }
 
+type Exister interface {
+	Exists(id string) (bool, error)
+}
+
 // DB struct holds the connection to DB
 type DB struct {
 	*sql.DB
@@ -78,7 +82,7 @@ func exists(db *DB, table string, column string, value string) (bool, error) {
 		return false, err
 	}
 
-	return count != 0, nil
+	return count > 0, nil
 }
 
 // existsMultiple checks whether row in specified table exists by []columns and []values
