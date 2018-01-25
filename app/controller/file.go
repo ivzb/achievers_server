@@ -52,6 +52,7 @@ func FileCreate(env *env.Env) *response.Message {
 	}
 
 	path := fmt.Sprintf("%s/%s", env.Config.Server.FileStorage, filename)
+
 	err = file.Create(path, multipart)
 
 	if err != nil {

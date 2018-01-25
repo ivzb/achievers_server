@@ -51,7 +51,7 @@ var fileSingleTests = []*test{
 	constructFileSingleTest(&testInput{
 		purpose:            "file single OK",
 		requestMethod:      consts.GET,
-		responseType:       Retrieve,
+		responseType:       Core,
 		responseStatusCode: http.StatusOK,
 		responseMessage:    "/" + mockFileID,
 		form:               fileSingleForm(),

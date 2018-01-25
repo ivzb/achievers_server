@@ -19,6 +19,7 @@ import (
 	dMock "github.com/ivzb/achievers_server/app/db/mock"
 	lMock "github.com/ivzb/achievers_server/app/shared/logger/mock"
 	tMock "github.com/ivzb/achievers_server/app/shared/token/mock"
+	uMock "github.com/ivzb/achievers_server/app/shared/uuid/mock"
 )
 
 const (
@@ -44,9 +45,12 @@ var (
 	mockRewardTypeID     = "5"
 	mockQuestTypeID      = "5"
 	mockMultimediaTypeID = "5"
+	mockMultipartBoundry = "MockBoundry"
+	mockUUID             = "mock_uuid"
 
 	mockDbErr     = errors.New("db error")
 	mockFormerErr = errors.New("former error")
+	mockUUIDerErr = errors.New("UUIDer error")
 
 	mockPage     = "3"
 	mockPageSize = 9
@@ -62,6 +66,7 @@ type test struct {
 type testRequest struct {
 	method        string
 	form          *url.Values
+	multipartForm string
 	env           *env.Env
 	removeHeaders bool
 }
@@ -80,9 +85,11 @@ type testInput struct {
 	responseStatusCode int
 	responseMessage    string
 	form               *map[string]string
+	multipartForm      string
 	db                 *dMock.DB
 	logger             *lMock.Logger
 	tokener            *tMock.Tokener
+	uuider             *uMock.UUIDer
 	config             *config.Config
 	args               []string
 	removeHeaders      bool
@@ -108,12 +115,14 @@ func constructEnv(
 	db *dMock.DB,
 	logger *lMock.Logger,
 	tokener *tMock.Tokener,
+	uuider *uMock.UUIDer,
 	config *config.Config) *env.Env {
 
 	return &env.Env{
 		DB:     db,
 		Log:    logger,
 		Token:  tokener,
+		UUID:   uuider,
 		Config: config,
 	}
 }
@@ -121,12 +130,14 @@ func constructEnv(
 func constructTestRequest(
 	method string,
 	form *url.Values,
+	multipartForm string,
 	env *env.Env,
 	removeHeaders bool) *testRequest {
 
 	return &testRequest{
 		method,
 		form,
+		multipartForm,
 		env,
 		removeHeaders,
 	}
@@ -144,18 +155,35 @@ func constructTestResponse(typ int, statusCode int, message string, results []by
 func constructRequest(t *testing.T, test *test) *httptest.ResponseRecorder {
 	rec := httptest.NewRecorder()
 
-	req, _ := http.NewRequest(test.request.method, "/test", encodeForm(*test.request.form))
+	var body io.Reader
+
+	if test.request.form != nil {
+		body = encodeForm(*test.request.form)
+	}
+
+	if test.request.multipartForm != "" {
+		body = strings.NewReader(test.request.multipartForm)
+	}
+
+	req, err := http.NewRequest(test.request.method, "/test", body)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	req.Form = *test.request.form
 
 	if !test.request.removeHeaders {
 		req.Header = http.Header{}
+		var contentType string
 
-		contentType := "application/x-www-form-urlencoded"
+		if test.request.form != nil {
+			contentType = "application/x-www-form-urlencoded"
+		}
 
-		//if test.request.multipartForm != nil {
-		//contentType = "multipart/form-data"
-		//}
+		if test.request.multipartForm != "" {
+			contentType = `multipart/form-data; boundary="` + mockMultipartBoundry + `"`
+		}
 
 		req.Header.Add("Content-Type", contentType)
 	}
@@ -197,7 +225,8 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 			testInput.requestMethod,
 			constructForm(testInput.form),
 			//constructMultipartForm(testInput.multipartForm),
-			constructEnv(testInput.db, testInput.logger, testInput.tokener, testInput.config),
+			testInput.multipartForm,
+			constructEnv(testInput.db, testInput.logger, testInput.tokener, testInput.uuider, testInput.config),
 			testInput.removeHeaders,
 		),
 		response: constructTestResponse(

@@ -1,13 +1,11 @@
 package controller
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFileSingle(t *testing.T) {
-	for _, test := range fileSingleTests {
-		rec := constructRequest(t, test)
-
-		assertCoreResponse(t, rec, test)
-	}
+	run(t, fileSingleTests)
 }
 
 func TestFileCreate(t *testing.T) {

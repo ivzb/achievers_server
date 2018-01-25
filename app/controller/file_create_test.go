@@ -2,32 +2,24 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/server"
+	uMock "github.com/ivzb/achievers_server/app/shared/uuid/mock"
 )
 
-//func fileCreateForm() *map[string]string {
-//return &map[string]string{
-//consts.File: "file",
-//}
-//}
-
 func fileCreateForm() string {
-	//return strings.NewReader(strings.Replace(message, "\n", "\r\n", -1))
 	return `
---xxx
+--` + mockMultipartBoundry + `
+Content-Disposition: form-data; name="file"; filename="file.txt"
+Content-Type: text/plain
 
-Content-Disposition: form-data; name="file"; filename="file"
-
-Content-Type: application/octet-stream
-
-Content-Transfer-Encoding: binary
-
-
-binary data
-
---xxx--`
+Test text file
+--` + mockMultipartBoundry + `--
+`
 }
 
 var fileCreateTests = []*test{
@@ -37,7 +29,6 @@ var fileCreateTests = []*test{
 		responseType:       Core,
 		responseStatusCode: http.StatusMethodNotAllowed,
 		responseMessage:    consts.MethodNotAllowed,
-		//form:               &map[string]string{},
 	}),
 	constructFileCreateTest(&testInput{
 		purpose:            "former error",
@@ -45,43 +36,57 @@ var fileCreateTests = []*test{
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    "request Content-Type isn't multipart/form-data",
-		//form:               &map[string]string{},
-		removeHeaders: true,
+		removeHeaders:      true,
 	}),
-	//constructFileCreateTest(&testInput{
-	//purpose:            "file create db error",
-	//requestMethod:      consts.POST,
-	//responseType:       Core,
-	//responseStatusCode: http.StatusInternalServerError,
-	//responseMessage:    consts.FriendlyErrorMessage,
-	////form:               fileCreateForm(),
-	////multipartForm: fileCreateForm(),
-	////isMultipart:        true,
-	////db: &mock.DB{
-	////InvolvementMock: mock.Involvement{
-	////ExistsMock: mock.InvolvementExists{Bool: true},
-	////},
-	////FileMock: mock.File{
-	////CreateMock: mock.FileCreate{Err: mockDbErr},
-	////},
-	////},
-	//}),
-	//constructFileCreateTest(&testInput{
-	//purpose:            "file create ok",
-	//requestMethod:      consts.POST,
-	//responseType:       Retrieve,
-	//responseStatusCode: http.StatusCreated,
-	//responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.File),
-	//form:               fileCreateForm(),
-	//db: &mock.DB{
-	//InvolvementMock: mock.Involvement{
-	//ExistsMock: mock.InvolvementExists{Bool: true},
-	//},
-	//FileMock: mock.File{
-	//CreateMock: mock.FileCreate{ID: mockID},
-	//},
-	//},
-	//}),
+	constructFileCreateTest(&testInput{
+		purpose:            "file create generate err error",
+		requestMethod:      consts.POST,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    consts.FriendlyErrorMessage,
+		multipartForm:      fileCreateForm(),
+		uuider: &uMock.UUIDer{
+			GenerateMock: uMock.Generate{
+				Err: mockUUIDerErr,
+			},
+		},
+	}),
+	constructFileCreateTest(&testInput{
+		purpose:            "file create file path not found",
+		requestMethod:      consts.POST,
+		responseType:       Core,
+		responseStatusCode: http.StatusInternalServerError,
+		responseMessage:    consts.FriendlyErrorMessage,
+		multipartForm:      fileCreateForm(),
+		uuider: &uMock.UUIDer{
+			GenerateMock: uMock.Generate{
+				UUID: mockUUID,
+			},
+		},
+		config: &config.Config{
+			Server: server.Info{
+				FileStorage: "/not_existing_folder",
+			},
+		},
+	}),
+	constructFileCreateTest(&testInput{
+		purpose:            "file create ok",
+		requestMethod:      consts.POST,
+		responseType:       Retrieve,
+		responseStatusCode: http.StatusCreated,
+		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.File),
+		multipartForm:      fileCreateForm(),
+		uuider: &uMock.UUIDer{
+			GenerateMock: uMock.Generate{
+				UUID: mockID,
+			},
+		},
+		config: &config.Config{
+			Server: server.Info{
+				FileStorage: "/tmp",
+			},
+		},
+	}),
 }
 
 func constructFileCreateTest(testInput *testInput) *test {
