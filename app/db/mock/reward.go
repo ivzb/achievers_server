@@ -7,8 +7,9 @@ import (
 type Reward struct {
 	ExistsMock RewardExists
 	SingleMock RewardSingle
-	AllMock    RewardsAll
 	CreateMock RewardCreate
+	LastIDMock RewardsLastID
+	AfterMock  RewardsAfter
 }
 
 type RewardExists struct {
@@ -21,7 +22,12 @@ type RewardSingle struct {
 	Err error
 }
 
-type RewardsAll struct {
+type RewardsLastID struct {
+	ID  string
+	Err error
+}
+
+type RewardsAfter struct {
 	Rwds []*model.Reward
 	Err  error
 }
@@ -39,10 +45,14 @@ func (ctx *Reward) Single(id string) (*model.Reward, error) {
 	return ctx.SingleMock.Rwd, ctx.SingleMock.Err
 }
 
-func (ctx *Reward) All(page int) ([]*model.Reward, error) {
-	return ctx.AllMock.Rwds, ctx.AllMock.Err
-}
-
 func (ctx *Reward) Create(reward *model.Reward) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
+}
+
+func (ctx *Reward) LastID() (string, error) {
+	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
+}
+
+func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {
+	return ctx.AfterMock.Rwds, ctx.AfterMock.Err
 }

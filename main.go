@@ -86,7 +86,8 @@ func main() {
 	http.Handle("/"+conf.Server.Version+"/evidence/create", authChain(env, controller.EvidenceCreate))
 
 	http.Handle("/"+conf.Server.Version+"/reward", authChain(env, controller.RewardSingle))
-	http.Handle("/"+conf.Server.Version+"/rewards", authChain(env, controller.RewardsIndex))
+	http.Handle("/"+conf.Server.Version+"/rewards/last", authChain(env, controller.RewardsLast))
+	http.Handle("/"+conf.Server.Version+"/rewards/after", authChain(env, controller.RewardsAfter))
 	http.Handle("/"+conf.Server.Version+"/reward/create", authChain(env, controller.RewardCreate))
 
 	http.Handle("/"+conf.Server.Version+"/quest", authChain(env, controller.QuestSingle))

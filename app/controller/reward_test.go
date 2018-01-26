@@ -2,8 +2,12 @@ package controller
 
 import "testing"
 
-func TestRewardsIndex(t *testing.T) {
-	run(t, rewardsIndexTests)
+func TestRewardsAfter(t *testing.T) {
+	run(t, rewardsAfterTests)
+}
+
+func TestRewardsLatest(t *testing.T) {
+	run(t, rewardsLatestTests)
 }
 
 func TestRewardSingle(t *testing.T) {

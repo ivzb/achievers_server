@@ -11,29 +11,47 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func RewardsIndex(env *env.Env) *response.Message {
+func RewardsLast(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := form.IntValue(env.Request, consts.Page)
+	id, err := env.DB.Reward().LastID()
 
 	if err != nil {
-		return response.BadRequest(err.Error())
-	}
-
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
-	}
-
-	rwds, err := env.DB.Reward().All(pg)
-
-	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	if len(rwds) == 0 {
-		return response.NotFound(consts.Page)
+	rwds, err := env.DB.Reward().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
+	}
+
+	return response.Ok(
+		consts.Rewards,
+		len(rwds),
+		rwds)
+}
+
+func RewardsAfter(env *env.Env) *response.Message {
+	if !request.IsMethod(env.Request, consts.GET) {
+		return response.MethodNotAllowed()
+	}
+
+	id, respErr := getFormString(env, consts.AfterID, env.DB.Reward())
+
+	if respErr != nil {
+		return respErr
+	}
+
+	rwds, err := env.DB.Reward().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
@@ -47,23 +65,13 @@ func RewardSingle(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	rwdID, err := form.StringValue(env.Request, consts.ID)
+	id, respErr := getFormString(env, consts.ID, env.DB.Reward())
 
-	if err != nil {
-		return response.BadRequest(err.Error())
+	if respErr != nil {
+		return respErr
 	}
 
-	exists, err := env.DB.Reward().Exists(rwdID)
-
-	if err != nil {
-		return response.InternalServerError()
-	}
-
-	if !exists {
-		return response.NotFound(consts.Reward)
-	}
-
-	rwd, err := env.DB.Reward().Single(rwdID)
+	rwd, err := env.DB.Reward().Single(id)
 
 	if err != nil {
 		return response.InternalServerError()

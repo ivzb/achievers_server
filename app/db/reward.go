@@ -5,8 +5,10 @@ import "github.com/ivzb/achievers_server/app/model"
 type Rewarder interface {
 	Exists(id string) (bool, error)
 	Single(id string) (*model.Reward, error)
-	All(page int) ([]*model.Reward, error)
 	Create(reward *model.Reward) (string, error)
+
+	LastID() (string, error)
+	After(afterID string) ([]*model.Reward, error)
 }
 
 type Reward struct {
@@ -48,13 +50,45 @@ func (ctx *Reward) Single(id string) (*model.Reward, error) {
 	return rwd, nil
 }
 
-func (ctx *Reward) All(page int) ([]*model.Reward, error) {
-	offset := limit * page
+func (ctx *Reward) Create(reward *model.Reward) (string, error) {
+	return create(ctx.db, `INSERT INTO reward(title, description, picture_url, reward_type_id, user_id)
+		VALUES($1, $2, $3, $4, $5)`,
+		reward.Title,
+		reward.Description,
+		reward.PictureURL,
+		reward.RewardTypeID,
+		reward.UserID)
+}
 
-	rows, err := ctx.db.Query("SELECT id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at "+
+func (ctx *Reward) LastID() (string, error) {
+	var id string
+
+	row := ctx.db.QueryRow("SELECT id " +
+		"FROM reward " +
+		"ORDER BY created_at DESC " +
+		"LIMIT 1")
+
+	err := row.Scan(&id)
+
+	if err == ErrNoRows {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {
+	selectArgs := "id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at "
+	rows, err := ctx.db.Query("SELECT "+selectArgs+
 		"FROM reward "+
+		"WHERE created_at <= "+
+		"  (SELECT created_at "+
+		"   FROM reward "+
+		"   WHERE id = $1) "+
 		"ORDER BY created_at DESC "+
-		"LIMIT $1 OFFSET $2", limit, offset)
+		"LIMIT $2", afterID, limit)
 
 	if err != nil {
 		return nil, err
@@ -66,6 +100,7 @@ func (ctx *Reward) All(page int) ([]*model.Reward, error) {
 
 	for rows.Next() {
 		rwd := new(model.Reward)
+
 		err := rows.Scan(
 			&rwd.ID,
 			&rwd.Title,
@@ -89,14 +124,4 @@ func (ctx *Reward) All(page int) ([]*model.Reward, error) {
 	}
 
 	return rwds, nil
-}
-
-func (ctx *Reward) Create(reward *model.Reward) (string, error) {
-	return create(ctx.db, `INSERT INTO reward(title, description, picture_url, reward_type_id, user_id)
-		VALUES($1, $2, $3, $4, $5)`,
-		reward.Title,
-		reward.Description,
-		reward.PictureURL,
-		reward.RewardTypeID,
-		reward.UserID)
 }

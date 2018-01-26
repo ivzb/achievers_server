@@ -32,6 +32,7 @@ var rewardSingleTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
 		form:               mapWithout(rewardSingleForm(), consts.ID),
+		db:                 &mock.DB{},
 	}),
 	constructRewardSingleTest(&testInput{
 		purpose:            "reward exists db error",
@@ -51,7 +52,7 @@ var rewardSingleTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Reward),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               rewardSingleForm(),
 		db: &mock.DB{
 			RewardMock: mock.Reward{
