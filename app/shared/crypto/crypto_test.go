@@ -9,8 +9,10 @@ import (
 	"testing"
 )
 
+const bits = 1024
+
 func TestGenerate(t *testing.T) {
-	priv, err := Generate()
+	priv, err := Generate(bits)
 
 	if err != nil {
 		t.Fatalf("Generate returned error, expected rsa.PrivateKey")
@@ -138,7 +140,7 @@ func TestImport_InvalidPemBytes(t *testing.T) {
 }
 
 func TestGenerateEncryptDecrypt(t *testing.T) {
-	priv, err := Generate()
+	priv, err := Generate(bits)
 
 	if err != nil {
 		t.Fatalf("Generate returned error, expected rsa.PrivateKey")
@@ -167,7 +169,7 @@ func TestGenerateEncryptDecrypt(t *testing.T) {
 }
 
 func TestGenerateExportImport(t *testing.T) {
-	priv, err := Generate()
+	priv, err := Generate(bits)
 
 	if err != nil {
 		t.Fatalf("Generate returned error, expected PrivateKey")

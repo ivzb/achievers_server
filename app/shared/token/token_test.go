@@ -9,7 +9,10 @@ import (
 )
 
 func TestEnsureExists_NonExisting(t *testing.T) {
-	info := &Info{Path: "token.pem"}
+	info := &Info{
+		Path: "token.pem",
+		Bits: 1024,
+	}
 
 	if file.Exists(info.Path) {
 		err := os.Remove(info.Path)
@@ -33,7 +36,10 @@ func TestEnsureExists_NonExisting(t *testing.T) {
 }
 
 func TestEnsureExists_Existing(t *testing.T) {
-	info := &Info{Path: "token.pem"}
+	info := &Info{
+		Path: "token.pem",
+		Bits: 1024,
+	}
 
 	if !file.Exists(info.Path) {
 		content := []byte{1, 2, 3}
@@ -58,7 +64,7 @@ func TestEnsureExists_Existing(t *testing.T) {
 }
 
 func TestEnsureExists_InvalidFilePath(t *testing.T) {
-	info := &Info{}
+	info := &Info{Bits: 1024}
 
 	err := info.EnsureExists()
 

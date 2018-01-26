@@ -21,13 +21,13 @@ func Handler(app app.App) app.App {
 			return response.Unauthorized(fmt.Sprintf(consts.FormatMissing, consts.AuthToken))
 		}
 
-		uID, err := app.Env.Token.Decrypt(at)
+		userID, err := app.Env.Token.Decrypt(at)
 
 		if err != nil {
 			return response.Unauthorized(fmt.Sprintf(consts.FormatInvalid, consts.AuthToken))
 		}
 
-		exists, err := app.Env.DB.User().Exists(uID)
+		exists, err := app.Env.DB.User().Exists(userID)
 
 		if err != nil {
 			return response.InternalServerError()
@@ -37,7 +37,7 @@ func Handler(app app.App) app.App {
 			return response.Unauthorized(fmt.Sprintf(consts.FormatInvalid, consts.AuthToken))
 		}
 
-		app.Env.UserID = uID
+		(*app.Env).UserID = userID
 
 		return prevHandler(env)
 	}

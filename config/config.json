@@ -31,6 +31,7 @@
         "MaxBytesReader": 2097152
 	},
 	"Token": {
-		"Path": "rsa/token.pem"
+		"Path": "rsa/token.pem",
+        "Bits": 1024
 	}
 }

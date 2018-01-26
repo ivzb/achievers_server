@@ -14,6 +14,7 @@ import (
 
 type Info struct {
 	Path string `json:"Path"`
+	Bits int    `json:"Bits"`
 }
 
 func (info *Info) EnsureExists() error {
@@ -22,9 +23,9 @@ func (info *Info) EnsureExists() error {
 		os.MkdirAll(dirs, 0777)
 
 		// Generate and write key to file if doesn't already exist
-		priv, err := crypto.Generate()
+		priv, err := crypto.Generate(info.Bits)
 		pem := crypto.Export(priv)
-		err = ioutil.WriteFile(info.Path, pem, 0600)
+		err = ioutil.WriteFile(info.Path, pem, 0775)
 
 		if err != nil {
 			return err

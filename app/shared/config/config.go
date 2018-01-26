@@ -22,10 +22,10 @@ type Config struct {
 }
 
 // New config instance
-func New(bytes []byte) (*Config, error) {
+func New(jsonConf []byte) (*Config, error) {
 	conf := &Config{}
 
-	if err := json.Unmarshal(bytes, &conf); err != nil {
+	if err := json.Unmarshal(jsonConf, &conf); err != nil {
 		return nil, fmt.Errorf("Could not parse config: %v", err)
 	}
 

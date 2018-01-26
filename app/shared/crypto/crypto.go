@@ -10,10 +10,9 @@ import (
 	"github.com/minio/sha256-simd"
 )
 
-// Generate 1024 bits rsa private key
-func Generate() (*rsa.PrivateKey, error) {
+// Generate rsa private key with bits as param
+func Generate(bits int) (*rsa.PrivateKey, error) {
 	reader := rand.Reader
-	bits := 1024
 
 	return rsa.GenerateKey(reader, bits)
 }

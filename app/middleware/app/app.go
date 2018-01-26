@@ -17,9 +17,9 @@ type App struct {
 
 func (app App) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	size := app.Env.Config.Server.MaxBytesReader // in Mb's
-	req.Body = http.MaxBytesReader(w, req.Body, size)
 
-	app.Env.Request = req
+	(*req).Body = http.MaxBytesReader(w, req.Body, size)
+	(*app.Env).Request = req
 
 	resp := app.Handler(app.Env)
 
