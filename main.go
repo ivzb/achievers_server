@@ -90,7 +90,8 @@ func main() {
 	http.Handle("/"+conf.Server.Version+"/reward/create", authChain(env, controller.RewardCreate))
 
 	http.Handle("/"+conf.Server.Version+"/quest", authChain(env, controller.QuestSingle))
-	http.Handle("/"+conf.Server.Version+"/quests", authChain(env, controller.QuestsIndex))
+	http.Handle("/"+conf.Server.Version+"/quests/last", authChain(env, controller.QuestsLast))
+	http.Handle("/"+conf.Server.Version+"/quests/after", authChain(env, controller.QuestsAfter))
 	http.Handle("/"+conf.Server.Version+"/quest/create", authChain(env, controller.QuestCreate))
 
 	http.Handle("/"+conf.Server.Version+"/quest_achievement/create", authChain(env, controller.QuestAchievementCreate))

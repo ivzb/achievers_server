@@ -32,6 +32,7 @@ var evidenceSingleTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
 		form:               mapWithout(evidenceSingleForm(), consts.ID),
+		db:                 &mock.DB{},
 	}),
 	constructEvidenceSingleTest(&testInput{
 		purpose:            "evidence exists db error",
@@ -51,7 +52,7 @@ var evidenceSingleTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Evidence),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               evidenceSingleForm(),
 		db: &mock.DB{
 			EvidenceMock: mock.Evidence{

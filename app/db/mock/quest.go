@@ -7,8 +7,9 @@ import (
 type Quest struct {
 	ExistsMock QuestExists
 	SingleMock QuestSingle
-	AllMock    QuestsAll
 	CreateMock QuestCreate
+	LastIDMock QuestsLastID
+	AfterMock  QuestsAfter
 }
 
 type QuestExists struct {
@@ -21,14 +22,19 @@ type QuestSingle struct {
 	Err error
 }
 
-type QuestsAll struct {
-	Qsts []*model.Quest
-	Err  error
-}
-
 type QuestCreate struct {
 	ID  string
 	Err error
+}
+
+type QuestsLastID struct {
+	ID  string
+	Err error
+}
+
+type QuestsAfter struct {
+	Qsts []*model.Quest
+	Err  error
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
@@ -39,10 +45,14 @@ func (ctx *Quest) Single(id string) (*model.Quest, error) {
 	return ctx.SingleMock.Qst, ctx.SingleMock.Err
 }
 
-func (ctx *Quest) All(page int) ([]*model.Quest, error) {
-	return ctx.AllMock.Qsts, ctx.AllMock.Err
-}
-
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
+}
+
+func (ctx *Quest) LastID() (string, error) {
+	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
+}
+
+func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
+	return ctx.AfterMock.Qsts, ctx.AfterMock.Err
 }

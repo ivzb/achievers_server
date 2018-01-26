@@ -32,6 +32,7 @@ var questSingleTests = []*test{
 		responseStatusCode: http.StatusBadRequest,
 		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
 		form:               mapWithout(questSingleForm(), consts.ID),
+		db:                 &mock.DB{},
 	}),
 	constructQuestSingleTest(&testInput{
 		purpose:            "quest exists db error",
@@ -51,7 +52,7 @@ var questSingleTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.Quest),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               questSingleForm(),
 		db: &mock.DB{
 			QuestMock: mock.Quest{

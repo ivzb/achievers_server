@@ -66,23 +66,13 @@ func EvidenceSingle(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	evdID, err := form.StringValue(env.Request, consts.ID)
+	id, respErr := getFormString(env, consts.ID, env.DB.Evidence())
 
-	if err != nil {
-		return response.BadRequest(err.Error())
+	if respErr != nil {
+		return respErr
 	}
 
-	exists, err := env.DB.Evidence().Exists(evdID)
-
-	if err != nil {
-		return response.InternalServerError()
-	}
-
-	if !exists {
-		return response.NotFound(consts.Evidence)
-	}
-
-	evd, err := env.DB.Evidence().Single(evdID)
+	evd, err := env.DB.Evidence().Single(id)
 
 	if err != nil {
 		return response.InternalServerError()

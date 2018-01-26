@@ -5,8 +5,10 @@ import "github.com/ivzb/achievers_server/app/model"
 type Quester interface {
 	Exists(id string) (bool, error)
 	Single(id string) (*model.Quest, error)
-	All(page int) ([]*model.Quest, error)
 	Create(quest *model.Quest) (string, error)
+
+	LastID() (string, error)
+	After(afterID string) ([]*model.Quest, error)
 }
 
 type Quest struct {
@@ -48,13 +50,45 @@ func (ctx *Quest) Single(id string) (*model.Quest, error) {
 	return qst, nil
 }
 
-func (ctx *Quest) All(page int) ([]*model.Quest, error) {
-	offset := limit * page
+func (ctx *Quest) Create(quest *model.Quest) (string, error) {
+	return create(ctx.db, `INSERT INTO quest (title, picture_url, involvement_id, quest_type_id, user_id)
+		VALUES($1, $2, $3, $4, $5)`,
+		quest.Title,
+		quest.PictureURL,
+		quest.InvolvementID,
+		quest.QuestTypeID,
+		quest.UserID)
+}
 
-	rows, err := ctx.db.Query("SELECT id, title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "+
+func (ctx *Quest) LastID() (string, error) {
+	var id string
+
+	row := ctx.db.QueryRow("SELECT id " +
+		"FROM quest " +
+		"ORDER BY created_at DESC " +
+		"LIMIT 1")
+
+	err := row.Scan(&id)
+
+	if err == ErrNoRows {
+		return "", nil
+	} else if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
+	selectArgs := "id, title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "
+	rows, err := ctx.db.Query("SELECT "+selectArgs+
 		"FROM quest "+
+		"WHERE created_at <= "+
+		"  (SELECT created_at "+
+		"   FROM quest "+
+		"   WHERE id = $1) "+
 		"ORDER BY created_at DESC "+
-		"LIMIT $1 OFFSET $2 ", limit, offset)
+		"LIMIT $2", afterID, limit)
 
 	if err != nil {
 		return nil, err
@@ -66,6 +100,7 @@ func (ctx *Quest) All(page int) ([]*model.Quest, error) {
 
 	for rows.Next() {
 		qst := new(model.Quest)
+
 		err := rows.Scan(
 			&qst.ID,
 			&qst.Title,
@@ -89,14 +124,4 @@ func (ctx *Quest) All(page int) ([]*model.Quest, error) {
 	}
 
 	return qsts, nil
-}
-
-func (ctx *Quest) Create(quest *model.Quest) (string, error) {
-	return create(ctx.db, `INSERT INTO quest (title, picture_url, involvement_id, quest_type_id, user_id)
-		VALUES($1, $2, $3, $4, $5)`,
-		quest.Title,
-		quest.PictureURL,
-		quest.InvolvementID,
-		quest.QuestTypeID,
-		quest.UserID)
 }

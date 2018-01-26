@@ -11,30 +11,47 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func QuestsIndex(env *env.Env) *response.Message {
+func QuestsLast(env *env.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	pg, err := form.IntValue(env.Request, consts.Page)
-
-	if err != nil {
-		return response.BadRequest(err.Error())
-	}
-
-	if pg < 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatInvalid, consts.Page))
-	}
-
-	qsts, err := env.DB.Quest().All(pg)
+	id, err := env.DB.Quest().LastID()
 
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	if len(qsts) == 0 {
-		return response.NotFound(consts.Page)
+	qsts, err := env.DB.Quest().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
+	}
+
+	return response.Ok(
+		consts.Quests,
+		len(qsts),
+		qsts)
+}
+
+func QuestsAfter(env *env.Env) *response.Message {
+	if !request.IsMethod(env.Request, consts.GET) {
+		return response.MethodNotAllowed()
+	}
+
+	id, respErr := getFormString(env, consts.AfterID, env.DB.Quest())
+
+	if respErr != nil {
+		return respErr
+	}
+
+	qsts, err := env.DB.Quest().After(id)
+
+	if err != nil {
+		env.Log.Error(err)
+		return response.InternalServerError()
 	}
 
 	return response.Ok(
@@ -48,24 +65,13 @@ func QuestSingle(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, err := form.StringValue(env.Request, consts.ID)
+	id, respErr := getFormString(env, consts.ID, env.DB.Quest())
 
-	if err != nil {
-		return response.BadRequest(err.Error())
+	if respErr != nil {
+		return respErr
 	}
 
-	exists, err := env.DB.Quest().Exists(qstID)
-
-	if err != nil {
-		env.Log.Error(err)
-		return response.InternalServerError()
-	}
-
-	if !exists {
-		return response.NotFound(consts.Quest)
-	}
-
-	qst, err := env.DB.Quest().Single(qstID)
+	qst, err := env.DB.Quest().Single(id)
 
 	if err != nil {
 		env.Log.Error(err)
