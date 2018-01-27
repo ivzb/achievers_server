@@ -17,11 +17,15 @@ type Achievementer interface {
 }
 
 type Achievement struct {
-	db *DB
+	db    *DB
+	table string
 }
 
 func (db *DB) Achievement() Achievementer {
-	return &Achievement{db}
+	return &Achievement{
+		db:    db,
+		table: "achievement",
+	}
 }
 
 func (ctx *Achievement) Exists(id string) (bool, error) {
@@ -66,22 +70,7 @@ func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
 }
 
 func (ctx *Achievement) LastID() (string, error) {
-	var id string
-
-	row := ctx.db.QueryRow("SELECT id " +
-		"FROM achievement " +
-		"ORDER BY created_at DESC " +
-		"LIMIT 1")
-
-	err := row.Scan(&id)
-
-	if err == ErrNoRows {
-		return "", nil
-	} else if err != nil {
-		return "", err
-	}
-
-	return id, nil
+	return lastID(ctx.db, ctx.table)
 }
 
 func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {

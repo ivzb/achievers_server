@@ -12,11 +12,15 @@ type Quester interface {
 }
 
 type Quest struct {
-	db *DB
+	db    *DB
+	table string
 }
 
 func (db *DB) Quest() Quester {
-	return &Quest{db}
+	return &Quest{
+		db:    db,
+		table: "quest",
+	}
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
@@ -61,22 +65,7 @@ func (ctx *Quest) Create(quest *model.Quest) (string, error) {
 }
 
 func (ctx *Quest) LastID() (string, error) {
-	var id string
-
-	row := ctx.db.QueryRow("SELECT id " +
-		"FROM quest " +
-		"ORDER BY created_at DESC " +
-		"LIMIT 1")
-
-	err := row.Scan(&id)
-
-	if err == ErrNoRows {
-		return "", nil
-	} else if err != nil {
-		return "", err
-	}
-
-	return id, nil
+	return lastID(ctx.db, ctx.table)
 }
 
 func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {

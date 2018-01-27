@@ -15,11 +15,15 @@ type Evidencer interface {
 }
 
 type Evidence struct {
-	db *DB
+	db    *DB
+	table string
 }
 
 func (db *DB) Evidence() Evidencer {
-	return &Evidence{db}
+	return &Evidence{
+		db:    db,
+		table: "evidence",
+	}
 }
 
 func (ctx *Evidence) Exists(id string) (bool, error) {
@@ -67,22 +71,7 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 }
 
 func (ctx *Evidence) LastID() (string, error) {
-	var id string
-
-	row := ctx.db.QueryRow("SELECT id " +
-		"FROM evidence " +
-		"ORDER BY created_at DESC " +
-		"LIMIT 1")
-
-	err := row.Scan(&id)
-
-	if err == ErrNoRows {
-		return "", nil
-	} else if err != nil {
-		return "", err
-	}
-
-	return id, nil
+	return lastID(ctx.db, ctx.table)
 }
 
 func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ivzb/achievers_server/app/shared/database"
+	"github.com/ivzb/achievers_server/app/shared/uuid"
 
 	// Postgre DB driver
 	_ "github.com/lib/pq"
@@ -42,6 +43,10 @@ type DBSourcer interface {
 
 type Exister interface {
 	Exists(id string) (bool, error)
+}
+
+type sqlScanner interface {
+	Scan(dest ...interface{}) error
 }
 
 // DB struct holds the connection to DB
@@ -132,6 +137,33 @@ func create(db *DB, query string, args ...interface{}) (string, error) {
 	err := db.QueryRow(query, args...).Scan(&id)
 
 	if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
+
+func lastID(db *DB, table string) (string, error) {
+	var id string
+
+	row := db.QueryRow("SELECT id" +
+		" FROM " + table +
+		" ORDER BY created_at DESC" +
+		" LIMIT 1")
+
+	err := row.Scan(&id)
+
+	if err == ErrNoRows {
+		// return random uuid since there are no ids in db
+		// it doesn't matter what the id is as long as it is a valid one
+		id, err := uuid.NewUUID().Generate()
+
+		if err != nil {
+			return "", err
+		}
+
+		return id, nil
+	} else if err != nil {
 		return "", err
 	}
 

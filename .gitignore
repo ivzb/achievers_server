@@ -83,3 +83,4 @@ doc/codelab/wiki/*.bin
 .vscode
 .vscode/*
 achievers_server
+logfile
