@@ -148,6 +148,23 @@ go tool cover -html=coverage.out
 ```
 
 ## TODO
-0. replace paging concept with later/after as implemented in achievement controller
-1. implement constructTest for shared/ similar to this in controller/
+0. refactor app/db/ as it should recieve some abstraction
+0.5. add kubernetes support
+1. implement constructTest for app/shared/ similar to this in controller/
 2. implement router with following format: router.GET("path", handler, middleware)
+3. update readme
+
+## Done :) // many tasks not written
+0. quest_achievement controller
++    1. create quest_achievement
++    2. get achievements by quest_id
++    3. get quests by achievement_id
+1. logger - add log error method
+2. get achievements by quest_id
+3. extract common controller functionalities which return plain Result
+ handlers should have \*shared.Request instead of \*http.Request which will wrap \*http.Request and use it only internally
+4. extract consts from controller/controller.go to shared/consts.go
+5. improve paging concept (pass afterID)
+6. extract framework models from app models
+7. replace paging concept with later/after as implemented in achievement controller
+
