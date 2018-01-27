@@ -12,15 +12,37 @@ type Quester interface {
 }
 
 type Quest struct {
-	db    *DB
-	table string
+	db         *DB
+	table      string
+	selectArgs string
 }
 
 func (db *DB) Quest() Quester {
 	return &Quest{
-		db:    db,
-		table: "quest",
+		db:         db,
+		table:      "quest",
+		selectArgs: "id, title, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
 	}
+}
+
+func (*Quest) scan(row sqlScanner) (*model.Quest, error) {
+	rwd := new(model.Quest)
+
+	err := row.Scan(
+		&rwd.ID,
+		&rwd.Title,
+		&rwd.PictureURL,
+		&rwd.InvolvementID,
+		&rwd.UserID,
+		&rwd.CreatedAt,
+		&rwd.UpdatedAt,
+		&rwd.DeletedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rwd, nil
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
@@ -28,30 +50,12 @@ func (ctx *Quest) Exists(id string) (bool, error) {
 }
 
 func (ctx *Quest) Single(id string) (*model.Quest, error) {
-	qst := new(model.Quest)
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE id = $1 "+
+		" LIMIT 1", id)
 
-	qst.ID = id
-
-	row := ctx.db.QueryRow("SELECT title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "+
-		"FROM quest "+
-		"WHERE id = $1 "+
-		"LIMIT 1", id)
-
-	err := row.Scan(
-		&qst.Title,
-		&qst.PictureURL,
-		&qst.InvolvementID,
-		&qst.QuestTypeID,
-		&qst.UserID,
-		&qst.CreatedAt,
-		&qst.UpdatedAt,
-		&qst.DeletedAt)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return qst, nil
+	return ctx.scan(row)
 }
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {

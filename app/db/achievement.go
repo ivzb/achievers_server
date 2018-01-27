@@ -17,32 +17,24 @@ type Achievementer interface {
 }
 
 type Achievement struct {
-	db    *DB
-	table string
+	db         *DB
+	table      string
+	selectArgs string
 }
 
 func (db *DB) Achievement() Achievementer {
 	return &Achievement{
-		db:    db,
-		table: "achievement",
+		db:         db,
+		table:      "achievement",
+		selectArgs: "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
 	}
 }
 
-func (ctx *Achievement) Exists(id string) (bool, error) {
-	return exists(ctx.db, "achievement", "id", id)
-}
-
-func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
+func (*Achievement) scan(row sqlScanner) (*model.Achievement, error) {
 	ach := new(model.Achievement)
 
-	ach.ID = id
-
-	row := ctx.db.QueryRow("SELECT title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at "+
-		"FROM achievement "+
-		"WHERE id = $1 "+
-		"LIMIT 1", id)
-
 	err := row.Scan(
+		&ach.ID,
 		&ach.Title,
 		&ach.Description,
 		&ach.PictureURL,
@@ -57,6 +49,19 @@ func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
 	}
 
 	return ach, nil
+}
+
+func (ctx *Achievement) Exists(id string) (bool, error) {
+	return exists(ctx.db, "achievement", "id", id)
+}
+
+func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE id = $1 "+
+		" LIMIT 1", id)
+
+	return ctx.scan(row)
 }
 
 func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {

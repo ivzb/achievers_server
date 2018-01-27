@@ -15,32 +15,24 @@ type Evidencer interface {
 }
 
 type Evidence struct {
-	db    *DB
-	table string
+	db         *DB
+	table      string
+	selectArgs string
 }
 
 func (db *DB) Evidence() Evidencer {
 	return &Evidence{
-		db:    db,
-		table: "evidence",
+		db:         db,
+		table:      "evidence",
+		selectArgs: "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at",
 	}
 }
 
-func (ctx *Evidence) Exists(id string) (bool, error) {
-	return exists(ctx.db, "evidence", "id", id)
-}
-
-func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
+func (*Evidence) scan(row sqlScanner) (*model.Evidence, error) {
 	evd := new(model.Evidence)
 
-	evd.ID = id
-
-	row := ctx.db.QueryRow("SELECT title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "+
-		"FROM evidence "+
-		"WHERE id = $1 "+
-		"LIMIT 1", id)
-
 	err := row.Scan(
+		&evd.ID,
 		&evd.Title,
 		&evd.PictureURL,
 		&evd.URL,
@@ -56,6 +48,19 @@ func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
 	}
 
 	return evd, nil
+}
+
+func (ctx *Evidence) Exists(id string) (bool, error) {
+	return exists(ctx.db, "evidence", "id", id)
+}
+
+func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE id = $1 "+
+		" LIMIT 1", id)
+
+	return ctx.scan(row)
 }
 
 // Create saves evidence object to db
