@@ -12,16 +12,16 @@ type Quester interface {
 }
 
 type Quest struct {
-	db         *DB
-	table      string
-	selectArgs string
+	*Context
 }
 
 func (db *DB) Quest() Quester {
 	return &Quest{
-		db:         db,
-		table:      "quest",
-		selectArgs: "id, title, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+		&Context{
+			db:         db,
+			table:      "quest",
+			selectArgs: "id, title, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+		},
 	}
 }
 
@@ -46,7 +46,7 @@ func (*Quest) scan(row sqlScanner) (*model.Quest, error) {
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
-	return exists(ctx.db, "quest", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *Quest) Single(id string) (*model.Quest, error) {

@@ -7,13 +7,18 @@ type RewardTyper interface {
 }
 
 type RewardType struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) RewardType() RewardTyper {
-	return &RewardType{db}
+	return &RewardType{
+		&Context{
+			db:    db,
+			table: "reward_type",
+		},
+	}
 }
 
 func (ctx *RewardType) Exists(id uint8) (bool, error) {
-	return exists(ctx.db, "reward_type", "id", strconv.FormatInt(int64(id), 10))
+	return exists(ctx.Context, "id", strconv.FormatInt(int64(id), 10))
 }

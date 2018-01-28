@@ -17,16 +17,16 @@ type Achievementer interface {
 }
 
 type Achievement struct {
-	db         *DB
-	table      string
-	selectArgs string
+	*Context
 }
 
 func (db *DB) Achievement() Achievementer {
 	return &Achievement{
-		db:         db,
-		table:      "achievement",
-		selectArgs: "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+		&Context{
+			db:         db,
+			table:      "achievement",
+			selectArgs: "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+		},
 	}
 }
 
@@ -52,7 +52,7 @@ func (*Achievement) scan(row sqlScanner) (*model.Achievement, error) {
 }
 
 func (ctx *Achievement) Exists(id string) (bool, error) {
-	return exists(ctx.db, "achievement", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *Achievement) Single(id string) (*model.Achievement, error) {

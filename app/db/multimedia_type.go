@@ -7,13 +7,18 @@ type MultimediaTyper interface {
 }
 
 type MultimediaType struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) MultimediaType() MultimediaTyper {
-	return &MultimediaType{db}
+	return &Involvement{
+		&Context{
+			db:    db,
+			table: "multimedia_type",
+		},
+	}
 }
 
 func (ctx *MultimediaType) Exists(id uint8) (bool, error) {
-	return exists(ctx.db, "multimedia_type", "id", strconv.FormatInt(int64(id), 10))
+	return exists(ctx.Context, "id", strconv.FormatInt(int64(id), 10))
 }

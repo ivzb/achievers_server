@@ -54,6 +54,12 @@ type DB struct {
 	*sql.DB
 }
 
+type Context struct {
+	db         *DB
+	table      string
+	selectArgs string
+}
+
 // NewDB creates connection to the database
 func NewDB(d database.Info) (*DB, error) {
 	switch d.Type {
@@ -72,9 +78,9 @@ func NewDB(d database.Info) (*DB, error) {
 }
 
 // exists checks whether row in specified table exists by column and value
-func exists(db *DB, table string, column string, value string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", table, column)
-	stmt, err := db.Prepare(query)
+func exists(model *Context, column string, value string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", model.table, column)
+	stmt, err := model.db.Prepare(query)
 
 	if err != nil {
 		return false, err
@@ -128,6 +134,15 @@ func whereClause(columns []string) string {
 	}
 
 	return strings.Join(placeholders, " AND ")
+}
+
+func single(model *Context, id string) *sql.Row {
+	row := model.db.QueryRow("SELECT "+model.selectArgs+
+		" FROM "+model.table+
+		" WHERE id = $1 "+
+		" LIMIT 1", id)
+
+	return row
 }
 
 // create executes passed query and args

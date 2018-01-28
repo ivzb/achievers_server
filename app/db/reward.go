@@ -14,16 +14,16 @@ type Rewarder interface {
 }
 
 type Reward struct {
-	db         *DB
-	table      string
-	selectArgs string
+	*Context
 }
 
 func (db *DB) Reward() Rewarder {
 	return &Reward{
-		db:         db,
-		table:      "reward",
-		selectArgs: "id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at",
+		&Context{
+			db:         db,
+			table:      "reward",
+			selectArgs: "id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at",
+		},
 	}
 }
 
@@ -49,14 +49,11 @@ func (*Reward) scan(row sqlScanner) (*model.Reward, error) {
 }
 
 func (ctx *Reward) Exists(id string) (bool, error) {
-	return exists(ctx.db, "reward", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *Reward) Single(id string) (*model.Reward, error) {
-	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE id = $1 "+
-		" LIMIT 1", id)
+	row := single(ctx.Context, id)
 
 	return ctx.scan(row)
 }

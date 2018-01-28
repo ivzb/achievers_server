@@ -13,19 +13,24 @@ type Userer interface {
 }
 
 type User struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) User() Userer {
-	return &User{db}
+	return &User{
+		&Context{
+			db:    db,
+			table: "user",
+		},
+	}
 }
 
 func (ctx *User) Exists(id string) (bool, error) {
-	return exists(ctx.db, "user", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *User) EmailExists(email string) (bool, error) {
-	return exists(ctx.db, "user", "email", email)
+	return exists(ctx.Context, "email", email)
 }
 
 func (ctx *User) Auth(auth *model.Auth) (string, error) {

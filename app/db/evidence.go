@@ -15,16 +15,16 @@ type Evidencer interface {
 }
 
 type Evidence struct {
-	db         *DB
-	table      string
-	selectArgs string
+	*Context
 }
 
 func (db *DB) Evidence() Evidencer {
 	return &Evidence{
-		db:         db,
-		table:      "evidence",
-		selectArgs: "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at",
+		&Context{
+			db:         db,
+			table:      "evidence",
+			selectArgs: "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at",
+		},
 	}
 }
 
@@ -51,7 +51,7 @@ func (*Evidence) scan(row sqlScanner) (*model.Evidence, error) {
 }
 
 func (ctx *Evidence) Exists(id string) (bool, error) {
-	return exists(ctx.db, "evidence", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *Evidence) Single(id string) (*model.Evidence, error) {

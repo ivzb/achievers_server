@@ -12,60 +12,55 @@ type Profiler interface {
 }
 
 type Profile struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) Profile() Profiler {
-	return &Profile{db}
+	return &Profile{
+		&Context{
+			db:         db,
+			table:      "profile",
+			selectArgs: "id, name, created_at, updated_at, deleted_at",
+		},
+	}
+}
+
+func (*Profile) scan(row sqlScanner) (*model.Profile, error) {
+	prfl := new(model.Profile)
+
+	err := row.Scan(
+		&prfl.Name,
+		&prfl.CreatedAt,
+		&prfl.UpdatedAt,
+		&prfl.DeletedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return prfl, nil
 }
 
 func (ctx *Profile) Exists(id string) (bool, error) {
-	return exists(ctx.db, "profile", "id", id)
+	return exists(ctx.Context, "id", id)
 }
 
 func (ctx *Profile) Single(id string) (*model.Profile, error) {
-	prfl := new(model.Profile)
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE id = $1 "+
+		" LIMIT 1", id)
 
-	prfl.ID = id
-
-	row := ctx.db.QueryRow("SELECT name, created_at, updated_at, deleted_at "+
-		"FROM profile "+
-		"WHERE id = $1 "+
-		"LIMIT 1", id)
-
-	err := row.Scan(
-		&prfl.Name,
-		&prfl.CreatedAt,
-		&prfl.UpdatedAt,
-		&prfl.DeletedAt)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return prfl, nil
+	return ctx.scan(row)
 }
 
 func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
-	prfl := new(model.Profile)
-
-	row := ctx.db.QueryRow("SELECT id, name, created_at, updated_at, deleted_at "+
-		"FROM profile "+
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		"FROM "+ctx.table+
 		"WHERE user_id = $1 "+
 		"LIMIT 1", userID)
 
-	err := row.Scan(
-		&prfl.ID,
-		&prfl.Name,
-		&prfl.CreatedAt,
-		&prfl.UpdatedAt,
-		&prfl.DeletedAt)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return prfl, nil
+	return ctx.scan(row)
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {

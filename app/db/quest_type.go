@@ -7,13 +7,18 @@ type QuestTyper interface {
 }
 
 type QuestType struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) QuestType() QuestTyper {
-	return &QuestType{db}
+	return &QuestType{
+		&Context{
+			db:    db,
+			table: "quest_type",
+		},
+	}
 }
 
 func (ctx *QuestType) Exists(id uint8) (bool, error) {
-	return exists(ctx.db, "quest_type", "id", strconv.FormatInt(int64(id), 10))
+	return exists(ctx.Context, "id", strconv.FormatInt(int64(id), 10))
 }
