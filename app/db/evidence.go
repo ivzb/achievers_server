@@ -71,7 +71,7 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 }
 
 func (ctx *Evidence) LastID() (string, error) {
-	return lastID(ctx.db, ctx.table)
+	return lastID(ctx.Context)
 }
 
 func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {

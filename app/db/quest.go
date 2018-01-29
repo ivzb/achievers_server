@@ -66,7 +66,7 @@ func (ctx *Quest) Create(quest *model.Quest) (string, error) {
 }
 
 func (ctx *Quest) LastID() (string, error) {
-	return lastID(ctx.db, ctx.table)
+	return lastID(ctx.Context)
 }
 
 func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {

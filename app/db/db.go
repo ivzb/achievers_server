@@ -186,11 +186,11 @@ func create(ctx *Context, args ...interface{}) (string, error) {
 	return id, nil
 }
 
-func lastID(db *DB, table string) (string, error) {
+func lastID(ctx *Context) (string, error) {
 	var id string
 
-	row := db.QueryRow("SELECT id" +
-		" FROM " + table +
+	row := ctx.db.QueryRow("SELECT id" +
+		" FROM " + ctx.table +
 		" ORDER BY created_at DESC" +
 		" LIMIT 1")
 

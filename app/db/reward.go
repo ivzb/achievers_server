@@ -69,7 +69,7 @@ func (ctx *Reward) Create(reward *model.Reward) (string, error) {
 }
 
 func (ctx *Reward) LastID() (string, error) {
-	return lastID(ctx.db, ctx.table)
+	return lastID(ctx.Context)
 }
 
 func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {

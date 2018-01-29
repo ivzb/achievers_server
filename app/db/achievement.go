@@ -72,7 +72,7 @@ func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
 }
 
 func (ctx *Achievement) LastID() (string, error) {
-	return lastID(ctx.db, ctx.table)
+	return lastID(ctx.Context)
 }
 
 func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
