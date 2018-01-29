@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -58,6 +59,7 @@ type Context struct {
 	db         *DB
 	table      string
 	selectArgs string
+	insertArgs string
 }
 
 // NewDB creates connection to the database
@@ -129,11 +131,20 @@ func whereClause(columns []string) string {
 	placeholders := make([]string, 0, len(columns))
 
 	for i, column := range columns {
-
 		placeholders = append(placeholders, column+" = $"+strconv.Itoa(i+1))
 	}
 
 	return strings.Join(placeholders, " AND ")
+}
+
+func concatPlaceholders(columns int) string {
+	placeholders := make([]string, 0, columns)
+
+	for i := 1; i <= columns+1; i++ {
+		placeholders = append(placeholders, "$"+strconv.Itoa(i))
+	}
+
+	return strings.Join(placeholders, ", ")
 }
 
 func single(ctx *Context, id string) *sql.Row {
@@ -159,10 +170,14 @@ func after(ctx *Context, afterID string) (*sql.Rows, error) {
 }
 
 // create executes passed query and args
-func create(db *DB, query string, args ...interface{}) (string, error) {
-	id := ""
-	query = query + " RETURNING id"
-	err := db.QueryRow(query, args...).Scan(&id)
+func create(ctx *Context, args ...interface{}) (string, error) {
+	columns := strings.Count(ctx.insertArgs, ",")
+	placeholders := concatPlaceholders(columns)
+	query := "INSERT INTO " + ctx.table + "(" + ctx.insertArgs + ") VALUES(" + placeholders + ") RETURNING id"
+	log.Println(query)
+
+	var id string
+	err := ctx.db.QueryRow(query, args...).Scan(&id)
 
 	if err != nil {
 		return "", err

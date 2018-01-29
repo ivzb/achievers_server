@@ -21,6 +21,7 @@ func (db *DB) Quest() Quester {
 			db:         db,
 			table:      "quest",
 			selectArgs: "id, title, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+			insertArgs: "title, picture_url, involvement_id, quest_type_id, user_id",
 		},
 	}
 }
@@ -56,8 +57,7 @@ func (ctx *Quest) Single(id string) (*model.Quest, error) {
 }
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
-	return create(ctx.db, `INSERT INTO quest (title, picture_url, involvement_id, quest_type_id, user_id)
-		VALUES($1, $2, $3, $4, $5)`,
+	return create(ctx.Context,
 		quest.Title,
 		quest.PictureURL,
 		quest.InvolvementID,

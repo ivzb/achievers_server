@@ -61,8 +61,7 @@ func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
 
 // Create saves evidence object to db
 func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
-	return create(ctx.db, `INSERT INTO evidence (title, picture_url, url, multimedia_type_id, achievement_id, user_id)
-		VALUES($1, $2, $3, $4, $5, $6)`,
+	return create(ctx.Context,
 		evidence.Title,
 		evidence.PictureURL,
 		evidence.URL,

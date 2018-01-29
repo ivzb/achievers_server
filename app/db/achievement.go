@@ -26,6 +26,7 @@ func (db *DB) Achievement() Achievementer {
 			db:         db,
 			table:      "achievement",
 			selectArgs: "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
+			insertArgs: "title, description, picture_url, involvement_id, user_id",
 		},
 	}
 }
@@ -62,8 +63,7 @@ func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
 }
 
 func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
-	return create(ctx.db, `INSERT INTO achievement (title, description, picture_url, involvement_id, user_id)
-        VALUES($1, $2, $3, $4, $5)`,
+	return create(ctx.Context,
 		achievement.Title,
 		achievement.Description,
 		achievement.PictureURL,

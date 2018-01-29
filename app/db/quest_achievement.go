@@ -8,11 +8,17 @@ type QuestAchievementer interface {
 }
 
 type QuestAchievement struct {
-	db *DB
+	*Context
 }
 
 func (db *DB) QuestAchievement() QuestAchievementer {
-	return &QuestAchievement{db}
+	return &QuestAchievement{
+		&Context{
+			db:         db,
+			table:      "quest_achievement",
+			insertArgs: "quest_id, achievement_id, user_id",
+		},
+	}
 }
 
 func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool, error) {
@@ -20,8 +26,7 @@ func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool,
 }
 
 func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
-	return create(ctx.db, `INSERT INTO quest_achievement (quest_id, achievement_id, user_id)
-		VALUES($1, $2, $3)`,
+	return create(ctx.Context,
 		qstAch.QuestID,
 		qstAch.AchievementID,
 		qstAch.UserID)

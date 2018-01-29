@@ -21,6 +21,7 @@ func (db *DB) Profile() Profiler {
 			db:         db,
 			table:      "profile",
 			selectArgs: "id, name, created_at, updated_at, deleted_at",
+			insertArgs: "name, user_id",
 		},
 	}
 }
@@ -61,8 +62,7 @@ func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
-	return create(ctx.db, `INSERT INTO profile (name, user_id)
-		VALUES($1, $2)`,
+	return create(ctx.Context,
 		profile.Name,
 		userID)
 }

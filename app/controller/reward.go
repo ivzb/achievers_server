@@ -114,6 +114,7 @@ func RewardCreate(env *env.Env) *response.Message {
 	rewardTypeExists, err := env.DB.RewardType().Exists(rwd.RewardTypeID)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
@@ -126,6 +127,7 @@ func RewardCreate(env *env.Env) *response.Message {
 	id, err := env.DB.Reward().Create(rwd)
 
 	if err != nil || id == "" {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 

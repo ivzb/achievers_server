@@ -23,6 +23,7 @@ func (db *DB) Reward() Rewarder {
 			db:         db,
 			table:      "reward",
 			selectArgs: "id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at",
+			insertArgs: "title, description, picture_url, reward_type_id, user_id",
 		},
 	}
 }
@@ -59,8 +60,7 @@ func (ctx *Reward) Single(id string) (*model.Reward, error) {
 }
 
 func (ctx *Reward) Create(reward *model.Reward) (string, error) {
-	return create(ctx.db, `INSERT INTO reward(title, description, picture_url, reward_type_id, user_id)
-		VALUES($1, $2, $3, $4, $5)`,
+	return create(ctx.Context,
 		reward.Title,
 		reward.Description,
 		reward.PictureURL,
