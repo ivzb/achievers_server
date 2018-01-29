@@ -73,14 +73,7 @@ func (ctx *Reward) LastID() (string, error) {
 }
 
 func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {
-	rows, err := ctx.db.Query("SELECT "+ctx.selectArgs+
-		" FROM reward "+
-		" WHERE created_at <= "+
-		"  (SELECT created_at"+
-		"   FROM reward"+
-		"   WHERE id = $1)"+
-		" ORDER BY created_at DESC"+
-		" LIMIT $2", afterID, limit)
+	rows, err := after(ctx.Context, afterID)
 
 	if err != nil {
 		return nil, err

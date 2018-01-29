@@ -136,13 +136,26 @@ func whereClause(columns []string) string {
 	return strings.Join(placeholders, " AND ")
 }
 
-func single(model *Context, id string) *sql.Row {
-	row := model.db.QueryRow("SELECT "+model.selectArgs+
-		" FROM "+model.table+
+func single(ctx *Context, id string) *sql.Row {
+	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
 		" WHERE id = $1 "+
 		" LIMIT 1", id)
 
 	return row
+}
+
+func after(ctx *Context, afterID string) (*sql.Rows, error) {
+	rows, err := ctx.db.Query("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE created_at <= "+
+		"  (SELECT created_at"+
+		"   FROM "+ctx.table+
+		"   WHERE id = $1)"+
+		" ORDER BY created_at DESC"+
+		" LIMIT $2", afterID, limit)
+
+	return rows, err
 }
 
 // create executes passed query and args

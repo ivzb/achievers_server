@@ -46,10 +46,7 @@ func (ctx *Profile) Exists(id string) (bool, error) {
 }
 
 func (ctx *Profile) Single(id string) (*model.Profile, error) {
-	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE id = $1 "+
-		" LIMIT 1", id)
+	row := single(ctx.Context, id)
 
 	return ctx.scan(row)
 }

@@ -9,7 +9,6 @@ type Evidencer interface {
 	Single(id string) (*model.Evidence, error)
 	Create(evidence *model.Evidence) (string, error)
 
-	//All(page int) ([]*model.Evidence, error)
 	LastID() (string, error)
 	After(afterID string) ([]*model.Evidence, error)
 }
@@ -55,10 +54,7 @@ func (ctx *Evidence) Exists(id string) (bool, error) {
 }
 
 func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
-	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE id = $1 "+
-		" LIMIT 1", id)
+	row := single(ctx.Context, id)
 
 	return ctx.scan(row)
 }
@@ -80,15 +76,7 @@ func (ctx *Evidence) LastID() (string, error) {
 }
 
 func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
-	selectArgs := "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at "
-	rows, err := ctx.db.Query("SELECT "+selectArgs+
-		"FROM evidence "+
-		"WHERE created_at <= "+
-		"  (SELECT created_at "+
-		"   FROM evidence "+
-		"   WHERE id = $1) "+
-		"ORDER BY created_at DESC "+
-		"LIMIT $2", afterID, limit)
+	rows, err := after(ctx.Context, afterID)
 
 	if err != nil {
 		return nil, err
@@ -99,18 +87,7 @@ func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
 	evds := make([]*model.Evidence, 0)
 
 	for rows.Next() {
-		evd := new(model.Evidence)
-		err := rows.Scan(
-			&evd.ID,
-			&evd.Title,
-			&evd.PictureURL,
-			&evd.URL,
-			&evd.MultimediaTypeID,
-			&evd.AchievementID,
-			&evd.UserID,
-			&evd.CreatedAt,
-			&evd.UpdatedAt,
-			&evd.DeletedAt)
+		evd, err := ctx.scan(rows)
 
 		if err != nil {
 			return nil, err

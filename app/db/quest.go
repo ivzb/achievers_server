@@ -50,10 +50,7 @@ func (ctx *Quest) Exists(id string) (bool, error) {
 }
 
 func (ctx *Quest) Single(id string) (*model.Quest, error) {
-	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE id = $1 "+
-		" LIMIT 1", id)
+	row := single(ctx.Context, id)
 
 	return ctx.scan(row)
 }
@@ -73,15 +70,7 @@ func (ctx *Quest) LastID() (string, error) {
 }
 
 func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
-	selectArgs := "id, title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at "
-	rows, err := ctx.db.Query("SELECT "+selectArgs+
-		"FROM quest "+
-		"WHERE created_at <= "+
-		"  (SELECT created_at "+
-		"   FROM quest "+
-		"   WHERE id = $1) "+
-		"ORDER BY created_at DESC "+
-		"LIMIT $2", afterID, limit)
+	rows, err := after(ctx.Context, afterID)
 
 	if err != nil {
 		return nil, err
@@ -92,18 +81,7 @@ func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
 	qsts := make([]*model.Quest, 0)
 
 	for rows.Next() {
-		qst := new(model.Quest)
-
-		err := rows.Scan(
-			&qst.ID,
-			&qst.Title,
-			&qst.PictureURL,
-			&qst.InvolvementID,
-			&qst.QuestTypeID,
-			&qst.UserID,
-			&qst.CreatedAt,
-			&qst.UpdatedAt,
-			&qst.DeletedAt)
+		qst, err := ctx.scan(rows)
 
 		if err != nil {
 			return nil, err

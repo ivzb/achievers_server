@@ -56,10 +56,7 @@ func (ctx *Achievement) Exists(id string) (bool, error) {
 }
 
 func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
-	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE id = $1 "+
-		" LIMIT 1", id)
+	row := single(ctx.Context, id)
 
 	return ctx.scan(row)
 }
@@ -101,15 +98,7 @@ func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 }
 
 func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
-	selectArgs := "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at "
-	rows, err := ctx.db.Query("SELECT "+selectArgs+
-		"FROM achievement "+
-		"WHERE created_at <= "+
-		"  (SELECT created_at "+
-		"   FROM achievement "+
-		"   WHERE id = $1) "+
-		"ORDER BY created_at DESC "+
-		"LIMIT $2", afterID, limit)
+	rows, err := after(ctx.Context, afterID)
 
 	if err != nil {
 		return nil, err
@@ -120,17 +109,7 @@ func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
 	achs := make([]*model.Achievement, 0)
 
 	for rows.Next() {
-		ach := new(model.Achievement)
-		err := rows.Scan(
-			&ach.ID,
-			&ach.Title,
-			&ach.Description,
-			&ach.PictureURL,
-			&ach.InvolvementID,
-			&ach.UserID,
-			&ach.CreatedAt,
-			&ach.UpdatedAt,
-			&ach.DeletedAt)
+		ach, err := ctx.scan(rows)
 
 		if err != nil {
 			return nil, err
