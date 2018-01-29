@@ -69,29 +69,42 @@ $ docker stop achievers_server
 The following endpoints are available:
 
 ```
-* GET	 / - Retrieve an welcome message
+* GET  /v1/ - Retrieve an welcome message
 
-* POST   /user/auth       - Retrieve an access token
-* POST   /user/create      - Create a new user
+* POST /v1/user/create - Create new user
+* POST /v1/user/auth   - Retrieve an access token
 
-* GET	 /achievement?id= - Retrieve an achievement by ID
-* GET	 /achievements?page= - Retrieve achievements by page
-* GET    /achievements/quest?id=&page= - Retrieve achievements by quest_id and page
-* POST   /achievement/create - Create a new achievement
+* GET  /v1/profile?id= - Retrieve profile by ID
+* GET  /v1/profile/me  - Retrieve your own profile
 
-* GET	 /evidence?id= - Retrieve an evidence by ID
-* GET	 /evidences?page= - Retrieve evidences by page
-* POST   /evidence/create - Create a new evidence 
+* POST /v1/achievement/create                 - Create new achievement
+* GET  /v1/achievement?id=                    - Retrieve an achievement by ID
+* GET  /v1/achievements/last                  - Retrieve last page of achievements
+* GET  /v1/achievements/after?after_id=       - Retrieve page of achievements after specified one
+* GET  /v1/achievements/quest?id=&page=       - Retrieve achievements by quest_id and page
+* GET  /v1/achievements/quest/last            - Retrieve last page of achievements by quest_id
+* GET  /v1/achievements/quest/after?after_id= - Retrieve page of achievements by quest_id after specified one
 
-* GET	 /reward?id= - Retrieve a reward by ID
-* GET	 /rewards?page= - Retrieve rewards by page
-* POST   /reward/create - Create a new reward 
+* POST /v1/evidence/create           - Create new evidence 
+* GET  /v1/evidence?id=              - Retrieve an evidence by ID
+* GET  /v1/evidences/last            - Retrieve last page of evidences
+* GET  /v1/evidences/after?after_id= - Retrieve page of evidences after specified one
 
-* GET	 /quest?id= - Retrieve a quest by ID
-* GET	 /quests?page= - Retrieve quests by page
-* POST   /quest/create - Create a new quest 
+* POST /v1/reward/create           - Create new reward 
+* GET  /v1/reward?id=              - Retrieve a reward by ID
+* GET  /v1/rewards/last            - Retrieve last page of rewards
+* GET  /v1/rewards/after?after_id= - Retrieve page of rewards after specified one
 
-* POST   /quest_achievement/create - Create a new quest_achievement
+* POST /v1/quest/create           - Create new quest 
+* GET  /v1/quest?id=              - Retrieve a quest by ID
+* GET  /v1/quests?page=           - Retrieve quests by page
+* GET  /v1/quests/last            - Retrieve last page of rewards
+* GET  /v1/quests/after?after_id= - Retrieve page of rewards after specified one
+
+* POST /v1/quest_achievement/create - Create a new quest_achievement
+
+* POST /v1/file/create - Create new file
+* GET  /v1/file?id=    - Retrieve a file by ID
 ```
 
 ## Rules for Consistency
@@ -149,10 +162,10 @@ go tool cover -html=coverage.out
 
 ## TODO
 0. refactor app/db/ as it should recieve some abstraction
-0.5. add kubernetes support
-1. implement constructTest for app/shared/ similar to this in controller/
-2. implement router with following format: router.GET("path", handler, middleware)
-3. update readme
+1. add kubernetes support
+2. implement constructTest for app/shared/ similar to this in controller/
+3. implement router with following format: router.GET("path", handler, middleware)
+4. use router's handlers to build a help page with endpoints
 
 ## Done :) // many tasks not written
 0. quest_achievement controller
@@ -167,4 +180,5 @@ go tool cover -html=coverage.out
 5. improve paging concept (pass afterID)
 6. extract framework models from app models
 7. replace paging concept with later/after as implemented in achievement controller
+8. update readme with available endpoints
 
