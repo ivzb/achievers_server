@@ -13,7 +13,7 @@ import (
 
 func evidencesAfterForm() *map[string]string {
 	return &map[string]string{
-		consts.AfterID: mockID,
+		consts.ID: mockID,
 	}
 }
 
@@ -34,8 +34,8 @@ var evidencesAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
-		form:               mapWithout(evidencesAfterForm(), consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(evidencesAfterForm(), consts.ID),
 		db: &mock.DB{
 			EvidenceMock: mock.Evidence{
 				ExistsMock: mock.EvidenceExists{Err: mockDbErr},
@@ -62,7 +62,7 @@ var evidencesAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               evidencesAfterForm(),
 		db: &mock.DB{
 			EvidenceMock: mock.Evidence{

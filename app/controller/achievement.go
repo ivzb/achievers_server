@@ -118,7 +118,7 @@ func AchievementsAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.AfterID, env.DB.Achievement())
+	id, respErr := getFormString(env, consts.ID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
@@ -148,14 +148,14 @@ func AchievementsByQuestIDLast(env *env.Env) *response.Message {
 		return respErr
 	}
 
-	afterID, err := env.DB.Achievement().LastIDByQuestID(qstID)
+	id, err := env.DB.Achievement().LastIDByQuestID(qstID)
 
 	if err != nil {
 		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 
-	achs, err := env.DB.Achievement().AfterByQuestID(qstID, afterID)
+	achs, err := env.DB.Achievement().AfterByQuestID(qstID, id)
 
 	if err != nil {
 		env.Log.Error(err)
@@ -179,13 +179,13 @@ func AchievementsByQuestIDAfter(env *env.Env) *response.Message {
 		return respErr
 	}
 
-	afterID, respErr := getFormString(env, consts.AfterID, env.DB.Achievement())
+	id, respErr := getFormString(env, consts.ID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
 	}
 
-	achs, err := env.DB.Achievement().AfterByQuestID(qstID, afterID)
+	achs, err := env.DB.Achievement().AfterByQuestID(qstID, id)
 
 	if err != nil {
 		env.Log.Error(err)

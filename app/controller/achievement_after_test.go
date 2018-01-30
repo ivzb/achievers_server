@@ -13,7 +13,7 @@ import (
 
 func achievementsAfterForm() *map[string]string {
 	return &map[string]string{
-		consts.AfterID: mockID,
+		consts.ID: mockID,
 	}
 }
 
@@ -34,8 +34,8 @@ var achievementsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
-		form:               mapWithout(achievementsAfterForm(), consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(achievementsAfterForm(), consts.ID),
 		db: &mock.DB{
 			AchievementMock: mock.Achievement{
 				ExistsMock: mock.AchievementExists{Err: mockDbErr},
@@ -62,7 +62,7 @@ var achievementsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               achievementsAfterForm(),
 		db: &mock.DB{
 			AchievementMock: mock.Achievement{

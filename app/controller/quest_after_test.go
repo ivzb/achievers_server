@@ -13,7 +13,7 @@ import (
 
 func questsAfterForm() *map[string]string {
 	return &map[string]string{
-		consts.AfterID: mockID,
+		consts.ID: mockID,
 	}
 }
 
@@ -34,8 +34,8 @@ var questsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
-		form:               mapWithout(questsAfterForm(), consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(questsAfterForm(), consts.ID),
 		db: &mock.DB{
 			QuestMock: mock.Quest{
 				ExistsMock: mock.QuestExists{Err: mockDbErr},
@@ -62,7 +62,7 @@ var questsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               questsAfterForm(),
 		db: &mock.DB{
 			QuestMock: mock.Quest{

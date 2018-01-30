@@ -13,7 +13,7 @@ import (
 
 func rewardsAfterForm() *map[string]string {
 	return &map[string]string{
-		consts.AfterID: mockID,
+		consts.ID: mockID,
 	}
 }
 
@@ -34,8 +34,8 @@ var rewardsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
-		form:               mapWithout(rewardsAfterForm(), consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(rewardsAfterForm(), consts.ID),
 		db: &mock.DB{
 			RewardMock: mock.Reward{
 				ExistsMock: mock.RewardExists{Err: mockDbErr},
@@ -62,7 +62,7 @@ var rewardsAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               rewardsAfterForm(),
 		db: &mock.DB{
 			RewardMock: mock.Reward{

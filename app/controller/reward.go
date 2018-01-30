@@ -41,7 +41,7 @@ func RewardsAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.AfterID, env.DB.Reward())
+	id, respErr := getFormString(env, consts.ID, env.DB.Reward())
 
 	if respErr != nil {
 		return respErr

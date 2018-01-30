@@ -14,7 +14,7 @@ import (
 func achievementsByQuestIDAfterForm() *map[string]string {
 	return &map[string]string{
 		consts.QuestID: mockID,
-		consts.AfterID: mockID,
+		consts.ID:      mockID,
 	}
 }
 
@@ -73,8 +73,8 @@ var achievementsByQuestIDAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AfterID),
-		form:               mapWithout(achievementsByQuestIDAfterForm(), consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.ID),
+		form:               mapWithout(achievementsByQuestIDAfterForm(), consts.ID),
 		db: &mock.DB{
 			QuestMock: mock.Quest{
 				ExistsMock: mock.QuestExists{Bool: true},
@@ -107,7 +107,7 @@ var achievementsByQuestIDAfterTests = []*test{
 		requestMethod:      consts.GET,
 		responseType:       Core,
 		responseStatusCode: http.StatusNotFound,
-		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.AfterID),
+		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.ID),
 		form:               achievementsByQuestIDAfterForm(),
 		db: &mock.DB{
 			QuestMock: mock.Quest{

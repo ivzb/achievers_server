@@ -42,7 +42,7 @@ func EvidencesAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.AfterID, env.DB.Evidence())
+	id, respErr := getFormString(env, consts.ID, env.DB.Evidence())
 
 	if respErr != nil {
 		return respErr

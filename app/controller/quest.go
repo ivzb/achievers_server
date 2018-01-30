@@ -41,7 +41,7 @@ func QuestsAfter(env *env.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.AfterID, env.DB.Quest())
+	id, respErr := getFormString(env, consts.ID, env.DB.Quest())
 
 	if respErr != nil {
 		return respErr
