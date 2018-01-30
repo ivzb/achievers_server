@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -13,10 +12,6 @@ import (
 
 	// Postgre DB driver
 	_ "github.com/lib/pq"
-)
-
-const (
-	limit = 9
 )
 
 var (
@@ -47,12 +42,15 @@ type Exister interface {
 }
 
 type sqlScanner interface {
-	Scan(dest ...interface{}) error
+	Scan(...interface{}) error
 }
+
+type scan func(sqlScanner) (interface{}, error)
 
 // DB struct holds the connection to DB
 type DB struct {
 	*sql.DB
+	pageLimit int
 }
 
 type Context struct {
@@ -73,16 +71,16 @@ func NewDB(d database.Info) (*DB, error) {
 		if err = db.Ping(); err != nil {
 			return nil, err
 		}
-		return &DB{db}, nil
+		return &DB{db, d.Postgre.PageLimit}, nil
 	default:
 		return nil, errors.New("No registered database in config")
 	}
 }
 
 // exists checks whether row in specified table exists by column and value
-func exists(model *Context, column string, value string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", model.table, column)
-	stmt, err := model.db.Prepare(query)
+func (ctx *Context) exists(column string, value string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", ctx.table, column)
+	stmt, err := ctx.db.Prepare(query)
 
 	if err != nil {
 		return false, err
@@ -99,9 +97,9 @@ func exists(model *Context, column string, value string) (bool, error) {
 }
 
 // existsMultiple checks whether row in specified table exists by []columns and []values
-func existsMultiple(db *DB, table string, columns []string, values []string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s LIMIT 1", table, whereClause(columns))
-	stmt, err := db.Prepare(query)
+func (ctx *Context) existsMultiple(columns []string, values []string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s LIMIT 1", ctx.table, whereClause(columns))
+	stmt, err := ctx.db.Prepare(query)
 
 	if err != nil {
 		return false, err
@@ -137,44 +135,20 @@ func whereClause(columns []string) string {
 	return strings.Join(placeholders, " AND ")
 }
 
-func concatPlaceholders(columns int) string {
-	placeholders := make([]string, 0, columns)
-
-	for i := 1; i <= columns+1; i++ {
-		placeholders = append(placeholders, "$"+strconv.Itoa(i))
-	}
-
-	return strings.Join(placeholders, ", ")
-}
-
-func single(ctx *Context, id string) *sql.Row {
+func (ctx *Context) single(id string, scan scan) (interface{}, error) {
 	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
 		" FROM "+ctx.table+
 		" WHERE id = $1 "+
 		" LIMIT 1", id)
 
-	return row
-}
-
-func after(ctx *Context, afterID string) (*sql.Rows, error) {
-	rows, err := ctx.db.Query("SELECT "+ctx.selectArgs+
-		" FROM "+ctx.table+
-		" WHERE created_at <= "+
-		"  (SELECT created_at"+
-		"   FROM "+ctx.table+
-		"   WHERE id = $1)"+
-		" ORDER BY created_at DESC"+
-		" LIMIT $2", afterID, limit)
-
-	return rows, err
+	return scan(row)
 }
 
 // create executes passed query and args
-func create(ctx *Context, args ...interface{}) (string, error) {
+func (ctx *Context) create(args ...interface{}) (string, error) {
 	columns := strings.Count(ctx.insertArgs, ",")
 	placeholders := concatPlaceholders(columns)
 	query := "INSERT INTO " + ctx.table + "(" + ctx.insertArgs + ") VALUES(" + placeholders + ") RETURNING id"
-	log.Println(query)
 
 	var id string
 	err := ctx.db.QueryRow(query, args...).Scan(&id)
@@ -186,7 +160,17 @@ func create(ctx *Context, args ...interface{}) (string, error) {
 	return id, nil
 }
 
-func lastID(ctx *Context) (string, error) {
+func concatPlaceholders(columns int) string {
+	placeholders := make([]string, 0, columns)
+
+	for i := 1; i <= columns+1; i++ {
+		placeholders = append(placeholders, "$"+strconv.Itoa(i))
+	}
+
+	return strings.Join(placeholders, ", ")
+}
+
+func (ctx *Context) lastID() (string, error) {
 	var id string
 
 	row := ctx.db.QueryRow("SELECT id" +
@@ -211,4 +195,35 @@ func lastID(ctx *Context) (string, error) {
 	}
 
 	return id, nil
+}
+
+func (ctx *Context) after(id string, scan scan) ([]interface{}, error) {
+	rows, err := ctx.db.Query("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE created_at <= "+
+		"  (SELECT created_at"+
+		"   FROM "+ctx.table+
+		"   WHERE id = $1)"+
+		" ORDER BY created_at DESC"+
+		" LIMIT $2", id, ctx.db.pageLimit)
+
+	defer rows.Close()
+
+	mdls := make([]interface{}, 0)
+
+	for rows.Next() {
+		mdl, err := scan(rows)
+
+		if err != nil {
+			return nil, err
+		}
+
+		mdls = append(mdls, mdl)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return mdls, nil
 }

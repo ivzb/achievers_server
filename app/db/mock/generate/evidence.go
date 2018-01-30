@@ -6,8 +6,8 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
-func Evidences(size int) []*model.Evidence {
-	evds := make([]*model.Evidence, size)
+func Evidences(size int) []interface{} {
+	evds := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
 		evds[i] = Evidence()
@@ -16,7 +16,7 @@ func Evidences(size int) []*model.Evidence {
 	return evds
 }
 
-func Evidence() *model.Evidence {
+func Evidence() interface{} {
 	evd := &model.Evidence{
 		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
 		"desc",

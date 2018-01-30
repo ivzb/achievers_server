@@ -6,8 +6,8 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
-func Achievements(size int) []*model.Achievement {
-	achs := make([]*model.Achievement, size)
+func Achievements(size int) []interface{} {
+	achs := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
 		achs[i] = Achievement()
@@ -16,7 +16,7 @@ func Achievements(size int) []*model.Achievement {
 	return achs
 }
 
-func Achievement() *model.Achievement {
+func Achievement() interface{} {
 	ach := &model.Achievement{
 		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
 		"title",

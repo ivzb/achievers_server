@@ -161,11 +161,12 @@ go tool cover -html=coverage.out
 ```
 
 ## TODO
-0. refactor app/db/ as it should recieve some abstraction
 1. add kubernetes support
 2. implement constructTest for app/shared/ similar to this in controller/
 3. implement router with following format: router.GET("path", handler, middleware)
 4. use router's handlers to build a help page with endpoints
+5. refactor afterID to id in controllers
+6. refactor db's context and scan function - extract needed info from model's properties
 
 ## Done :) // many tasks not written
 0. quest_achievement controller
@@ -181,4 +182,6 @@ go tool cover -html=coverage.out
 6. extract framework models from app models
 7. replace paging concept with later/after as implemented in achievement controller
 8. update readme with available endpoints
+9. refactor app/db/ as it should recieve some abstraction
+10. extract limit const from db.go to config and pass it when instantiate
 

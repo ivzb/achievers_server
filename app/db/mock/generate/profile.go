@@ -6,7 +6,7 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
-func Profile() *model.Profile {
+func Profile() interface{} {
 	prfl := &model.Profile{
 		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
 		"Ivan Zahariev",

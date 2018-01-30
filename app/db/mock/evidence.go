@@ -18,7 +18,7 @@ type EvidenceExists struct {
 }
 
 type EvidenceSingle struct {
-	Evd *model.Evidence
+	Evd interface{}
 	Err error
 }
 
@@ -28,7 +28,7 @@ type EvidencesLastID struct {
 }
 
 type EvidencesAfter struct {
-	Evds []*model.Evidence
+	Evds []interface{}
 	Err  error
 }
 
@@ -41,7 +41,7 @@ func (ctx *Evidence) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
+func (ctx *Evidence) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Evd, ctx.SingleMock.Err
 }
 
@@ -53,6 +53,6 @@ func (ctx *Evidence) LastID() (string, error) {
 	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
 }
 
-func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
+func (ctx *Evidence) After(afterID string) ([]interface{}, error) {
 	return ctx.AfterMock.Evds, ctx.AfterMock.Err
 }

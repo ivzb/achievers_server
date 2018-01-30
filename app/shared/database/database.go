@@ -28,6 +28,7 @@ type PostgreInfo struct {
 	Hostname  string
 	Port      int
 	Parameter string
+	PageLimit int
 }
 
 // DSN returns the Data Source Name

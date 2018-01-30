@@ -18,7 +18,7 @@ type QuestExists struct {
 }
 
 type QuestSingle struct {
-	Qst *model.Quest
+	Qst interface{}
 	Err error
 }
 
@@ -33,7 +33,7 @@ type QuestsLastID struct {
 }
 
 type QuestsAfter struct {
-	Qsts []*model.Quest
+	Qsts []interface{}
 	Err  error
 }
 
@@ -41,7 +41,7 @@ func (ctx *Quest) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *Quest) Single(id string) (*model.Quest, error) {
+func (ctx *Quest) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Qst, ctx.SingleMock.Err
 }
 
@@ -53,6 +53,6 @@ func (ctx *Quest) LastID() (string, error) {
 	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
 }
 
-func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
+func (ctx *Quest) After(afterID string) ([]interface{}, error) {
 	return ctx.AfterMock.Qsts, ctx.AfterMock.Err
 }

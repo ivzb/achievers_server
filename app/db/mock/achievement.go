@@ -20,7 +20,7 @@ type AchievementExists struct {
 }
 
 type AchievementSingle struct {
-	Ach *model.Achievement
+	Ach interface{}
 	Err error
 }
 
@@ -35,12 +35,12 @@ type AchievementsLastIDByQuestID struct {
 }
 
 type AchievementsAfter struct {
-	Achs []*model.Achievement
+	Achs []interface{}
 	Err  error
 }
 
 type AchievementsAfterByQuestID struct {
-	Achs []*model.Achievement
+	Achs []interface{}
 	Err  error
 }
 
@@ -53,7 +53,7 @@ func (ctx *Achievement) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
+func (ctx *Achievement) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Ach, ctx.SingleMock.Err
 }
 
@@ -69,10 +69,10 @@ func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 	return ctx.LastIDByQuestIDMock.ID, ctx.LastIDByQuestIDMock.Err
 }
 
-func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
+func (ctx *Achievement) After(afterID string) ([]interface{}, error) {
 	return ctx.AfterMock.Achs, ctx.AfterMock.Err
 }
 
-func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]*model.Achievement, error) {
+func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]interface{}, error) {
 	return ctx.AfterByQuestIDMock.Achs, ctx.AfterByQuestIDMock.Err
 }

@@ -20,5 +20,5 @@ func (db *DB) Involvement() Involvementer {
 }
 
 func (ctx *Involvement) Exists(id uint8) (bool, error) {
-	return exists(ctx.Context, "id", strconv.FormatInt(int64(id), 10))
+	return ctx.exists("id", strconv.FormatInt(int64(id), 10))
 }

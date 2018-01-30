@@ -6,8 +6,8 @@ import (
 
 type Profiler interface {
 	Exists(id string) (bool, error)
-	Single(id string) (*model.Profile, error)
-	SingleByUserID(userID string) (*model.Profile, error)
+	Single(id string) (interface{}, error)
+	SingleByUserID(userID string) (interface{}, error)
 	Create(profile *model.Profile, userID string) (string, error)
 }
 
@@ -26,7 +26,7 @@ func (db *DB) Profile() Profiler {
 	}
 }
 
-func (*Profile) scan(row sqlScanner) (*model.Profile, error) {
+func (*Profile) scan(row sqlScanner) (interface{}, error) {
 	prfl := new(model.Profile)
 
 	err := row.Scan(
@@ -43,16 +43,14 @@ func (*Profile) scan(row sqlScanner) (*model.Profile, error) {
 }
 
 func (ctx *Profile) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
-func (ctx *Profile) Single(id string) (*model.Profile, error) {
-	row := single(ctx.Context, id)
-
-	return ctx.scan(row)
+func (ctx *Profile) Single(id string) (interface{}, error) {
+	return ctx.single(id, ctx.scan)
 }
 
-func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
+func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
 		"FROM "+ctx.table+
 		"WHERE user_id = $1 "+
@@ -62,7 +60,7 @@ func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		profile.Name,
 		userID)
 }

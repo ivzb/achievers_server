@@ -6,8 +6,8 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
-func Rewards(size int) []*model.Reward {
-	rwds := make([]*model.Reward, size)
+func Rewards(size int) []interface{} {
+	rwds := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
 		rwds[i] = Reward()
@@ -16,7 +16,7 @@ func Rewards(size int) []*model.Reward {
 	return rwds
 }
 
-func Reward() *model.Reward {
+func Reward() interface{} {
 	rwd := &model.Reward{
 		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
 		"name",

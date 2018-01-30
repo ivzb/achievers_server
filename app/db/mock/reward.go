@@ -18,7 +18,7 @@ type RewardExists struct {
 }
 
 type RewardSingle struct {
-	Rwd *model.Reward
+	Rwd interface{}
 	Err error
 }
 
@@ -28,7 +28,7 @@ type RewardsLastID struct {
 }
 
 type RewardsAfter struct {
-	Rwds []*model.Reward
+	Rwds []interface{}
 	Err  error
 }
 
@@ -41,7 +41,7 @@ func (ctx *Reward) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *Reward) Single(id string) (*model.Reward, error) {
+func (ctx *Reward) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Rwd, ctx.SingleMock.Err
 }
 
@@ -53,6 +53,6 @@ func (ctx *Reward) LastID() (string, error) {
 	return ctx.LastIDMock.ID, ctx.LastIDMock.Err
 }
 
-func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {
+func (ctx *Reward) After(afterID string) ([]interface{}, error) {
 	return ctx.AfterMock.Rwds, ctx.AfterMock.Err
 }

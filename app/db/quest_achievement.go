@@ -22,11 +22,11 @@ func (db *DB) QuestAchievement() QuestAchievementer {
 }
 
 func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool, error) {
-	return existsMultiple(ctx.db, "quest_achievement", []string{"quest_id", "achievement_id"}, []string{questID, achievementID})
+	return ctx.existsMultiple([]string{"quest_id", "achievement_id"}, []string{questID, achievementID})
 }
 
 func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		qstAch.QuestID,
 		qstAch.AchievementID,
 		qstAch.UserID)

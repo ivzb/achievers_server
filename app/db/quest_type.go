@@ -20,5 +20,5 @@ func (db *DB) QuestType() QuestTyper {
 }
 
 func (ctx *QuestType) Exists(id uint8) (bool, error) {
-	return exists(ctx.Context, "id", strconv.FormatInt(int64(id), 10))
+	return ctx.exists("id", strconv.FormatInt(int64(id), 10))
 }

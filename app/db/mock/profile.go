@@ -17,12 +17,12 @@ type ProfileExists struct {
 }
 
 type ProfileSingle struct {
-	Prfl *model.Profile
+	Prfl interface{}
 	Err  error
 }
 
 type ProfileSingleByUserID struct {
-	Prfl *model.Profile
+	Prfl interface{}
 	Err  error
 }
 
@@ -35,11 +35,11 @@ func (ctx *Profile) Exists(id string) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *Profile) Single(id string) (*model.Profile, error) {
+func (ctx *Profile) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Prfl, ctx.SingleMock.Err
 }
 
-func (ctx *Profile) SingleByUserID(userID string) (*model.Profile, error) {
+func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	return ctx.SingleByUserIDMock.Prfl, ctx.SingleByUserIDMock.Err
 }
 

@@ -6,8 +6,8 @@ import (
 	"github.com/ivzb/achievers_server/app/model"
 )
 
-func Quests(size int) []*model.Quest {
-	qsts := make([]*model.Quest, size)
+func Quests(size int) []interface{} {
+	qsts := make([]interface{}, size)
 
 	for i := 0; i < size; i++ {
 		qsts[i] = Quest()
@@ -16,7 +16,7 @@ func Quests(size int) []*model.Quest {
 	return qsts
 }
 
-func Quest() *model.Quest {
+func Quest() interface{} {
 	qst := &model.Quest{
 		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
 		"name",

@@ -26,11 +26,11 @@ func (db *DB) User() Userer {
 }
 
 func (ctx *User) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
 func (ctx *User) EmailExists(email string) (bool, error) {
-	return exists(ctx.Context, "email", email)
+	return ctx.exists("email", email)
 }
 
 func (ctx *User) Auth(auth *model.Auth) (string, error) {

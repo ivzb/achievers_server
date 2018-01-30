@@ -6,14 +6,14 @@ import (
 
 type Achievementer interface {
 	Exists(id string) (bool, error)
-	Single(id string) (*model.Achievement, error)
+	Single(id string) (interface{}, error)
 	Create(achievement *model.Achievement) (string, error)
 
 	LastID() (string, error)
 	LastIDByQuestID(questID string) (string, error)
 
-	After(afterID string) ([]*model.Achievement, error)
-	AfterByQuestID(questID string, afterID string) ([]*model.Achievement, error)
+	After(id string) ([]interface{}, error)
+	AfterByQuestID(questID string, afterID string) ([]interface{}, error)
 }
 
 type Achievement struct {
@@ -31,7 +31,7 @@ func (db *DB) Achievement() Achievementer {
 	}
 }
 
-func (*Achievement) scan(row sqlScanner) (*model.Achievement, error) {
+func (*Achievement) scan(row sqlScanner) (interface{}, error) {
 	ach := new(model.Achievement)
 
 	err := row.Scan(
@@ -53,17 +53,15 @@ func (*Achievement) scan(row sqlScanner) (*model.Achievement, error) {
 }
 
 func (ctx *Achievement) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
-func (ctx *Achievement) Single(id string) (*model.Achievement, error) {
-	row := single(ctx.Context, id)
-
-	return ctx.scan(row)
+func (ctx *Achievement) Single(id string) (interface{}, error) {
+	return ctx.single(id, ctx.scan)
 }
 
 func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		achievement.Title,
 		achievement.Description,
 		achievement.PictureURL,
@@ -72,7 +70,7 @@ func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
 }
 
 func (ctx *Achievement) LastID() (string, error) {
-	return lastID(ctx.Context)
+	return ctx.lastID()
 }
 
 func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
@@ -97,35 +95,11 @@ func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 	return id, nil
 }
 
-func (ctx *Achievement) After(afterID string) ([]*model.Achievement, error) {
-	rows, err := after(ctx.Context, afterID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	achs := make([]*model.Achievement, 0)
-
-	for rows.Next() {
-		ach, err := ctx.scan(rows)
-
-		if err != nil {
-			return nil, err
-		}
-
-		achs = append(achs, ach)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return achs, nil
+func (ctx *Achievement) After(id string) ([]interface{}, error) {
+	return ctx.after(id, ctx.scan)
 }
 
-func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]*model.Achievement, error) {
+func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]interface{}, error) {
 	rows, err := ctx.db.Query("SELECT a.id, a.title, a.description, a.picture_url, a.involvement_id, a.user_id, a.created_at, a.updated_at, a.deleted_at "+
 		"FROM achievement as a "+
 		"INNER JOIN quest_achievement as qa "+
@@ -135,7 +109,7 @@ func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]*model
 		"   FROM achievement "+
 		"   WHERE id = $2) "+
 		"ORDER BY a.created_at DESC "+
-		"LIMIT $3", questID, afterID, limit)
+		"LIMIT $3", questID, afterID, ctx.db.pageLimit)
 
 	if err != nil {
 		return nil, err
@@ -143,7 +117,7 @@ func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]*model
 
 	defer rows.Close()
 
-	achs := make([]*model.Achievement, 0)
+	achs := make([]interface{}, 0)
 
 	for rows.Next() {
 		ach := new(model.Achievement)

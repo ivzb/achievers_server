@@ -4,11 +4,11 @@ import "github.com/ivzb/achievers_server/app/model"
 
 type Quester interface {
 	Exists(id string) (bool, error)
-	Single(id string) (*model.Quest, error)
+	Single(id string) (interface{}, error)
 	Create(quest *model.Quest) (string, error)
 
 	LastID() (string, error)
-	After(afterID string) ([]*model.Quest, error)
+	After(id string) ([]interface{}, error)
 }
 
 type Quest struct {
@@ -26,7 +26,7 @@ func (db *DB) Quest() Quester {
 	}
 }
 
-func (*Quest) scan(row sqlScanner) (*model.Quest, error) {
+func (*Quest) scan(row sqlScanner) (interface{}, error) {
 	rwd := new(model.Quest)
 
 	err := row.Scan(
@@ -47,17 +47,15 @@ func (*Quest) scan(row sqlScanner) (*model.Quest, error) {
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
-func (ctx *Quest) Single(id string) (*model.Quest, error) {
-	row := single(ctx.Context, id)
-
-	return ctx.scan(row)
+func (ctx *Quest) Single(id string) (interface{}, error) {
+	return ctx.single(id, ctx.scan)
 }
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		quest.Title,
 		quest.PictureURL,
 		quest.InvolvementID,
@@ -66,33 +64,9 @@ func (ctx *Quest) Create(quest *model.Quest) (string, error) {
 }
 
 func (ctx *Quest) LastID() (string, error) {
-	return lastID(ctx.Context)
+	return ctx.lastID()
 }
 
-func (ctx *Quest) After(afterID string) ([]*model.Quest, error) {
-	rows, err := after(ctx.Context, afterID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	qsts := make([]*model.Quest, 0)
-
-	for rows.Next() {
-		qst, err := ctx.scan(rows)
-
-		if err != nil {
-			return nil, err
-		}
-
-		qsts = append(qsts, qst)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return qsts, nil
+func (ctx *Quest) After(id string) ([]interface{}, error) {
+	return ctx.after(id, ctx.scan)
 }

@@ -6,11 +6,11 @@ import (
 
 type Evidencer interface {
 	Exists(id string) (bool, error)
-	Single(id string) (*model.Evidence, error)
+	Single(id string) (interface{}, error)
 	Create(evidence *model.Evidence) (string, error)
 
 	LastID() (string, error)
-	After(afterID string) ([]*model.Evidence, error)
+	After(id string) ([]interface{}, error)
 }
 
 type Evidence struct {
@@ -27,7 +27,7 @@ func (db *DB) Evidence() Evidencer {
 	}
 }
 
-func (*Evidence) scan(row sqlScanner) (*model.Evidence, error) {
+func (*Evidence) scan(row sqlScanner) (interface{}, error) {
 	evd := new(model.Evidence)
 
 	err := row.Scan(
@@ -50,18 +50,16 @@ func (*Evidence) scan(row sqlScanner) (*model.Evidence, error) {
 }
 
 func (ctx *Evidence) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
-func (ctx *Evidence) Single(id string) (*model.Evidence, error) {
-	row := single(ctx.Context, id)
-
-	return ctx.scan(row)
+func (ctx *Evidence) Single(id string) (interface{}, error) {
+	return ctx.single(id, ctx.scan)
 }
 
 // Create saves evidence object to db
 func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		evidence.Title,
 		evidence.PictureURL,
 		evidence.URL,
@@ -71,33 +69,9 @@ func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
 }
 
 func (ctx *Evidence) LastID() (string, error) {
-	return lastID(ctx.Context)
+	return ctx.lastID()
 }
 
-func (ctx *Evidence) After(afterID string) ([]*model.Evidence, error) {
-	rows, err := after(ctx.Context, afterID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	evds := make([]*model.Evidence, 0)
-
-	for rows.Next() {
-		evd, err := ctx.scan(rows)
-
-		if err != nil {
-			return nil, err
-		}
-
-		evds = append(evds, evd)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return evds, nil
+func (ctx *Evidence) After(id string) ([]interface{}, error) {
+	return ctx.after(id, ctx.scan)
 }

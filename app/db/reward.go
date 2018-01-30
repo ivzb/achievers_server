@@ -6,11 +6,11 @@ import (
 
 type Rewarder interface {
 	Exists(id string) (bool, error)
-	Single(id string) (*model.Reward, error)
+	Single(id string) (interface{}, error)
 	Create(reward *model.Reward) (string, error)
 
 	LastID() (string, error)
-	After(afterID string) ([]*model.Reward, error)
+	After(id string) ([]interface{}, error)
 }
 
 type Reward struct {
@@ -28,7 +28,7 @@ func (db *DB) Reward() Rewarder {
 	}
 }
 
-func (*Reward) scan(row sqlScanner) (*model.Reward, error) {
+func (*Reward) scan(row sqlScanner) (interface{}, error) {
 	rwd := new(model.Reward)
 
 	err := row.Scan(
@@ -50,17 +50,15 @@ func (*Reward) scan(row sqlScanner) (*model.Reward, error) {
 }
 
 func (ctx *Reward) Exists(id string) (bool, error) {
-	return exists(ctx.Context, "id", id)
+	return ctx.exists("id", id)
 }
 
-func (ctx *Reward) Single(id string) (*model.Reward, error) {
-	row := single(ctx.Context, id)
-
-	return ctx.scan(row)
+func (ctx *Reward) Single(id string) (interface{}, error) {
+	return ctx.single(id, ctx.scan)
 }
 
 func (ctx *Reward) Create(reward *model.Reward) (string, error) {
-	return create(ctx.Context,
+	return ctx.create(
 		reward.Title,
 		reward.Description,
 		reward.PictureURL,
@@ -69,33 +67,9 @@ func (ctx *Reward) Create(reward *model.Reward) (string, error) {
 }
 
 func (ctx *Reward) LastID() (string, error) {
-	return lastID(ctx.Context)
+	return ctx.lastID()
 }
 
-func (ctx *Reward) After(afterID string) ([]*model.Reward, error) {
-	rows, err := after(ctx.Context, afterID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	rwds := make([]*model.Reward, 0)
-
-	for rows.Next() {
-		rwd, err := ctx.scan(rows)
-
-		if err != nil {
-			return nil, err
-		}
-
-		rwds = append(rwds, rwd)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return rwds, nil
+func (ctx *Reward) After(id string) ([]interface{}, error) {
+	return ctx.after(id, ctx.scan)
 }
