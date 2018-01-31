@@ -165,7 +165,7 @@ go tool cover -html=coverage.out
 2. implement constructTest for app/shared/ similar to this in controller/
 3. implement router with following format: router.GET("path", handler, middleware)
 4. use router's handlers to build a help page with endpoints
-5. refactor db's context and scan function - extract needed info from model's properties
+5. get rid of db's scan function, use struct tags instead
 
 ## Done :) // many tasks not written
 0. quest_achievement controller
@@ -184,4 +184,4 @@ go tool cover -html=coverage.out
 9. refactor app/db/ as it should recieve some abstraction
 10. extract limit const from db.go to config and pass it when instantiate
 11. refactor afterID to id in controllers
-
+12. refactor db's context - extract needed info from model's properties

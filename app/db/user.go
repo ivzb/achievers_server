@@ -18,10 +18,7 @@ type User struct {
 
 func (db *DB) User() Userer {
 	return &User{
-		&Context{
-			db:    db,
-			table: "user",
-		},
+		newContext(db, "user", nil),
 	}
 }
 

@@ -17,12 +17,7 @@ type Quest struct {
 
 func (db *DB) Quest() Quester {
 	return &Quest{
-		&Context{
-			db:         db,
-			table:      "quest",
-			selectArgs: "id, title, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
-			insertArgs: "title, picture_url, involvement_id, quest_type_id, user_id",
-		},
+		newContext(db, "quest", &model.Quest{}),
 	}
 }
 

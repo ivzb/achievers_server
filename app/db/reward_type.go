@@ -12,10 +12,7 @@ type RewardType struct {
 
 func (db *DB) RewardType() RewardTyper {
 	return &RewardType{
-		&Context{
-			db:    db,
-			table: "reward_type",
-		},
+		newContext(db, "reward_type", nil),
 	}
 }
 

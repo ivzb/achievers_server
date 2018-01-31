@@ -17,12 +17,7 @@ type Profile struct {
 
 func (db *DB) Profile() Profiler {
 	return &Profile{
-		&Context{
-			db:         db,
-			table:      "profile",
-			selectArgs: "id, name, created_at, updated_at, deleted_at",
-			insertArgs: "name, user_id",
-		},
+		newContext(db, "profile", &model.Profile{}),
 	}
 }
 

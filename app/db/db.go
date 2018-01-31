@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -77,6 +78,15 @@ func NewDB(d database.Info) (*DB, error) {
 	}
 }
 
+func newContext(db *DB, table string, model interface{}) *Context {
+	return &Context{
+		db:         db,
+		table:      table,
+		selectArgs: buildQuery("select", model),
+		insertArgs: buildQuery("insert", model),
+	}
+}
+
 // exists checks whether row in specified table exists by column and value
 func (ctx *Context) exists(column string, value string) (bool, error) {
 	query := fmt.Sprintf("SELECT COUNT(id) FROM \"%s\" WHERE %s = $1  LIMIT 1", ctx.table, column)
@@ -113,6 +123,31 @@ func (ctx *Context) existsMultiple(columns []string, values []string) (bool, err
 	}
 
 	return count != 0, nil
+}
+
+func buildQuery(tag string, model interface{}) string {
+	if model == nil {
+		return ""
+	}
+
+	// get the struct type
+	modelValue := reflect.ValueOf(model).Elem()
+	modelType := modelValue.Type()
+
+	query := make([]string, 0)
+
+	// enumerate model fields
+	for i := 0; i < modelType.NumField(); i++ {
+		field := modelType.Field(i)
+
+		key := field.Tag.Get(tag)
+
+		if len(key) > 0 {
+			query = append(query, key)
+		}
+	}
+
+	return strings.Join(query, ", ")
 }
 
 func scanArgs(values []string) []interface{} {

@@ -12,10 +12,7 @@ type Involvement struct {
 
 func (db *DB) Involvement() Involvementer {
 	return &Involvement{
-		&Context{
-			db:    db,
-			table: "involvement",
-		},
+		newContext(db, "involvement", nil),
 	}
 }
 

@@ -19,11 +19,7 @@ type Evidence struct {
 
 func (db *DB) Evidence() Evidencer {
 	return &Evidence{
-		&Context{
-			db:         db,
-			table:      "evidence",
-			selectArgs: "id, title, picture_url, url, multimedia_type_id, achievement_id, user_id, created_at, updated_at, deleted_at",
-		},
+		newContext(db, "evidence", &model.Evidence{}),
 	}
 }
 

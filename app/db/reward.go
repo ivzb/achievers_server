@@ -19,12 +19,7 @@ type Reward struct {
 
 func (db *DB) Reward() Rewarder {
 	return &Reward{
-		&Context{
-			db:         db,
-			table:      "reward",
-			selectArgs: "id, title, description, picture_url, reward_type_id, user_id, created_at, updated_at, deleted_at",
-			insertArgs: "title, description, picture_url, reward_type_id, user_id",
-		},
+		newContext(db, "reward", &model.Reward{}),
 	}
 }
 

@@ -22,12 +22,7 @@ type Achievement struct {
 
 func (db *DB) Achievement() Achievementer {
 	return &Achievement{
-		&Context{
-			db:         db,
-			table:      "achievement",
-			selectArgs: "id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at",
-			insertArgs: "title, description, picture_url, involvement_id, user_id",
-		},
+		newContext(db, "achievement", &model.Achievement{}),
 	}
 }
 

@@ -12,10 +12,7 @@ type QuestType struct {
 
 func (db *DB) QuestType() QuestTyper {
 	return &QuestType{
-		&Context{
-			db:    db,
-			table: "quest_type",
-		},
+		newContext(db, "quest_type", nil),
 	}
 }
 

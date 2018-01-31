@@ -11,11 +11,8 @@ type MultimediaType struct {
 }
 
 func (db *DB) MultimediaType() MultimediaTyper {
-	return &Involvement{
-		&Context{
-			db:    db,
-			table: "multimedia_type",
-		},
+	return &MultimediaType{
+		newContext(db, "multimedia_type", nil),
 	}
 }
 
