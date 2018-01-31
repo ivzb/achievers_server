@@ -1,8 +1,6 @@
 package model
 
-import (
-	"time"
-)
+import "time"
 
 type Reward struct {
 	ID string `json:"id" select:"id"`

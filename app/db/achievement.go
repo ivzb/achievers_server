@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type Achievementer interface {
@@ -22,7 +23,7 @@ type Achievement struct {
 
 func (db *DB) Achievement() Achievementer {
 	return &Achievement{
-		newContext(db, "achievement", &model.Achievement{}),
+		newContext(db, consts.Achievement, new(model.Achievement)),
 	}
 }
 
@@ -40,15 +41,11 @@ func (*Achievement) scan(row sqlScanner) (interface{}, error) {
 		&ach.UpdatedAt,
 		&ach.DeletedAt)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return ach, nil
+	return ach, err
 }
 
 func (ctx *Achievement) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Achievement) Single(id string) (interface{}, error) {

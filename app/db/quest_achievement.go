@@ -1,6 +1,9 @@
 package db
 
-import "github.com/ivzb/achievers_server/app/model"
+import (
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 type QuestAchievementer interface {
 	Exists(questID string, achievementID string) (bool, error)
@@ -13,16 +16,15 @@ type QuestAchievement struct {
 
 func (db *DB) QuestAchievement() QuestAchievementer {
 	return &QuestAchievement{
-		&Context{
-			db:         db,
-			table:      "quest_achievement",
-			insertArgs: "quest_id, achievement_id, user_id",
-		},
+		newContext(db, consts.QuestAchievement, new(model.QuestAchievement)),
 	}
 }
 
 func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool, error) {
-	return ctx.existsMultiple([]string{"quest_id", "achievement_id"}, []string{questID, achievementID})
+	keys := []string{consts.QuestID, consts.AchievementID}
+	values := []string{questID, achievementID}
+
+	return ctx.existsMultiple(keys, values)
 }
 
 func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {

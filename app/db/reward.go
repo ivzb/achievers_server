@@ -1,7 +1,11 @@
 package db
 
 import (
+	"log"
+	"reflect"
+
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type Rewarder interface {
@@ -19,33 +23,39 @@ type Reward struct {
 
 func (db *DB) Reward() Rewarder {
 	return &Reward{
-		newContext(db, "reward", &model.Reward{}),
+		newContext(db, consts.Reward, new(model.Reward)),
 	}
 }
 
 func (*Reward) scan(row sqlScanner) (interface{}, error) {
 	rwd := new(model.Reward)
 
-	err := row.Scan(
-		&rwd.ID,
-		&rwd.Title,
-		&rwd.Description,
-		&rwd.PictureURL,
-		&rwd.RewardTypeID,
-		&rwd.UserID,
-		&rwd.CreatedAt,
-		&rwd.UpdatedAt,
-		&rwd.DeletedAt)
+	// get the struct type
+	modelValue := reflect.ValueOf(rwd).Elem()
+	modelType := modelValue.Type()
+	tag := "select"
 
-	if err != nil {
-		return nil, err
+	query := make([]interface{}, 0)
+
+	// enumerate model fields
+	for i := 0; i < modelType.NumField(); i++ {
+		field := modelType.Field(i)
+
+		key := field.Tag.Get(tag)
+
+		if len(key) > 0 {
+			log.Println(field)
+			query = append(query, modelValue.Field(i).Addr().Interface())
+		}
 	}
 
-	return rwd, nil
+	err := row.Scan(query...)
+
+	return rwd, err
 }
 
 func (ctx *Reward) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Reward) Single(id string) (interface{}, error) {

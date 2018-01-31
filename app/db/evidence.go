@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type Evidencer interface {
@@ -19,7 +20,7 @@ type Evidence struct {
 
 func (db *DB) Evidence() Evidencer {
 	return &Evidence{
-		newContext(db, "evidence", &model.Evidence{}),
+		newContext(db, consts.Evidence, new(model.Evidence)),
 	}
 }
 
@@ -38,15 +39,11 @@ func (*Evidence) scan(row sqlScanner) (interface{}, error) {
 		&evd.UpdatedAt,
 		&evd.DeletedAt)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return evd, nil
+	return evd, err
 }
 
 func (ctx *Evidence) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Evidence) Single(id string) (interface{}, error) {

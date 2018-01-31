@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,16 +19,16 @@ type User struct {
 
 func (db *DB) User() Userer {
 	return &User{
-		newContext(db, "user", nil),
+		newContext(db, consts.User, nil),
 	}
 }
 
 func (ctx *User) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *User) EmailExists(email string) (bool, error) {
-	return ctx.exists("email", email)
+	return ctx.exists(consts.Email, email)
 }
 
 func (ctx *User) Auth(auth *model.Auth) (string, error) {

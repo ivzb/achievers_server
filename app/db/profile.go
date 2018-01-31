@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type Profiler interface {
@@ -17,7 +18,7 @@ type Profile struct {
 
 func (db *DB) Profile() Profiler {
 	return &Profile{
-		newContext(db, "profile", &model.Profile{}),
+		newContext(db, consts.Profile, new(model.Profile)),
 	}
 }
 
@@ -25,20 +26,17 @@ func (*Profile) scan(row sqlScanner) (interface{}, error) {
 	prfl := new(model.Profile)
 
 	err := row.Scan(
+		&prfl.ID,
 		&prfl.Name,
 		&prfl.CreatedAt,
 		&prfl.UpdatedAt,
 		&prfl.DeletedAt)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return prfl, nil
+	return prfl, err
 }
 
 func (ctx *Profile) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Profile) Single(id string) (interface{}, error) {
@@ -47,15 +45,13 @@ func (ctx *Profile) Single(id string) (interface{}, error) {
 
 func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
-		"FROM "+ctx.table+
-		"WHERE user_id = $1 "+
-		"LIMIT 1", userID)
+		" FROM "+ctx.table+
+		" WHERE user_id = $1 "+
+		" LIMIT 1", userID)
 
 	return ctx.scan(row)
 }
 
 func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
-	return ctx.create(
-		profile.Name,
-		userID)
+	return ctx.create(profile.Name, userID)
 }

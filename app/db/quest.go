@@ -1,6 +1,9 @@
 package db
 
-import "github.com/ivzb/achievers_server/app/model"
+import (
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 type Quester interface {
 	Exists(id string) (bool, error)
@@ -17,7 +20,7 @@ type Quest struct {
 
 func (db *DB) Quest() Quester {
 	return &Quest{
-		newContext(db, "quest", &model.Quest{}),
+		newContext(db, consts.Quest, new(model.Quest)),
 	}
 }
 
@@ -34,15 +37,11 @@ func (*Quest) scan(row sqlScanner) (interface{}, error) {
 		&rwd.UpdatedAt,
 		&rwd.DeletedAt)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return rwd, nil
+	return rwd, err
 }
 
 func (ctx *Quest) Exists(id string) (bool, error) {
-	return ctx.exists("id", id)
+	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Quest) Single(id string) (interface{}, error) {

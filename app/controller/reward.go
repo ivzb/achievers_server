@@ -74,6 +74,7 @@ func RewardSingle(env *env.Env) *response.Message {
 	rwd, err := env.DB.Reward().Single(id)
 
 	if err != nil {
+		env.Log.Error(err)
 		return response.InternalServerError()
 	}
 

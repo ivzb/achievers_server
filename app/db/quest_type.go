@@ -1,6 +1,10 @@
 package db
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 type QuestTyper interface {
 	Exists(id uint8) (bool, error)
@@ -12,10 +16,10 @@ type QuestType struct {
 
 func (db *DB) QuestType() QuestTyper {
 	return &QuestType{
-		newContext(db, "quest_type", nil),
+		newContext(db, consts.QuestType, nil),
 	}
 }
 
 func (ctx *QuestType) Exists(id uint8) (bool, error) {
-	return ctx.exists("id", strconv.FormatInt(int64(id), 10))
+	return ctx.exists(consts.ID, strconv.FormatInt(int64(id), 10))
 }

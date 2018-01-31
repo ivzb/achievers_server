@@ -1,6 +1,10 @@
 package db
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 type Involvementer interface {
 	Exists(id uint8) (bool, error)
@@ -12,10 +16,10 @@ type Involvement struct {
 
 func (db *DB) Involvement() Involvementer {
 	return &Involvement{
-		newContext(db, "involvement", nil),
+		newContext(db, consts.Involvement, nil),
 	}
 }
 
 func (ctx *Involvement) Exists(id uint8) (bool, error) {
-	return ctx.exists("id", strconv.FormatInt(int64(id), 10))
+	return ctx.exists(consts.ID, strconv.FormatInt(int64(id), 10))
 }

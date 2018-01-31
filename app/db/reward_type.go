@@ -1,6 +1,10 @@
 package db
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 type RewardTyper interface {
 	Exists(id uint8) (bool, error)
@@ -12,7 +16,7 @@ type RewardType struct {
 
 func (db *DB) RewardType() RewardTyper {
 	return &RewardType{
-		newContext(db, "reward_type", nil),
+		newContext(db, consts.RewardType, nil),
 	}
 }
 

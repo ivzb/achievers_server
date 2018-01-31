@@ -57,6 +57,7 @@ type DB struct {
 type Context struct {
 	db         *DB
 	table      string
+	model      interface{}
 	selectArgs string
 	insertArgs string
 }
@@ -82,9 +83,33 @@ func newContext(db *DB, table string, model interface{}) *Context {
 	return &Context{
 		db:         db,
 		table:      table,
+		model:      model,
 		selectArgs: buildQuery("select", model),
 		insertArgs: buildQuery("insert", model),
 	}
+}
+
+func scan_(row sqlScanner, tag string, model interface{}) (interface{}, error) {
+	// get the struct type
+	modelValue := reflect.ValueOf(model).Elem()
+	modelType := modelValue.Type()
+	scanFields := make([]interface{}, 0)
+
+	// enumerate struct fields
+	for i := 0; i < modelType.NumField(); i++ {
+		field := modelType.Field(i)
+		key := field.Tag.Get(tag)
+
+		if len(key) > 0 {
+			// add field for scan since it has tag we are looking for
+			scanField := modelValue.Field(i).Addr().Interface()
+			scanFields = append(scanFields, scanField)
+		}
+	}
+
+	err := row.Scan(scanFields...)
+
+	return model, err
 }
 
 // exists checks whether row in specified table exists by column and value
@@ -176,7 +201,8 @@ func (ctx *Context) single(id string, scan scan) (interface{}, error) {
 		" WHERE id = $1 "+
 		" LIMIT 1", id)
 
-	return scan(row)
+	return scan_(row, "select", ctx.model)
+	//return scan(row)
 }
 
 // create executes passed query and args
@@ -247,7 +273,7 @@ func (ctx *Context) after(id string, scan scan) ([]interface{}, error) {
 	mdls := make([]interface{}, 0)
 
 	for rows.Next() {
-		mdl, err := scan(rows)
+		mdl, err := scan_(rows, "select", ctx.model)
 
 		if err != nil {
 			return nil, err
