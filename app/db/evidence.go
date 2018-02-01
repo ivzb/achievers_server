@@ -24,41 +24,16 @@ func (db *DB) Evidence() Evidencer {
 	}
 }
 
-func (*Evidence) scan(row sqlScanner) (interface{}, error) {
-	evd := new(model.Evidence)
-
-	err := row.Scan(
-		&evd.ID,
-		&evd.Title,
-		&evd.PictureURL,
-		&evd.URL,
-		&evd.MultimediaTypeID,
-		&evd.AchievementID,
-		&evd.UserID,
-		&evd.CreatedAt,
-		&evd.UpdatedAt,
-		&evd.DeletedAt)
-
-	return evd, err
-}
-
 func (ctx *Evidence) Exists(id string) (bool, error) {
 	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Evidence) Single(id string) (interface{}, error) {
-	return ctx.single(id, ctx.scan)
+	return ctx.single(id)
 }
 
-// Create saves evidence object to db
 func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
-	return ctx.create(
-		evidence.Title,
-		evidence.PictureURL,
-		evidence.URL,
-		evidence.MultimediaTypeID,
-		evidence.AchievementID,
-		evidence.UserID)
+	return ctx.create(evidence)
 }
 
 func (ctx *Evidence) LastID() (string, error) {
@@ -66,5 +41,5 @@ func (ctx *Evidence) LastID() (string, error) {
 }
 
 func (ctx *Evidence) After(id string) ([]interface{}, error) {
-	return ctx.after(id, ctx.scan)
+	return ctx.after(id)
 }

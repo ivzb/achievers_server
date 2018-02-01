@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
@@ -141,7 +140,6 @@ func EvidenceCreate(env *env.Env) *response.Message {
 	id, err := env.DB.Evidence().Create(evd)
 
 	if err != nil || id == "" {
-		log.Println(err)
 		return response.InternalServerError()
 	}
 

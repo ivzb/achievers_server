@@ -24,37 +24,16 @@ func (db *DB) Quest() Quester {
 	}
 }
 
-func (*Quest) scan(row sqlScanner) (interface{}, error) {
-	rwd := new(model.Quest)
-
-	err := row.Scan(
-		&rwd.ID,
-		&rwd.Title,
-		&rwd.PictureURL,
-		&rwd.InvolvementID,
-		&rwd.UserID,
-		&rwd.CreatedAt,
-		&rwd.UpdatedAt,
-		&rwd.DeletedAt)
-
-	return rwd, err
-}
-
 func (ctx *Quest) Exists(id string) (bool, error) {
 	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Quest) Single(id string) (interface{}, error) {
-	return ctx.single(id, ctx.scan)
+	return ctx.single(id)
 }
 
 func (ctx *Quest) Create(quest *model.Quest) (string, error) {
-	return ctx.create(
-		quest.Title,
-		quest.PictureURL,
-		quest.InvolvementID,
-		quest.QuestTypeID,
-		quest.UserID)
+	return ctx.create(quest)
 }
 
 func (ctx *Quest) LastID() (string, error) {
@@ -62,5 +41,5 @@ func (ctx *Quest) LastID() (string, error) {
 }
 
 func (ctx *Quest) After(id string) ([]interface{}, error) {
-	return ctx.after(id, ctx.scan)
+	return ctx.after(id)
 }

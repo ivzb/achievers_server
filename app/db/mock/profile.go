@@ -43,6 +43,6 @@ func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	return ctx.SingleByUserIDMock.Prfl, ctx.SingleByUserIDMock.Err
 }
 
-func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
+func (ctx *Profile) Create(profile *model.Profile) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }

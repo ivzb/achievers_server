@@ -100,7 +100,8 @@ func UserCreate(env *env.Env) *response.Message {
 		return response.InternalServerError()
 	}
 
-	_, err = env.DB.Profile().Create(prfl, userID)
+	prfl.UserID = userID
+	_, err = env.DB.Profile().Create(prfl)
 
 	if err != nil {
 		env.Log.Error(err)

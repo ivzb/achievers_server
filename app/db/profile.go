@@ -9,7 +9,7 @@ type Profiler interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
 	SingleByUserID(userID string) (interface{}, error)
-	Create(profile *model.Profile, userID string) (string, error)
+	Create(profile *model.Profile) (string, error)
 }
 
 type Profile struct {
@@ -22,25 +22,12 @@ func (db *DB) Profile() Profiler {
 	}
 }
 
-func (*Profile) scan(row sqlScanner) (interface{}, error) {
-	prfl := new(model.Profile)
-
-	err := row.Scan(
-		&prfl.ID,
-		&prfl.Name,
-		&prfl.CreatedAt,
-		&prfl.UpdatedAt,
-		&prfl.DeletedAt)
-
-	return prfl, err
-}
-
 func (ctx *Profile) Exists(id string) (bool, error) {
 	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Profile) Single(id string) (interface{}, error) {
-	return ctx.single(id, ctx.scan)
+	return ctx.single(id)
 }
 
 func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
@@ -49,9 +36,9 @@ func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 		" WHERE user_id = $1 "+
 		" LIMIT 1", userID)
 
-	return ctx.scan(row)
+	return scan(row, "select", ctx.model)
 }
 
-func (ctx *Profile) Create(profile *model.Profile, userID string) (string, error) {
-	return ctx.create(profile.Name, userID)
+func (ctx *Profile) Create(profile *model.Profile) (string, error) {
+	return ctx.create(profile)
 }

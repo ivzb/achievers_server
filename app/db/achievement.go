@@ -27,38 +27,16 @@ func (db *DB) Achievement() Achievementer {
 	}
 }
 
-func (*Achievement) scan(row sqlScanner) (interface{}, error) {
-	ach := new(model.Achievement)
-
-	err := row.Scan(
-		&ach.ID,
-		&ach.Title,
-		&ach.Description,
-		&ach.PictureURL,
-		&ach.InvolvementID,
-		&ach.UserID,
-		&ach.CreatedAt,
-		&ach.UpdatedAt,
-		&ach.DeletedAt)
-
-	return ach, err
-}
-
 func (ctx *Achievement) Exists(id string) (bool, error) {
 	return ctx.exists(consts.ID, id)
 }
 
 func (ctx *Achievement) Single(id string) (interface{}, error) {
-	return ctx.single(id, ctx.scan)
+	return ctx.single(id)
 }
 
 func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
-	return ctx.create(
-		achievement.Title,
-		achievement.Description,
-		achievement.PictureURL,
-		achievement.InvolvementID,
-		achievement.UserID)
+	return ctx.create(achievement)
 }
 
 func (ctx *Achievement) LastID() (string, error) {
@@ -88,7 +66,7 @@ func (ctx *Achievement) LastIDByQuestID(questID string) (string, error) {
 }
 
 func (ctx *Achievement) After(id string) ([]interface{}, error) {
-	return ctx.after(id, ctx.scan)
+	return ctx.after(id)
 }
 
 func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]interface{}, error) {

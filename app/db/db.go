@@ -46,8 +46,6 @@ type sqlScanner interface {
 	Scan(...interface{}) error
 }
 
-type scan func(sqlScanner) (interface{}, error)
-
 // DB struct holds the connection to DB
 type DB struct {
 	*sql.DB
@@ -89,27 +87,28 @@ func newContext(db *DB, table string, model interface{}) *Context {
 	}
 }
 
-func scan_(row sqlScanner, tag string, model interface{}) (interface{}, error) {
-	// get the struct type
-	modelValue := reflect.ValueOf(model).Elem()
-	modelType := modelValue.Type()
-	scanFields := make([]interface{}, 0)
+// scan crawls struct fields for given tag and passes these who match to sqlScanner
+// in order to populate struct fields with data from db
+func scan(row sqlScanner, tag string, model interface{}) (interface{}, error) {
+	// instantiate struct via its type
+	structType := reflect.TypeOf(model).Elem()
+	structInstance := reflect.New(structType).Elem()
+	fieldsForScan := make([]interface{}, 0)
 
 	// enumerate struct fields
-	for i := 0; i < modelType.NumField(); i++ {
-		field := modelType.Field(i)
-		key := field.Tag.Get(tag)
+	for i := 0; i < structType.NumField(); i++ {
+		hasTag := structType.Field(i).Tag.Get(tag)
 
-		if len(key) > 0 {
+		if len(hasTag) > 0 {
 			// add field for scan since it has tag we are looking for
-			scanField := modelValue.Field(i).Addr().Interface()
-			scanFields = append(scanFields, scanField)
+			field := structInstance.Field(i).Addr().Interface()
+			fieldsForScan = append(fieldsForScan, field)
 		}
 	}
 
-	err := row.Scan(scanFields...)
+	err := row.Scan(fieldsForScan...)
 
-	return model, err
+	return structInstance.Interface(), err
 }
 
 // exists checks whether row in specified table exists by column and value
@@ -195,24 +194,39 @@ func whereClause(columns []string) string {
 	return strings.Join(placeholders, " AND ")
 }
 
-func (ctx *Context) single(id string, scan scan) (interface{}, error) {
+func (ctx *Context) single(id string) (interface{}, error) {
 	row := ctx.db.QueryRow("SELECT "+ctx.selectArgs+
 		" FROM "+ctx.table+
 		" WHERE id = $1 "+
 		" LIMIT 1", id)
 
-	return scan_(row, "select", ctx.model)
-	//return scan(row)
+	return scan(row, "select", ctx.model)
 }
 
 // create executes passed query and args
-func (ctx *Context) create(args ...interface{}) (string, error) {
+func (ctx *Context) create(model interface{}) (string, error) {
 	columns := strings.Count(ctx.insertArgs, ",")
 	placeholders := concatPlaceholders(columns)
 	query := "INSERT INTO " + ctx.table + "(" + ctx.insertArgs + ") VALUES(" + placeholders + ") RETURNING id"
 
+	// instantiate struct via its type
+	structInstance := reflect.ValueOf(model).Elem()
+	structType := structInstance.Type()
+	fieldsToInsert := make([]interface{}, 0)
+	tag := "insert"
+
+	// enumerate struct fields
+	for i := 0; i < structType.NumField(); i++ {
+		hasTag := structType.Field(i).Tag.Get(tag)
+
+		if len(hasTag) > 0 {
+			field := structInstance.Field(i).Addr().Interface()
+			fieldsToInsert = append(fieldsToInsert, field)
+		}
+	}
+
 	var id string
-	err := ctx.db.QueryRow(query, args...).Scan(&id)
+	err := ctx.db.QueryRow(query, fieldsToInsert...).Scan(&id)
 
 	if err != nil {
 		return "", err
@@ -258,7 +272,7 @@ func (ctx *Context) lastID() (string, error) {
 	return id, nil
 }
 
-func (ctx *Context) after(id string, scan scan) ([]interface{}, error) {
+func (ctx *Context) after(id string) ([]interface{}, error) {
 	rows, err := ctx.db.Query("SELECT "+ctx.selectArgs+
 		" FROM "+ctx.table+
 		" WHERE created_at <= "+
@@ -273,7 +287,7 @@ func (ctx *Context) after(id string, scan scan) ([]interface{}, error) {
 	mdls := make([]interface{}, 0)
 
 	for rows.Next() {
-		mdl, err := scan_(rows, "select", ctx.model)
+		mdl, err := scan(rows, "select", ctx.model)
 
 		if err != nil {
 			return nil, err

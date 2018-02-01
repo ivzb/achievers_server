@@ -28,8 +28,5 @@ func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool,
 }
 
 func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
-	return ctx.create(
-		qstAch.QuestID,
-		qstAch.AchievementID,
-		qstAch.UserID)
+	return ctx.create(qstAch)
 }
