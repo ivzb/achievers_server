@@ -167,8 +167,9 @@ go tool cover -html=coverage.out
 4. use router's handlers to build a help page with endpoints
 5. improve context - replace model instance with model type
 6. create form validation
+7. improve code coverage
 
-## Done :) // many tasks not written
+## Done :) // some tasks might not be written
 0. quest_achievement controller
 +    1. create quest_achievement
 +    2. get achievements by quest_id
