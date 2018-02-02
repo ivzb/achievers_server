@@ -38,6 +38,10 @@ type DBSourcer interface {
 	MultimediaType() MultimediaTyper
 }
 
+type Singler interface {
+	Single(id string) (interface{}, error)
+}
+
 type Exister interface {
 	Exists(id string) (bool, error)
 }

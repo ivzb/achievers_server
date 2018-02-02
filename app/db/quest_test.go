@@ -1,6 +1,12 @@
 package db
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 var qst = (&DB{}).Quest().(*Quest)
 
@@ -11,16 +17,26 @@ func TestQuestTable(t *testing.T) {
 	testAssert(t, "table", expected, actual)
 }
 
-func TestQuestSelect(t *testing.T) {
+func TestQuestSelectQuery(t *testing.T) {
 	expected := "id, title, picture_url, involvement_id, quest_type_id, user_id, created_at, updated_at, deleted_at"
 	actual := qst.selectArgs
 
 	testAssert(t, "query", expected, actual)
 }
 
-func TestQuestInsert(t *testing.T) {
+func TestQuestInsertQuery(t *testing.T) {
 	expected := "title, picture_url, involvement_id, quest_type_id, user_id"
 	actual := qst.insertArgs
 
 	testAssert(t, "query", expected, actual)
+}
+
+func TestQuestSelect(t *testing.T) {
+	expected := *generate.Quest().(*model.Quest)
+
+	qst := &Quest{
+		newContext(nil, consts.Quest, new(model.Quest)),
+	}
+
+	testSingle(t, qst, expected)
 }

@@ -1,6 +1,8 @@
 package db
 
-import "testing"
+import (
+	"testing"
+)
 
 var qstAch = (&DB{}).QuestAchievement().(*QuestAchievement)
 
@@ -11,14 +13,14 @@ func TestQuestAchievementTable(t *testing.T) {
 	testAssert(t, "table", expected, actual)
 }
 
-func TestQuestAchievementSelect(t *testing.T) {
+func TestQuestAchievementSelectQuery(t *testing.T) {
 	expected := ""
 	actual := qstAch.selectArgs
 
 	testAssert(t, "query", expected, actual)
 }
 
-func TestQuestAchievementInsert(t *testing.T) {
+func TestQuestAchievementAchievementInsertQuery(t *testing.T) {
 	expected := "quest_id, achievement_id, user_id"
 	actual := qstAch.insertArgs
 
