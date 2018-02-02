@@ -2,6 +2,10 @@ package db
 
 import (
 	"testing"
+
+	"github.com/ivzb/achievers_server/app/db/mock/generate"
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 var qstAch = (&DB{}).QuestAchievement().(*QuestAchievement)
@@ -25,4 +29,15 @@ func TestQuestAchievementAchievementInsertQuery(t *testing.T) {
 	actual := qstAch.insertArgs
 
 	testAssert(t, "query", expected, actual)
+}
+
+func TestQuestAchievementAchievementInsert(t *testing.T) {
+	mdl := generate.QuestAchievement().(*model.QuestAchievement)
+	expected := mdl.ID
+
+	qstAch := &QuestAchievement{
+		newContext(nil, consts.QuestAchievement, new(model.QuestAchievement)),
+	}
+
+	testCreate(t, qstAch, mdl, expected)
 }

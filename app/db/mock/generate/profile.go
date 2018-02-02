@@ -8,7 +8,7 @@ import (
 
 func Profile() interface{} {
 	prfl := &model.Profile{
-		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
+		"mock_id",
 		"Ivan Zahariev",
 		"",
 		time.Date(2017, 12, 9, 15, 4, 23, 0, time.UTC),

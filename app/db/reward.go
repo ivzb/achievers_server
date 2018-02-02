@@ -8,7 +8,7 @@ import (
 type Rewarder interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
-	Create(reward *model.Reward) (string, error)
+	Create(reward interface{}) (string, error)
 
 	LastID() (string, error)
 	After(id string) ([]interface{}, error)
@@ -32,7 +32,7 @@ func (ctx *Reward) Single(id string) (interface{}, error) {
 	return ctx.single(id)
 }
 
-func (ctx *Reward) Create(reward *model.Reward) (string, error) {
+func (ctx *Reward) Create(reward interface{}) (string, error) {
 	return ctx.create(reward)
 }
 

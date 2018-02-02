@@ -40,3 +40,14 @@ func TestQuestSelect(t *testing.T) {
 
 	testSingle(t, qst, expected)
 }
+
+func TestQuestInsert(t *testing.T) {
+	mdl := generate.Quest().(*model.Quest)
+	expected := mdl.ID
+
+	qst := &Quest{
+		newContext(nil, consts.Quest, new(model.Quest)),
+	}
+
+	testCreate(t, qst, mdl, expected)
+}

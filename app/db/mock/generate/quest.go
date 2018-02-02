@@ -18,7 +18,7 @@ func Quests(size int) []interface{} {
 
 func Quest() interface{} {
 	qst := &model.Quest{
-		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
+		"mock_id",
 		"name",
 		"http://picture.jpg",
 		3,

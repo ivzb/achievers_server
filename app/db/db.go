@@ -42,6 +42,10 @@ type Singler interface {
 	Single(id string) (interface{}, error)
 }
 
+type Creator interface {
+	Create(model interface{}) (string, error)
+}
+
 type Exister interface {
 	Exists(id string) (bool, error)
 }
@@ -230,6 +234,7 @@ func (ctx *Context) create(model interface{}) (string, error) {
 	}
 
 	var id string
+
 	err := ctx.db.QueryRow(query, fieldsToInsert...).Scan(&id)
 
 	if err != nil {

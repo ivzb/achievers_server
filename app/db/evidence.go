@@ -8,7 +8,7 @@ import (
 type Evidencer interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
-	Create(evidence *model.Evidence) (string, error)
+	Create(evidence interface{}) (string, error)
 
 	LastID() (string, error)
 	After(id string) ([]interface{}, error)
@@ -32,7 +32,7 @@ func (ctx *Evidence) Single(id string) (interface{}, error) {
 	return ctx.single(id)
 }
 
-func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
+func (ctx *Evidence) Create(evidence interface{}) (string, error) {
 	return ctx.create(evidence)
 }
 

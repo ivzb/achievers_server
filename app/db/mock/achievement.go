@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type Achievement struct {
 	ExistsMock          AchievementExists
 	SingleMock          AchievementSingle
@@ -57,7 +53,7 @@ func (ctx *Achievement) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Ach, ctx.SingleMock.Err
 }
 
-func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
+func (ctx *Achievement) Create(achievement interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }
 

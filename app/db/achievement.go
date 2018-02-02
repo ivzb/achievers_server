@@ -8,7 +8,7 @@ import (
 type Achievementer interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
-	Create(achievement *model.Achievement) (string, error)
+	Create(achievement interface{}) (string, error)
 
 	LastID() (string, error)
 	LastIDByQuestID(questID string) (string, error)
@@ -35,7 +35,7 @@ func (ctx *Achievement) Single(id string) (interface{}, error) {
 	return ctx.single(id)
 }
 
-func (ctx *Achievement) Create(achievement *model.Achievement) (string, error) {
+func (ctx *Achievement) Create(achievement interface{}) (string, error) {
 	return ctx.create(achievement)
 }
 

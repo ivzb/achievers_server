@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type QuestAchievement struct {
 	ExistsMock QuestAchievementExists
 	CreateMock QuestAchievementCreate
@@ -23,6 +19,6 @@ func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool,
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 
-func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
+func (ctx *QuestAchievement) Create(qstAch interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }

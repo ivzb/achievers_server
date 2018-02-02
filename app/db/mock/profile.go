@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type Profile struct {
 	ExistsMock         ProfileExists
 	SingleMock         ProfileSingle
@@ -43,6 +39,6 @@ func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	return ctx.SingleByUserIDMock.Prfl, ctx.SingleByUserIDMock.Err
 }
 
-func (ctx *Profile) Create(profile *model.Profile) (string, error) {
+func (ctx *Profile) Create(profile interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }

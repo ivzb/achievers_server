@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type Quest struct {
 	ExistsMock QuestExists
 	SingleMock QuestSingle
@@ -45,7 +41,7 @@ func (ctx *Quest) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Qst, ctx.SingleMock.Err
 }
 
-func (ctx *Quest) Create(quest *model.Quest) (string, error) {
+func (ctx *Quest) Create(quest interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }
 

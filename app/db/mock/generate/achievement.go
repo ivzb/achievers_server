@@ -18,7 +18,7 @@ func Achievements(size int) []interface{} {
 
 func Achievement() interface{} {
 	ach := &model.Achievement{
-		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
+		"mock_id",
 		"title",
 		"desc",
 		"http://picture.jpg",

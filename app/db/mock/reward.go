@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type Reward struct {
 	ExistsMock RewardExists
 	SingleMock RewardSingle
@@ -45,7 +41,7 @@ func (ctx *Reward) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Rwd, ctx.SingleMock.Err
 }
 
-func (ctx *Reward) Create(reward *model.Reward) (string, error) {
+func (ctx *Reward) Create(reward interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }
 

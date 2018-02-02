@@ -18,7 +18,7 @@ func Evidences(size int) []interface{} {
 
 func Evidence() interface{} {
 	evd := &model.Evidence{
-		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
+		"mock_id",
 		"desc",
 		"http://preview-url.jpg",
 		"http://url.jpg",

@@ -1,9 +1,5 @@
 package mock
 
-import (
-	"github.com/ivzb/achievers_server/app/model"
-)
-
 type Evidence struct {
 	ExistsMock EvidenceExists
 	SingleMock EvidenceSingle
@@ -45,7 +41,7 @@ func (ctx *Evidence) Single(id string) (interface{}, error) {
 	return ctx.SingleMock.Evd, ctx.SingleMock.Err
 }
 
-func (ctx *Evidence) Create(evidence *model.Evidence) (string, error) {
+func (ctx *Evidence) Create(evidence interface{}) (string, error) {
 	return ctx.CreateMock.ID, ctx.CreateMock.Err
 }
 

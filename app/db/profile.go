@@ -9,7 +9,7 @@ type Profiler interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
 	SingleByUserID(userID string) (interface{}, error)
-	Create(profile *model.Profile) (string, error)
+	Create(profile interface{}) (string, error)
 }
 
 type Profile struct {
@@ -39,6 +39,6 @@ func (ctx *Profile) SingleByUserID(userID string) (interface{}, error) {
 	return scan(row, "select", ctx.model)
 }
 
-func (ctx *Profile) Create(profile *model.Profile) (string, error) {
+func (ctx *Profile) Create(profile interface{}) (string, error) {
 	return ctx.create(profile)
 }

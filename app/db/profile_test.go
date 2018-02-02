@@ -40,3 +40,14 @@ func TestProfileSelect(t *testing.T) {
 
 	testSingle(t, prfl, expected)
 }
+
+func TestProfileInsert(t *testing.T) {
+	mdl := generate.Profile().(*model.Profile)
+	expected := mdl.ID
+
+	prfl := &Profile{
+		newContext(nil, consts.Profile, new(model.Profile)),
+	}
+
+	testCreate(t, prfl, mdl, expected)
+}

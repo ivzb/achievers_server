@@ -7,7 +7,7 @@ import (
 
 type QuestAchievementer interface {
 	Exists(questID string, achievementID string) (bool, error)
-	Create(qstAch *model.QuestAchievement) (string, error)
+	Create(qstAch interface{}) (string, error)
 }
 
 type QuestAchievement struct {
@@ -27,6 +27,6 @@ func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool,
 	return ctx.existsMultiple(keys, values)
 }
 
-func (ctx *QuestAchievement) Create(qstAch *model.QuestAchievement) (string, error) {
+func (ctx *QuestAchievement) Create(qstAch interface{}) (string, error) {
 	return ctx.create(qstAch)
 }

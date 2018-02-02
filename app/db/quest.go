@@ -8,7 +8,7 @@ import (
 type Quester interface {
 	Exists(id string) (bool, error)
 	Single(id string) (interface{}, error)
-	Create(quest *model.Quest) (string, error)
+	Create(quest interface{}) (string, error)
 
 	LastID() (string, error)
 	After(id string) ([]interface{}, error)
@@ -32,7 +32,7 @@ func (ctx *Quest) Single(id string) (interface{}, error) {
 	return ctx.single(id)
 }
 
-func (ctx *Quest) Create(quest *model.Quest) (string, error) {
+func (ctx *Quest) Create(quest interface{}) (string, error) {
 	return ctx.create(quest)
 }
 

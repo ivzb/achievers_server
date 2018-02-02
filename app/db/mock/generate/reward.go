@@ -18,7 +18,7 @@ func Rewards(size int) []interface{} {
 
 func Reward() interface{} {
 	rwd := &model.Reward{
-		"fb7691eb-ea1d-b20f-edee-9cadcf23181f",
+		"mock_id",
 		"name",
 		"desc",
 		"http://picture.jpg",

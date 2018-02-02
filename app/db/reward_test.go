@@ -40,3 +40,14 @@ func TestRewardSelect(t *testing.T) {
 
 	testSingle(t, rwd, expected)
 }
+
+func TestRewardInsert(t *testing.T) {
+	mdl := generate.Reward().(*model.Reward)
+	expected := mdl.ID
+
+	rwd := &Reward{
+		newContext(nil, consts.Reward, new(model.Reward)),
+	}
+
+	testCreate(t, rwd, mdl, expected)
+}

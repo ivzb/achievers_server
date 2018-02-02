@@ -40,3 +40,14 @@ func TestAchievementSelect(t *testing.T) {
 
 	testSingle(t, ach, expected)
 }
+
+func TestAchievementInsert(t *testing.T) {
+	mdl := generate.Achievement().(*model.Achievement)
+	expected := mdl.ID
+
+	ach := &Achievement{
+		newContext(nil, consts.Achievement, new(model.Achievement)),
+	}
+
+	testCreate(t, ach, mdl, expected)
+}

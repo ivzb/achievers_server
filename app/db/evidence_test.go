@@ -40,3 +40,14 @@ func TestEvidenceSelect(t *testing.T) {
 
 	testSingle(t, evd, expected)
 }
+
+func TestEvidenceInsert(t *testing.T) {
+	mdl := generate.Evidence().(*model.Evidence)
+	expected := mdl.ID
+
+	evd := &Evidence{
+		newContext(nil, consts.Evidence, new(model.Evidence)),
+	}
+
+	testCreate(t, evd, mdl, expected)
+}
