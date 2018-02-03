@@ -51,3 +51,15 @@ func TestEvidenceInsert(t *testing.T) {
 
 	testCreate(t, evd, mdl, expected)
 }
+
+func TestEvidenceExists(t *testing.T) {
+	mdl := generate.Evidence().(*model.Evidence)
+	id := mdl.ID
+	expected := true
+
+	evd := &Evidence{
+		newContext(nil, consts.Evidence, new(model.Evidence)),
+	}
+
+	testExists(t, evd, id, expected)
+}

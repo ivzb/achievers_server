@@ -1,6 +1,8 @@
 package db
 
-import "testing"
+import (
+	"testing"
+)
 
 var inv = (&DB{}).Involvement().(*Involvement)
 

@@ -51,3 +51,15 @@ func TestQuestInsert(t *testing.T) {
 
 	testCreate(t, qst, mdl, expected)
 }
+
+func TestQuestExists(t *testing.T) {
+	mdl := generate.Quest().(*model.Quest)
+	id := mdl.ID
+	expected := true
+
+	qst := &Quest{
+		newContext(nil, consts.Quest, new(model.Quest)),
+	}
+
+	testExists(t, qst, id, expected)
+}

@@ -1,6 +1,11 @@
 package db
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/ivzb/achievers_server/app/model"
+	"github.com/ivzb/achievers_server/app/shared/consts"
+)
 
 var usr = (&DB{}).User().(*User)
 
@@ -23,4 +28,15 @@ func TestUserInsert(t *testing.T) {
 	actual := usr.insertArgs
 
 	testAssert(t, "query", expected, actual)
+}
+
+func TestUserExists(t *testing.T) {
+	id := "mock_id"
+	expected := true
+
+	rwd := &User{
+		newContext(nil, consts.User, new(model.User)),
+	}
+
+	testExists(t, rwd, id, expected)
 }

@@ -51,3 +51,15 @@ func TestProfileInsert(t *testing.T) {
 
 	testCreate(t, prfl, mdl, expected)
 }
+
+func TestProfileExists(t *testing.T) {
+	mdl := generate.Profile().(*model.Profile)
+	id := mdl.ID
+	expected := true
+
+	prfl := &Profile{
+		newContext(nil, consts.Profile, new(model.Profile)),
+	}
+
+	testExists(t, prfl, id, expected)
+}

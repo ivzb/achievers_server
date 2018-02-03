@@ -114,6 +114,43 @@ func testCreate(t *testing.T, creator Creator, mdl interface{}, expected string)
 	}
 }
 
+func testExists(t *testing.T, exister Exister, id string, expected bool) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	ctx := reflect.ValueOf(exister).Elem().FieldByName("Context").Interface().(*Context)
+	ctx.db = &DB{db, 9}
+
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"count"}).AddRow(1)
+
+	fields := make([]driver.Value, 0)
+	fields = append(fields, "id")
+
+	mock.ExpectQuery("^" + regexp.QuoteMeta("SELECT COUNT(id) FROM "+ctx.table+" WHERE id = $1 LIMIT 1") + "$").
+		WithArgs(id).
+		WillReturnRows(rows)
+
+	actual, err := exister.Exists(id)
+
+	if err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
+	}
+}
+
 func testAssert(t *testing.T, param string, expected string, actual string) {
 	if expected != actual {
 		t.Errorf("model returned wrong %v: \ngot \"%v\" \nwant \"%v\"", param, actual, expected)

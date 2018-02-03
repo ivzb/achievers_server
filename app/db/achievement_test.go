@@ -51,3 +51,15 @@ func TestAchievementInsert(t *testing.T) {
 
 	testCreate(t, ach, mdl, expected)
 }
+
+func TestAchievementExists(t *testing.T) {
+	mdl := generate.Achievement().(*model.Achievement)
+	id := mdl.ID
+	expected := true
+
+	ach := &Achievement{
+		newContext(nil, consts.Achievement, new(model.Achievement)),
+	}
+
+	testExists(t, ach, id, expected)
+}

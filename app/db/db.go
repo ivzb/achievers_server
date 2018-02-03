@@ -122,14 +122,9 @@ func scan(row sqlScanner, tag string, model interface{}) (interface{}, error) {
 // exists checks whether row in specified table exists by column and value
 func (ctx *Context) exists(column string, value string) (bool, error) {
 	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s = $1  LIMIT 1", ctx.table, column)
-	stmt, err := ctx.db.Prepare(query)
-
-	if err != nil {
-		return false, err
-	}
 
 	var count int
-	err = stmt.QueryRow(value).Scan(&count)
+	err := ctx.db.QueryRow(query, value).Scan(&count)
 
 	if err != nil {
 		return false, err
