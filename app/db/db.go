@@ -66,6 +66,7 @@ type Context struct {
 	model      interface{}
 	selectArgs string
 	insertArgs string
+	existsArgs string
 }
 
 // NewDB creates connection to the database
@@ -92,6 +93,7 @@ func newContext(db *DB, table string, model interface{}) *Context {
 		model:      model,
 		selectArgs: buildQuery("select", model),
 		insertArgs: buildQuery("insert", model),
+		existsArgs: buildQuery("exists", model),
 	}
 }
 
