@@ -33,7 +33,7 @@ type EvidenceCreate struct {
 	Err error
 }
 
-func (ctx *Evidence) Exists(id string) (bool, error) {
+func (ctx *Evidence) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

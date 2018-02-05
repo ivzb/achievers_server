@@ -31,6 +31,13 @@ func TestAchievementInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
+func TestAchievementExistsQuery(t *testing.T) {
+	expected := "id"
+	actual := ach.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
 func TestAchievementSelect(t *testing.T) {
 	expected := *generate.Achievement().(*model.Achievement)
 

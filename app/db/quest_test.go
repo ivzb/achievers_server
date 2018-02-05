@@ -31,6 +31,13 @@ func TestQuestInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
+func TestQuestExistsQuery(t *testing.T) {
+	expected := "id"
+	actual := qst.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
 func TestQuestSelect(t *testing.T) {
 	expected := *generate.Quest().(*model.Quest)
 

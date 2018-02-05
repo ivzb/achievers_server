@@ -6,7 +6,7 @@ import (
 )
 
 type Quester interface {
-	Exists(id string) (bool, error)
+	Exists(id interface{}) (bool, error)
 	Single(id string) (interface{}, error)
 	Create(quest interface{}) (string, error)
 
@@ -24,8 +24,8 @@ func (db *DB) Quest() Quester {
 	}
 }
 
-func (ctx *Quest) Exists(id string) (bool, error) {
-	return ctx.exists(consts.ID, id)
+func (ctx *Quest) Exists(id interface{}) (bool, error) {
+	return ctx.exists(&model.Profile{ID: id.(string)})
 }
 
 func (ctx *Quest) Single(id string) (interface{}, error) {

@@ -168,6 +168,7 @@ go tool cover -html=coverage.out
 5. improve context - replace model instance with model type
 6. create form validation
 7. improve code coverage
+8. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
 
 ## Done :) // some tasks might not be written
 0. quest_achievement controller

@@ -7,7 +7,7 @@ import (
 )
 
 type Userer interface {
-	Exists(id string) (bool, error)
+	Exists(id interface{}) (bool, error)
 	EmailExists(email string) (bool, error)
 	Create(user *model.User) (string, error)
 	Auth(auth *model.Auth) (string, error)
@@ -23,12 +23,12 @@ func (db *DB) User() Userer {
 	}
 }
 
-func (ctx *User) Exists(id string) (bool, error) {
-	return ctx.exists(consts.ID, id)
+func (ctx *User) Exists(id interface{}) (bool, error) {
+	return ctx.existsBy(consts.ID, id.(string))
 }
 
 func (ctx *User) EmailExists(email string) (bool, error) {
-	return ctx.exists(consts.Email, email)
+	return ctx.existsBy(consts.Email, email)
 }
 
 func (ctx *User) Auth(auth *model.Auth) (string, error) {

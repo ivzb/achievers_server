@@ -1,13 +1,12 @@
 package db
 
 import (
-	"strconv"
-
+	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type MultimediaTyper interface {
-	Exists(id uint8) (bool, error)
+	Exists(id interface{}) (bool, error)
 }
 
 type MultimediaType struct {
@@ -16,10 +15,10 @@ type MultimediaType struct {
 
 func (db *DB) MultimediaType() MultimediaTyper {
 	return &MultimediaType{
-		newContext(db, consts.MultimediaType, nil),
+		newContext(db, consts.MultimediaType, new(model.MultimediaType)),
 	}
 }
 
-func (ctx *MultimediaType) Exists(id uint8) (bool, error) {
-	return ctx.exists(consts.ID, strconv.FormatInt(int64(id), 10))
+func (ctx *MultimediaType) Exists(id interface{}) (bool, error) {
+	return ctx.exists(&model.MultimediaType{ID: id.(uint8)})
 }

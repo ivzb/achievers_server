@@ -27,7 +27,7 @@ type ProfileCreate struct {
 	Err error
 }
 
-func (ctx *Profile) Exists(id string) (bool, error) {
+func (ctx *Profile) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

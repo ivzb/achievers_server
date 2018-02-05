@@ -31,6 +31,13 @@ func TestProfileInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
+func TestProfileExistsQuery(t *testing.T) {
+	expected := "id"
+	actual := prfl.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
 func TestProfileSelect(t *testing.T) {
 	expected := *generate.Profile().(*model.Profile)
 

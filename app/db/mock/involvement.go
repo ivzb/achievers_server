@@ -9,6 +9,6 @@ type InvolvementExists struct {
 	Err  error
 }
 
-func (ctx *Involvement) Exists(id uint8) (bool, error) {
+func (ctx *Involvement) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }

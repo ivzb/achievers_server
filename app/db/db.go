@@ -47,7 +47,11 @@ type Creator interface {
 }
 
 type Exister interface {
-	Exists(id string) (bool, error)
+	Exists(field interface{}) (bool, error)
+}
+
+type ExisterMultiple interface {
+	Exists(field ...interface{}) (bool, error)
 }
 
 type sqlScanner interface {
@@ -61,9 +65,10 @@ type DB struct {
 }
 
 type Context struct {
-	db         *DB
-	table      string
-	model      interface{}
+	db    *DB
+	table string
+	model interface{}
+
 	selectArgs string
 	insertArgs string
 	existsArgs string
@@ -122,8 +127,8 @@ func scan(row sqlScanner, tag string, model interface{}) (interface{}, error) {
 }
 
 // exists checks whether row in specified table exists by column and value
-func (ctx *Context) exists(column string, value string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s = $1  LIMIT 1", ctx.table, column)
+func (ctx *Context) existsBy(column string, value string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s = $1 LIMIT 1", ctx.table, column)
 
 	var count int
 	err := ctx.db.QueryRow(query, value).Scan(&count)
@@ -133,25 +138,6 @@ func (ctx *Context) exists(column string, value string) (bool, error) {
 	}
 
 	return count > 0, nil
-}
-
-// existsMultiple checks whether row in specified table exists by []columns and []values
-func (ctx *Context) existsMultiple(columns []string, values []string) (bool, error) {
-	query := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s LIMIT 1", ctx.table, whereClause(columns))
-	stmt, err := ctx.db.Prepare(query)
-
-	if err != nil {
-		return false, err
-	}
-
-	var count int
-	err = stmt.QueryRow(scanArgs(values)...).Scan(&count)
-
-	if err != nil {
-		return false, err
-	}
-
-	return count != 0, nil
 }
 
 func buildQuery(tag string, model interface{}) string {
@@ -177,16 +163,6 @@ func buildQuery(tag string, model interface{}) string {
 	}
 
 	return strings.Join(query, ", ")
-}
-
-func scanArgs(values []string) []interface{} {
-	scanArgs := make([]interface{}, len(values))
-
-	for i := range values {
-		scanArgs[i] = &values[i]
-	}
-
-	return scanArgs
 }
 
 func whereClause(columns []string) string {
@@ -276,6 +252,37 @@ func (ctx *Context) lastID() (string, error) {
 	}
 
 	return id, nil
+}
+
+func (ctx *Context) exists(model interface{}) (bool, error) {
+	columns := strings.Split(ctx.existsArgs, ", ")
+	where := whereClause(columns)
+	query := "SELECT COUNT(id) FROM " + ctx.table + " WHERE " + where + " LIMIT 1"
+
+	// instantiate struct via its type
+	structInstance := reflect.ValueOf(model).Elem()
+	structType := structInstance.Type()
+	fieldsForExists := make([]interface{}, 0)
+	tag := "exists"
+
+	// enumerate struct fields
+	for i := 0; i < structType.NumField(); i++ {
+		hasTag := structType.Field(i).Tag.Get(tag)
+
+		if len(hasTag) > 0 {
+			field := structInstance.Field(i).Addr().Interface()
+			fieldsForExists = append(fieldsForExists, field)
+		}
+	}
+
+	var count int
+	err := ctx.db.QueryRow(query, fieldsForExists...).Scan(&count)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 func (ctx *Context) after(id string) ([]interface{}, error) {

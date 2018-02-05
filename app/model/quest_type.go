@@ -5,7 +5,7 @@ import (
 )
 
 type QuestType struct {
-	ID uint8 `json:"id"`
+	ID uint8 `json:"id" exists:"id"`
 
 	Title string `json:"title"`
 

@@ -1,12 +1,15 @@
 package db
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
 type QuestAchievementer interface {
-	Exists(questID string, achievementID string) (bool, error)
+	Exists(args ...interface{}) (bool, error)
 	Create(qstAch interface{}) (string, error)
 }
 
@@ -20,11 +23,19 @@ func (db *DB) QuestAchievement() QuestAchievementer {
 	}
 }
 
-func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool, error) {
-	keys := []string{consts.QuestID, consts.AchievementID}
-	values := []string{questID, achievementID}
+func (ctx *QuestAchievement) Exists(args ...interface{}) (bool, error) {
+	if len(args) != 2 {
+		return false, errors.New("two arguments wanted, got " + strconv.Itoa(len(args)))
+	}
 
-	return ctx.existsMultiple(keys, values)
+	qstID := args[0].(string)
+	achID := args[1].(string)
+
+	//return ctx.existsMultiple(keys, values)
+	return ctx.exists(&model.QuestAchievement{
+		QuestID:       qstID,
+		AchievementID: achID,
+	})
 }
 
 func (ctx *QuestAchievement) Create(qstAch interface{}) (string, error) {

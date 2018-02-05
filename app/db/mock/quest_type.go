@@ -9,6 +9,6 @@ type QuestTypeExists struct {
 	Err  error
 }
 
-func (ctx *QuestType) Exists(id uint8) (bool, error) {
+func (ctx *QuestType) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }

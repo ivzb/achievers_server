@@ -31,7 +31,14 @@ func TestQuestAchievementAchievementInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
-func TestQuestAchievementAchievementInsert(t *testing.T) {
+func TestQuestAchievementExistsQuery(t *testing.T) {
+	expected := "quest_id, achievement_id"
+	actual := qstAch.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
+func TestQuestAchievementInsert(t *testing.T) {
 	mdl := generate.QuestAchievement().(*model.QuestAchievement)
 	expected := mdl.ID
 
@@ -40,4 +47,41 @@ func TestQuestAchievementAchievementInsert(t *testing.T) {
 	}
 
 	testCreate(t, qstAch, mdl, expected)
+}
+
+func TestQuestAchievementExists(t *testing.T) {
+	qa := generate.QuestAchievement().(*model.QuestAchievement)
+	achID := qa.AchievementID
+	qstID := qa.QuestID
+	expected := true
+
+	qstAch := &QuestAchievement{
+		newContext(nil, consts.QuestAchievement, new(model.QuestAchievement)),
+	}
+
+	testExistsMultiple(t, qstAch, expected, achID, qstID)
+}
+
+func TestQuestAchievementExists_NotEnoughArguments(t *testing.T) {
+	testQuestAchievementExistsArguments(t, "mock_id")
+}
+
+func TestQuestAchievementExists_TooManyArguments(t *testing.T) {
+	testQuestAchievementExistsArguments(t, "mock_id", "mock_id", "mock_id")
+}
+
+func testQuestAchievementExistsArguments(t *testing.T, args ...interface{}) {
+	expected := false
+
+	qstAch := &QuestAchievement{
+		newContext(nil, consts.QuestAchievement, new(model.QuestAchievement)),
+	}
+
+	actual, err := qstAch.Exists(args)
+
+	if err == nil {
+		t.Error("scan should have returned error")
+	}
+
+	testAssert(t, "exists", expected, actual)
 }

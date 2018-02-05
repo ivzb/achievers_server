@@ -6,7 +6,7 @@ import (
 )
 
 type Achievementer interface {
-	Exists(id string) (bool, error)
+	Exists(id interface{}) (bool, error)
 	Single(id string) (interface{}, error)
 	Create(achievement interface{}) (string, error)
 
@@ -27,8 +27,8 @@ func (db *DB) Achievement() Achievementer {
 	}
 }
 
-func (ctx *Achievement) Exists(id string) (bool, error) {
-	return ctx.exists(consts.ID, id)
+func (ctx *Achievement) Exists(id interface{}) (bool, error) {
+	return ctx.exists(&model.Achievement{ID: id.(string)})
 }
 
 func (ctx *Achievement) Single(id string) (interface{}, error) {

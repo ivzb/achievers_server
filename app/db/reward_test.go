@@ -31,6 +31,13 @@ func TestRewardInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
+func TestRewardExistsQuery(t *testing.T) {
+	expected := "id"
+	actual := rwd.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
 func TestRewardSelect(t *testing.T) {
 	expected := *generate.Reward().(*model.Reward)
 

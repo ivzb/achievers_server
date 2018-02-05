@@ -34,9 +34,9 @@ func TestUserExists(t *testing.T) {
 	id := "mock_id"
 	expected := true
 
-	rwd := &User{
+	usr := &User{
 		newContext(nil, consts.User, new(model.User)),
 	}
 
-	testExists(t, rwd, id, expected)
+	testExists(t, usr, id, expected)
 }

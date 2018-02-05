@@ -5,7 +5,7 @@ import (
 )
 
 type Profile struct {
-	ID string `json:"id" select:"id"`
+	ID string `json:"id" select:"id" exists:"id"`
 
 	Name   string `json:"name" select:"name" insert:"name"`
 	UserID string `json:"-" insert:"user_id"`

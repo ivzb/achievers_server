@@ -45,7 +45,7 @@ type AchievementCreate struct {
 	Err error
 }
 
-func (ctx *Achievement) Exists(id string) (bool, error) {
+func (ctx *Achievement) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

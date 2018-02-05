@@ -33,7 +33,7 @@ type QuestsAfter struct {
 	Err  error
 }
 
-func (ctx *Quest) Exists(id string) (bool, error) {
+func (ctx *Quest) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

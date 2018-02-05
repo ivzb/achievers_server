@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Evidence struct {
-	ID string `json:"id" select:"id"`
+	ID string `json:"id" select:"id" exists:"id"`
 
 	Title      string `json:"title" select:"title" insert:"title"`
 	PictureURL string `json:"picture_url" select:"picture_url" insert:"picture_url"`

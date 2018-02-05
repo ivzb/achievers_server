@@ -6,7 +6,7 @@ import (
 )
 
 type Evidencer interface {
-	Exists(id string) (bool, error)
+	Exists(id interface{}) (bool, error)
 	Single(id string) (interface{}, error)
 	Create(evidence interface{}) (string, error)
 
@@ -24,8 +24,8 @@ func (db *DB) Evidence() Evidencer {
 	}
 }
 
-func (ctx *Evidence) Exists(id string) (bool, error) {
-	return ctx.exists(consts.ID, id)
+func (ctx *Evidence) Exists(id interface{}) (bool, error) {
+	return ctx.exists(&model.Evidence{ID: id.(string)})
 }
 
 func (ctx *Evidence) Single(id string) (interface{}, error) {

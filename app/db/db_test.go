@@ -114,7 +114,7 @@ func testCreate(t *testing.T, creator Creator, mdl interface{}, expected string)
 	}
 }
 
-func testExists(t *testing.T, exister Exister, id string, expected bool) {
+func testExists(t *testing.T, exister Exister, id interface{}, expected bool) {
 	db, mock, err := sqlmock.New()
 
 	if err != nil {
@@ -151,7 +151,50 @@ func testExists(t *testing.T, exister Exister, id string, expected bool) {
 	}
 }
 
-func testAssert(t *testing.T, param string, expected string, actual string) {
+func testExistsMultiple(t *testing.T, exister ExisterMultiple, expected bool, args ...driver.Value) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	ctx := reflect.ValueOf(exister).Elem().FieldByName("Context").Interface().(*Context)
+	ctx.db = &DB{db, 9}
+
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"count"}).AddRow(1)
+
+	columns := strings.Split(ctx.existsArgs, ", ")
+	placeholders := whereClause(columns)
+
+	mock.ExpectQuery("^" + regexp.QuoteMeta("SELECT COUNT(id) FROM "+ctx.table+" WHERE "+placeholders+" LIMIT 1") + "$").
+		WithArgs(args...).
+		WillReturnRows(rows)
+
+	exstArgs := make([]interface{}, len(args))
+
+	for i := range args {
+		exstArgs[i] = args[i]
+	}
+
+	actual, err := exister.Exists(exstArgs...)
+
+	if err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
+	}
+}
+
+func testAssert(t *testing.T, param string, expected interface{}, actual interface{}) {
 	if expected != actual {
 		t.Errorf("model returned wrong %v: \ngot \"%v\" \nwant \"%v\"", param, actual, expected)
 	}

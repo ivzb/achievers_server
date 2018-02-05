@@ -6,7 +6,7 @@ import (
 )
 
 type Profiler interface {
-	Exists(id string) (bool, error)
+	Exists(id interface{}) (bool, error)
 	Single(id string) (interface{}, error)
 	SingleByUserID(userID string) (interface{}, error)
 	Create(profile interface{}) (string, error)
@@ -22,8 +22,8 @@ func (db *DB) Profile() Profiler {
 	}
 }
 
-func (ctx *Profile) Exists(id string) (bool, error) {
-	return ctx.exists(consts.ID, id)
+func (ctx *Profile) Exists(id interface{}) (bool, error) {
+	return ctx.exists(&model.Profile{ID: id.(string)})
 }
 
 func (ctx *Profile) Single(id string) (interface{}, error) {

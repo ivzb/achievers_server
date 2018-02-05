@@ -33,7 +33,7 @@ type RewardCreate struct {
 	Err error
 }
 
-func (ctx *Reward) Exists(id string) (bool, error) {
+func (ctx *Reward) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

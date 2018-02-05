@@ -15,7 +15,7 @@ type QuestAchievementCreate struct {
 	Err error
 }
 
-func (ctx *QuestAchievement) Exists(questID string, achievementID string) (bool, error) {
+func (ctx *QuestAchievement) Exists(...interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

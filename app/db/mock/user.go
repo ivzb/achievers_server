@@ -31,7 +31,7 @@ type UserAuth struct {
 	Err error
 }
 
-func (ctx *User) Exists(id string) (bool, error) {
+func (ctx *User) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }
 

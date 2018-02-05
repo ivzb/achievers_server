@@ -9,6 +9,6 @@ type MultimediaTypeExists struct {
 	Err  error
 }
 
-func (ctx *MultimediaType) Exists(id uint8) (bool, error) {
+func (ctx *MultimediaType) Exists(id interface{}) (bool, error) {
 	return ctx.ExistsMock.Bool, ctx.ExistsMock.Err
 }

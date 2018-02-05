@@ -5,7 +5,7 @@ import (
 )
 
 type Involvement struct {
-	ID string `json:"id"`
+	ID uint8 `json:"id" exists:"id"`
 
 	Title string `json:"title"`
 

@@ -31,6 +31,13 @@ func TestEvidenceInsertQuery(t *testing.T) {
 	testAssert(t, "query", expected, actual)
 }
 
+func TestEvidenceExistsQuery(t *testing.T) {
+	expected := "id"
+	actual := evd.existsArgs
+
+	testAssert(t, "query", expected, actual)
+}
+
 func TestEvidenceSelect(t *testing.T) {
 	expected := *generate.Evidence().(*model.Evidence)
 
