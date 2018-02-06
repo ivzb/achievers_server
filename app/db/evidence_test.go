@@ -81,3 +81,13 @@ func TestEvidenceLastID(t *testing.T) {
 
 	testLastID(t, evd, expected)
 }
+
+func TestEvidenceAfter(t *testing.T) {
+	expected := generate.Evidences(9)
+
+	evd := &Evidence{
+		newContext(nil, consts.Evidence, new(model.Evidence)),
+	}
+
+	testAfter(t, evd, expected)
+}

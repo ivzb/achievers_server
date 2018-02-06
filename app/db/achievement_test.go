@@ -81,3 +81,13 @@ func TestAchievementLastID(t *testing.T) {
 
 	testLastID(t, ach, expected)
 }
+
+func TestAchievementAfter(t *testing.T) {
+	expected := generate.Achievements(9)
+
+	ach := &Achievement{
+		newContext(nil, consts.Achievement, new(model.Achievement)),
+	}
+
+	testAfter(t, ach, expected)
+}

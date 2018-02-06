@@ -206,9 +206,6 @@ func testLastID(t *testing.T, laster Laster, expected string) {
 
 	defer db.Close()
 
-	//cols := strings.Split(ctx.selectArgs, ", ")
-	//rows := sqlmock.NewRows(cols).AddRow(fields...)
-	//mockID := "mock_id"
 	mockID := "mock_id"
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(mockID)
 
@@ -226,6 +223,72 @@ func testLastID(t *testing.T, laster Laster, expected string) {
 	}
 
 	if expected != actual {
+		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
+	}
+}
+
+func testAfter(t *testing.T, afterer Afterer, expected []interface{}) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	ctx := reflect.ValueOf(afterer).Elem().FieldByName("Context").Interface().(*Context)
+	ctx.db = &DB{db, 9}
+
+	defer db.Close()
+
+	cols := strings.Split(ctx.selectArgs, ", ")
+	rows := sqlmock.NewRows(cols)
+
+	for row := 0; row < len(expected); row++ {
+		structInstance := reflect.ValueOf(expected[row]).Elem()
+		structType := structInstance.Type()
+		fields := make([]driver.Value, 0)
+		tag := "select"
+
+		// enumerate struct fields
+		for i := 0; i < structType.NumField(); i++ {
+			hasTag := structType.Field(i).Tag.Get(tag)
+
+			if len(hasTag) > 0 {
+				// add field for scan since it has tag we are looking for
+				field := structInstance.Field(i).Interface()
+				fields = append(fields, field)
+			}
+		}
+
+		rows = rows.AddRow(fields...)
+	}
+
+	mockID := "mock_id"
+
+	mock.ExpectQuery("^"+regexp.QuoteMeta("SELECT "+ctx.selectArgs+
+		" FROM "+ctx.table+
+		" WHERE created_at <= "+
+		"  (SELECT created_at"+
+		"   FROM "+ctx.table+
+		"   WHERE id = $1)"+
+		" ORDER BY created_at DESC"+
+		" LIMIT $2")+"$").WithArgs(mockID, ctx.db.pageLimit).WillReturnRows(rows)
+
+	actual, err := afterer.After(mockID)
+
+	if err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	if len(expected) != len(actual) {
+		t.Errorf("unexpected length:\ngot %v\nwant %v", len(actual), len(expected))
+	}
+
+	if reflect.DeepEqual(expected, actual) {
 		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
 	}
 }

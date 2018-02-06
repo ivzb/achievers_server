@@ -81,3 +81,13 @@ func TestQuestLastID(t *testing.T) {
 
 	testLastID(t, qst, expected)
 }
+
+func TestQuestAfter(t *testing.T) {
+	expected := generate.Quests(9)
+
+	qst := &Quest{
+		newContext(nil, consts.Quest, new(model.Quest)),
+	}
+
+	testAfter(t, qst, expected)
+}

@@ -81,3 +81,13 @@ func TestRewardLastID(t *testing.T) {
 
 	testLastID(t, rwd, expected)
 }
+
+func TestRewardAfter(t *testing.T) {
+	expected := generate.Rewards(9)
+
+	rwd := &Reward{
+		newContext(nil, consts.Reward, new(model.Reward)),
+	}
+
+	testAfter(t, rwd, expected)
+}

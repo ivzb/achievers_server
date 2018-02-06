@@ -58,6 +58,10 @@ type Laster interface {
 	LastID() (string, error)
 }
 
+type Afterer interface {
+	After(id string) ([]interface{}, error)
+}
+
 type sqlScanner interface {
 	Scan(...interface{}) error
 }
