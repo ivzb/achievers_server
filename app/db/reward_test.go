@@ -70,3 +70,14 @@ func TestRewardExists(t *testing.T) {
 
 	testExists(t, rwd, id, expected)
 }
+
+func TestRewardLastID(t *testing.T) {
+	mdl := generate.Reward().(*model.Reward)
+	expected := mdl.ID
+
+	rwd := &Reward{
+		newContext(nil, consts.Reward, new(model.Reward)),
+	}
+
+	testLastID(t, rwd, expected)
+}

@@ -70,3 +70,14 @@ func TestQuestExists(t *testing.T) {
 
 	testExists(t, qst, id, expected)
 }
+
+func TestQuestLastID(t *testing.T) {
+	mdl := generate.Quest().(*model.Quest)
+	expected := mdl.ID
+
+	qst := &Quest{
+		newContext(nil, consts.Quest, new(model.Quest)),
+	}
+
+	testLastID(t, qst, expected)
+}

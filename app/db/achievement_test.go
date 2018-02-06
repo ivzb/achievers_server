@@ -70,3 +70,14 @@ func TestAchievementExists(t *testing.T) {
 
 	testExists(t, ach, id, expected)
 }
+
+func TestAchievementLastID(t *testing.T) {
+	mdl := generate.Achievement().(*model.Achievement)
+	expected := mdl.ID
+
+	ach := &Achievement{
+		newContext(nil, consts.Achievement, new(model.Achievement)),
+	}
+
+	testLastID(t, ach, expected)
+}

@@ -194,6 +194,42 @@ func testExistsMultiple(t *testing.T, exister ExisterMultiple, expected bool, ar
 	}
 }
 
+func testLastID(t *testing.T, laster Laster, expected string) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	ctx := reflect.ValueOf(laster).Elem().FieldByName("Context").Interface().(*Context)
+	ctx.db = &DB{db, 9}
+
+	defer db.Close()
+
+	//cols := strings.Split(ctx.selectArgs, ", ")
+	//rows := sqlmock.NewRows(cols).AddRow(fields...)
+	//mockID := "mock_id"
+	mockID := "mock_id"
+	rows := sqlmock.NewRows([]string{"id"}).AddRow(mockID)
+
+	mock.ExpectQuery("^SELECT id FROM " + ctx.table + " ORDER BY created_at DESC LIMIT 1$").WillReturnRows(rows)
+
+	actual, err := laster.LastID()
+
+	if err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+	if expected != actual {
+		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
+	}
+}
+
 func testAssert(t *testing.T, param string, expected interface{}, actual interface{}) {
 	if expected != actual {
 		t.Errorf("model returned wrong %v: \ngot \"%v\" \nwant \"%v\"", param, actual, expected)

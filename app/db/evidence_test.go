@@ -70,3 +70,14 @@ func TestEvidenceExists(t *testing.T) {
 
 	testExists(t, evd, id, expected)
 }
+
+func TestEvidenceLastID(t *testing.T) {
+	mdl := generate.Evidence().(*model.Evidence)
+	expected := mdl.ID
+
+	evd := &Evidence{
+		newContext(nil, consts.Evidence, new(model.Evidence)),
+	}
+
+	testLastID(t, evd, expected)
+}

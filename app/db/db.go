@@ -54,6 +54,10 @@ type ExisterMultiple interface {
 	Exists(field ...interface{}) (bool, error)
 }
 
+type Laster interface {
+	LastID() (string, error)
+}
+
 type sqlScanner interface {
 	Scan(...interface{}) error
 }
