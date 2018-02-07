@@ -70,16 +70,17 @@ func (ctx *Achievement) After(id string) ([]interface{}, error) {
 }
 
 func (ctx *Achievement) AfterByQuestID(questID string, afterID string) ([]interface{}, error) {
-	rows, err := ctx.db.Query("SELECT a.id, a.title, a.description, a.picture_url, a.involvement_id, a.user_id, a.created_at, a.updated_at, a.deleted_at "+
-		"FROM achievement as a "+
-		"INNER JOIN quest_achievement as qa "+
-		"ON a.id = qa.achievement_id "+
-		"WHERE qa.quest_id = $1 AND a.created_at <= "+
-		"  (SELECT created_at "+
-		"   FROM achievement "+
-		"   WHERE id = $2) "+
-		"ORDER BY a.created_at DESC "+
-		"LIMIT $3", questID, afterID, ctx.db.pageLimit)
+	selectArgs := prefixArgsWith(ctx.selectArgs, "a.")
+	rows, err := ctx.db.Query("SELECT "+selectArgs+
+		" FROM achievement as a"+
+		" INNER JOIN quest_achievement as qa"+
+		" ON a.id = qa.achievement_id"+
+		" WHERE qa.quest_id = $1 AND a.created_at <="+
+		"  (SELECT created_at"+
+		"   FROM achievement"+
+		"   WHERE id = $2)"+
+		" ORDER BY a.created_at DESC"+
+		" LIMIT $3", questID, afterID, ctx.db.pageLimit)
 
 	if err != nil {
 		return nil, err

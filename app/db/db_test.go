@@ -287,10 +287,6 @@ func testAfter(t *testing.T, afterer Afterer, expected []interface{}) {
 	if len(expected) != len(actual) {
 		t.Errorf("unexpected length:\ngot %v\nwant %v", len(actual), len(expected))
 	}
-
-	if reflect.DeepEqual(expected, actual) {
-		t.Errorf("unexpected result:\ngot %v\nwant %v", actual, expected)
-	}
 }
 
 func testAssert(t *testing.T, param string, expected interface{}, actual interface{}) {

@@ -323,3 +323,14 @@ func (ctx *Context) after(id string) ([]interface{}, error) {
 
 	return mdls, nil
 }
+
+func prefixArgsWith(args string, prefix string) string {
+	separator := ", "
+	split := strings.Split(args, separator)
+
+	for i := 0; i < len(split); i++ {
+		split[i] = prefix + split[i]
+	}
+
+	return strings.Join(split, separator)
+}
