@@ -11,6 +11,7 @@ import (
 
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/conv"
+	"github.com/ivzb/achievers_server/app/shared/ptrs"
 )
 
 const (
@@ -24,7 +25,7 @@ var (
 
 // Map form values to model and returns error if model is not struct, wrong content type or parse error
 func ModelValue(r *http.Request, model interface{}) error {
-	if !isStructPtr(model) {
+	if !ptrs.IsStructPtr(model) {
 		return errNotStruct
 	}
 
@@ -73,17 +74,6 @@ func MultipartFile(r *http.Request, key string) (multipart.File, *multipart.File
 	file, header, err := r.FormFile(key)
 
 	return file, header, err
-}
-
-// prevent running on types other than struct
-func isStructPtr(i interface{}) bool {
-	if reflect.TypeOf(i).Kind() != reflect.Ptr {
-		return false
-	} else if reflect.TypeOf(i).Elem().Kind() != reflect.Struct {
-		return false
-	}
-
-	return true
 }
 
 // map recives http.Request and maps form values to target model
