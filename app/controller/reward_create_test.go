@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ivzb/achievers_server/app/db/mock"
+	dMock "github.com/ivzb/achievers_server/app/db/mock"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 )
 
@@ -37,35 +37,35 @@ var rewardCreateTests = []*test{
 		removeHeaders:      true,
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form consts.Title",
+		purpose:            "blank form consts.Title",
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Title),
 		form:               mapWithout(rewardCreateForm(), consts.Title),
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form consts.Description",
+		purpose:            "blank form consts.Description",
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Description),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Description),
 		form:               mapWithout(rewardCreateForm(), consts.Description),
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form picture_url",
+		purpose:            "blank form picture_url",
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.PictureURL),
 		form:               mapWithout(rewardCreateForm(), consts.PictureURL),
 	}),
 	constructRewardCreateTest(&testInput{
-		purpose:            "missing form reward_type_id",
+		purpose:            "blank form reward_type_id",
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.RewardTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatValidID, consts.RewardTypeID),
 		form:               mapWithout(rewardCreateForm(), consts.RewardTypeID),
 	}),
 	constructRewardCreateTest(&testInput{
@@ -75,9 +75,9 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
-		db: &mock.DB{
-			RewardTypeMock: mock.RewardType{
-				ExistsMock: mock.RewardTypeExists{Err: mockDbErr},
+		db: &dMock.DB{
+			RewardTypeMock: dMock.RewardType{
+				ExistsMock: dMock.RewardTypeExists{Err: mockDbErr},
 			},
 		},
 	}),
@@ -88,9 +88,9 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusNotFound,
 		responseMessage:    fmt.Sprintf(consts.FormatNotFound, consts.RewardTypeID),
 		form:               rewardCreateForm(),
-		db: &mock.DB{
-			RewardTypeMock: mock.RewardType{
-				ExistsMock: mock.RewardTypeExists{Bool: false},
+		db: &dMock.DB{
+			RewardTypeMock: dMock.RewardType{
+				ExistsMock: dMock.RewardTypeExists{Bool: false},
 			},
 		},
 	}),
@@ -101,12 +101,12 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusInternalServerError,
 		responseMessage:    consts.FriendlyErrorMessage,
 		form:               rewardCreateForm(),
-		db: &mock.DB{
-			RewardTypeMock: mock.RewardType{
-				ExistsMock: mock.RewardTypeExists{Bool: true},
+		db: &dMock.DB{
+			RewardTypeMock: dMock.RewardType{
+				ExistsMock: dMock.RewardTypeExists{Bool: true},
 			},
-			RewardMock: mock.Reward{
-				CreateMock: mock.RewardCreate{Err: mockDbErr},
+			RewardMock: dMock.Reward{
+				CreateMock: dMock.RewardCreate{Err: mockDbErr},
 			},
 		},
 	}),
@@ -117,12 +117,12 @@ var rewardCreateTests = []*test{
 		responseStatusCode: http.StatusCreated,
 		responseMessage:    fmt.Sprintf(consts.FormatCreated, consts.Reward),
 		form:               rewardCreateForm(),
-		db: &mock.DB{
-			RewardTypeMock: mock.RewardType{
-				ExistsMock: mock.RewardTypeExists{Bool: true},
+		db: &dMock.DB{
+			RewardTypeMock: dMock.RewardType{
+				ExistsMock: dMock.RewardTypeExists{Bool: true},
 			},
-			RewardMock: mock.Reward{
-				CreateMock: mock.RewardCreate{ID: mockID},
+			RewardMock: dMock.Reward{
+				CreateMock: dMock.RewardCreate{ID: mockID},
 			},
 		},
 	}),

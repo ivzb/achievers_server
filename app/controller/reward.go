@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
+	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
 func RewardsLast(env *env.Env) *response.Message {
@@ -96,20 +95,10 @@ func RewardCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if rwd.Title == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
-	}
+	err = validator.Validate(*rwd)
 
-	if rwd.Description == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Description))
-	}
-
-	if rwd.PictureURL == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
-	}
-
-	if rwd.RewardTypeID == 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.RewardTypeID))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	rewardTypeExists, err := env.DB.RewardType().Exists(rwd.RewardTypeID)

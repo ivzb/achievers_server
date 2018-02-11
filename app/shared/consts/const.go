@@ -7,6 +7,8 @@ const (
 	FormatAlreadyExists = "%s already exists"
 	FormatNotFound      = "%s not found"
 	FormatInvalid       = "invalid %s"
+	FormatBlank         = "%s cannot be blank"
+	FormatValidID       = "%s should be valid id"
 
 	Authorized           = "authorized"
 	Unauthorized         = "unauthorized"

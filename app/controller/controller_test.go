@@ -226,7 +226,12 @@ func constructTest(handler app.Handler, testInput *testInput, responseResults []
 			constructForm(testInput.form),
 			//constructMultipartForm(testInput.multipartForm),
 			testInput.multipartForm,
-			constructEnv(testInput.db, testInput.logger, testInput.tokener, testInput.uuider, testInput.config),
+			constructEnv(
+				testInput.db,
+				testInput.logger,
+				testInput.tokener,
+				testInput.uuider,
+				testInput.config),
 			testInput.removeHeaders,
 		),
 		response: constructTestResponse(

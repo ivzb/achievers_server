@@ -160,15 +160,16 @@ View coverage result in html
 go tool cover -html=coverage.out
 ```
 
-## TODO
+## TODO // bigger number == higher priority
 1. add kubernetes support
 2. implement constructTest for app/shared/ similar to this in controller/
 3. implement router with following format: router.GET("path", handler, middleware)
 4. use router's handlers to build a help page with endpoints
 5. improve context - replace model instance with model type
-6. create form validation
-7. improve code coverage
-8. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
+6. improve code coverage
+7. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
+8. create form validation
+9. restructure the whole project in modules (i.e. model, db and controller living along in one folder)
 
 ## Done :) // some tasks might not be written
 0. quest_achievement controller
