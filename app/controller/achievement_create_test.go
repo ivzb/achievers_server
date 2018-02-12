@@ -41,7 +41,7 @@ var achievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Title),
 		form:               mapWithout(achievementCreateForm(), consts.Title),
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -49,7 +49,7 @@ var achievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Description),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Description),
 		form:               mapWithout(achievementCreateForm(), consts.Description),
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -57,7 +57,7 @@ var achievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.PictureURL),
 		form:               mapWithout(achievementCreateForm(), consts.PictureURL),
 	}),
 	constructAchievementCreateTest(&testInput{
@@ -65,7 +65,7 @@ var achievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.InvolvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatValidID, consts.InvolvementID),
 		form:               mapWithout(achievementCreateForm(), consts.InvolvementID),
 	}),
 	constructAchievementCreateTest(&testInput{

@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
+	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
 func AchievementCreate(env *env.Env) *response.Message {
@@ -23,20 +22,10 @@ func AchievementCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if ach.Title == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
-	}
+	err = validator.Validate(*ach)
 
-	if ach.Description == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Description))
-	}
-
-	if ach.PictureURL == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
-	}
-
-	if ach.InvolvementID == 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.InvolvementID))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	involvementExists, err := env.DB.Involvement().Exists(ach.InvolvementID)

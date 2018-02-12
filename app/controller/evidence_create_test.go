@@ -42,7 +42,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Title),
 		form:               mapWithout(evidenceCreateForm(), consts.Title),
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -50,7 +50,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.PictureURL),
 		form:               mapWithout(evidenceCreateForm(), consts.PictureURL),
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -58,7 +58,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.URL),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.URL),
 		form:               mapWithout(evidenceCreateForm(), consts.URL),
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -66,7 +66,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.MultimediaTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatValidID, consts.MultimediaTypeID),
 		form:               mapWithout(evidenceCreateForm(), consts.MultimediaTypeID),
 	}),
 	constructEvidenceCreateTest(&testInput{
@@ -74,7 +74,7 @@ var evidenceCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AchievementID),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.AchievementID),
 		form:               mapWithout(evidenceCreateForm(), consts.AchievementID),
 	}),
 	constructEvidenceCreateTest(&testInput{

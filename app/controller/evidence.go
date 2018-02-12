@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
+	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
 func EvidencesLast(env *env.Env) *response.Message {
@@ -95,25 +94,31 @@ func EvidenceCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if evd.Title == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
+	err = validator.Validate(*evd)
+
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
-	if evd.PictureURL == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
-	}
+	//if evd.Title == "" {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
+	//}
 
-	if evd.URL == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.URL))
-	}
+	//if evd.PictureURL == "" {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
+	//}
 
-	if evd.MultimediaTypeID == 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.MultimediaTypeID))
-	}
+	//if evd.URL == "" {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.URL))
+	//}
 
-	if evd.AchievementID == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
-	}
+	//if evd.MultimediaTypeID == 0 {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.MultimediaTypeID))
+	//}
+
+	//if evd.AchievementID == "" {
+	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
+	//}
 
 	multimediaTypeExist, err := env.DB.MultimediaType().Exists(evd.MultimediaTypeID)
 

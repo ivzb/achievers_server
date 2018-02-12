@@ -9,6 +9,7 @@ const (
 	FormatInvalid       = "invalid %s"
 	FormatBlank         = "%s cannot be blank"
 	FormatValidID       = "%s should be valid id"
+	FormatValidUUID     = "%s should be valid uuid"
 
 	Authorized           = "authorized"
 	Unauthorized         = "unauthorized"

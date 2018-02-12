@@ -170,6 +170,7 @@ go tool cover -html=coverage.out
 7. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
 8. create form validation
 9. restructure the whole project in modules (i.e. model, db and controller living along in one folder)
+10. unify db length constraints
 
 ## Done :) // some tasks might not be written
 0. quest_achievement controller

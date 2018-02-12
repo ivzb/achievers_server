@@ -40,7 +40,7 @@ var (
 	mockURL              = "mock url"
 	mockEncrypt          = "mock encrypt"
 	mockFileID           = "."
-	mockAchievementID    = "mock achievement_id"
+	mockAchievementID    = "c85a9afc-8e44-4ac8-9b4e-f56608066d3f"
 	mockInvolvementID    = "3"
 	mockRewardTypeID     = "5"
 	mockQuestTypeID      = "5"
