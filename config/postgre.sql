@@ -144,7 +144,7 @@ CREATE TRIGGER quest_type_updated_at
 CREATE TABLE "user" (
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     
-    email      VARCHAR(100) NOT NULL,
+    email      VARCHAR(255) NOT NULL,
     password   BYTEA NOT NULL,
     
     user_status_id smallint NOT NULL DEFAULT 1,
@@ -194,9 +194,9 @@ CREATE TRIGGER profile_updated_at
 CREATE TABLE achievement (
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     
-    title       VARCHAR(50) NOT NULL,
+    title       VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    picture_url VARCHAR(100) NOT NULL,
+    picture_url VARCHAR(255) NOT NULL,
     
     involvement_id smallint NOT NULL,
     user_id        UUID NOT NULL,

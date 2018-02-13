@@ -168,9 +168,7 @@ go tool cover -html=coverage.out
 5. improve context - replace model instance with model type
 6. improve code coverage
 7. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
-8. create form validation
-9. restructure the whole project in modules (i.e. model, db and controller living along in one folder)
-10. unify db length constraints
+8. restructure the whole project in modules (i.e. model, db and controller living along in one folder)
 
 ## Done :) // some tasks might not be written
 0. quest_achievement controller
@@ -192,3 +190,5 @@ go tool cover -html=coverage.out
 12. refactor db's context - extract needed info from model's properties
 13. get rid of db's scan function, use struct tags instead
 14. improve db's create - extract needed fields by struct's tags
+15. create form validation
+16. unify db length constraints
