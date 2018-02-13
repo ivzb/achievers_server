@@ -1,16 +1,16 @@
 package controller
 
 import (
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
-func AchievementCreate(env *env.Env) *response.Message {
+func AchievementCreate(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -53,7 +53,7 @@ func AchievementCreate(env *env.Env) *response.Message {
 		id)
 }
 
-func AchievementSingle(env *env.Env) *response.Message {
+func AchievementSingle(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -77,7 +77,7 @@ func AchievementSingle(env *env.Env) *response.Message {
 		ach)
 }
 
-func AchievementsLast(env *env.Env) *response.Message {
+func AchievementsLast(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -102,7 +102,7 @@ func AchievementsLast(env *env.Env) *response.Message {
 		achs)
 }
 
-func AchievementsAfter(env *env.Env) *response.Message {
+func AchievementsAfter(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -126,7 +126,7 @@ func AchievementsAfter(env *env.Env) *response.Message {
 		achs)
 }
 
-func AchievementsByQuestIDLast(env *env.Env) *response.Message {
+func AchievementsByQuestIDLast(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -157,7 +157,7 @@ func AchievementsByQuestIDLast(env *env.Env) *response.Message {
 		achs)
 }
 
-func AchievementsByQuestIDAfter(env *env.Env) *response.Message {
+func AchievementsByQuestIDAfter(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}

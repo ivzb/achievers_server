@@ -1,16 +1,16 @@
 package controller
 
 import (
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
-func EvidencesLast(env *env.Env) *response.Message {
+func EvidencesLast(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -35,7 +35,7 @@ func EvidencesLast(env *env.Env) *response.Message {
 		evds)
 }
 
-func EvidencesAfter(env *env.Env) *response.Message {
+func EvidencesAfter(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -59,7 +59,7 @@ func EvidencesAfter(env *env.Env) *response.Message {
 		evds)
 }
 
-func EvidenceSingle(env *env.Env) *response.Message {
+func EvidenceSingle(env *app.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
@@ -82,7 +82,7 @@ func EvidenceSingle(env *env.Env) *response.Message {
 		evd)
 }
 
-func EvidenceCreate(env *env.Env) *response.Message {
+func EvidenceCreate(env *app.Env) *response.Message {
 	if env.Request.Method != "POST" {
 		return response.MethodNotAllowed()
 	}

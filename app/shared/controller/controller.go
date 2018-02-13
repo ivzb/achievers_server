@@ -10,7 +10,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func getFormString(env *app.Env, key string, exister db.Exister) (string, *response.Message) {
+func GetFormString(env *app.Env, key string, exister db.Exister) (string, *response.Message) {
 	value, err := form.StringValue(env.Request, key)
 
 	if err != nil {

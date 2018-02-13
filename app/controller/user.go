@@ -3,15 +3,15 @@ package controller
 import (
 	"fmt"
 
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func UserAuth(env *env.Env) *response.Message {
+func UserAuth(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
@@ -59,7 +59,7 @@ func UserAuth(env *env.Env) *response.Message {
 	return response.Created(consts.AuthToken, token)
 }
 
-func UserCreate(env *env.Env) *response.Message {
+func UserCreate(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}

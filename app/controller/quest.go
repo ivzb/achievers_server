@@ -1,16 +1,16 @@
 package controller
 
 import (
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
-func QuestsLast(env *env.Env) *response.Message {
+func QuestsLast(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -35,7 +35,7 @@ func QuestsLast(env *env.Env) *response.Message {
 		qsts)
 }
 
-func QuestsAfter(env *env.Env) *response.Message {
+func QuestsAfter(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -59,7 +59,7 @@ func QuestsAfter(env *env.Env) *response.Message {
 		qsts)
 }
 
-func QuestSingle(env *env.Env) *response.Message {
+func QuestSingle(env *app.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
@@ -83,7 +83,7 @@ func QuestSingle(env *env.Env) *response.Message {
 		qst)
 }
 
-func QuestCreate(env *env.Env) *response.Message {
+func QuestCreate(env *app.Env) *response.Message {
 	if env.Request.Method != "POST" {
 		return response.MethodNotAllowed()
 	}

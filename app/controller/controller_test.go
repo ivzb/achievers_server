@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
+	a "github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/shared/config"
-	"github.com/ivzb/achievers_server/app/shared/env"
 
 	dMock "github.com/ivzb/achievers_server/app/db/mock"
 	lMock "github.com/ivzb/achievers_server/app/shared/logger/mock"
@@ -67,7 +67,7 @@ type testRequest struct {
 	method        string
 	form          *url.Values
 	multipartForm string
-	env           *env.Env
+	env           *a.Env
 	removeHeaders bool
 }
 
@@ -116,9 +116,9 @@ func constructEnv(
 	logger *lMock.Logger,
 	tokener *tMock.Tokener,
 	uuider *uMock.UUIDer,
-	config *config.Config) *env.Env {
+	config *config.Config) *a.Env {
 
-	return &env.Env{
+	return &a.Env{
 		DB:     db,
 		Log:    logger,
 		Token:  tokener,
@@ -131,7 +131,7 @@ func constructTestRequest(
 	method string,
 	form *url.Values,
 	multipartForm string,
-	env *env.Env,
+	env *a.Env,
 	removeHeaders bool) *testRequest {
 
 	return &testRequest{

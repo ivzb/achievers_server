@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func ProfileMe(env *env.Env) *response.Message {
+func ProfileMe(env *app.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}
@@ -25,7 +25,7 @@ func ProfileMe(env *env.Env) *response.Message {
 		prfl)
 }
 
-func ProfileSingle(env *env.Env) *response.Message {
+func ProfileSingle(env *app.Env) *response.Message {
 	if env.Request.Method != consts.GET {
 		return response.MethodNotAllowed()
 	}

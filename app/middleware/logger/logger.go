@@ -3,8 +3,8 @@ package logger
 import (
 	"fmt"
 
+	eapp "github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/middleware/app"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
@@ -12,7 +12,7 @@ import (
 func Handler(app app.App) app.App {
 	prevHandler := app.Handler
 
-	app.Handler = func(env *env.Env) *response.Message {
+	app.Handler = func(env *eapp.Env) *response.Message {
 		message := fmt.Sprintf("%s %s %s",
 			env.Request.RemoteAddr,
 			env.Request.Method,

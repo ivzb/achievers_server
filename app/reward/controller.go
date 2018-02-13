@@ -1,16 +1,17 @@
-package controller
+package reward
 
 import (
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
-	"github.com/ivzb/achievers_server/app/shared/env"
+	"github.com/ivzb/achievers_server/app/shared/controller"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
 	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
-func RewardsLast(env *env.Env) *response.Message {
+func Last(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -35,12 +36,12 @@ func RewardsLast(env *env.Env) *response.Message {
 		rwds)
 }
 
-func RewardsAfter(env *env.Env) *response.Message {
+func After(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Reward())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Reward())
 
 	if respErr != nil {
 		return respErr
@@ -59,12 +60,12 @@ func RewardsAfter(env *env.Env) *response.Message {
 		rwds)
 }
 
-func RewardSingle(env *env.Env) *response.Message {
+func Single(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Reward())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Reward())
 
 	if respErr != nil {
 		return respErr
@@ -83,7 +84,7 @@ func RewardSingle(env *env.Env) *response.Message {
 		rwd)
 }
 
-func RewardCreate(env *env.Env) *response.Message {
+func Create(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}

@@ -5,14 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	a "github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/shared/config"
-	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/logger/mock"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-func testHandler(env *env.Env) *response.Message {
+func testHandler(env *a.Env) *response.Message {
 	return response.Ok("ok", 1, "OK")
 }
 
@@ -21,7 +21,7 @@ func TestLoggerHandler_Log(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 
-	env := &env.Env{
+	env := &a.Env{
 		Log:    &mock.Logger{},
 		Config: &config.Config{},
 	}

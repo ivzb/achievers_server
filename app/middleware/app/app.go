@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ivzb/achievers_server/app/shared/env"
+	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/shared/response"
 )
 
-type Handler func(env *env.Env) *response.Message
+type Handler func(env *app.Env) *response.Message
 
 type App struct {
-	Env     *env.Env
+	Env     *app.Env
 	Handler Handler
 }
 
