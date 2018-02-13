@@ -41,7 +41,7 @@ var questCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.Title),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.Title),
 		form:               mapWithout(questCreateForm(), consts.Title),
 	}),
 	constructQuestCreateTest(&testInput{
@@ -49,7 +49,7 @@ var questCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.PictureURL),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.PictureURL),
 		form:               mapWithout(questCreateForm(), consts.PictureURL),
 	}),
 	constructQuestCreateTest(&testInput{
@@ -57,7 +57,7 @@ var questCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.InvolvementID),
+		responseMessage:    fmt.Sprintf(consts.FormatValidID, consts.InvolvementID),
 		form:               mapWithout(questCreateForm(), consts.InvolvementID),
 	}),
 	constructQuestCreateTest(&testInput{
@@ -65,7 +65,7 @@ var questCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.QuestTypeID),
+		responseMessage:    fmt.Sprintf(consts.FormatValidID, consts.QuestTypeID),
 		form:               mapWithout(questCreateForm(), consts.QuestTypeID),
 	}),
 	constructQuestCreateTest(&testInput{

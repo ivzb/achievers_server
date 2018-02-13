@@ -7,9 +7,9 @@ import (
 type QuestAchievement struct {
 	ID string `json:"id"`
 
-	QuestID       string `json:"quest_id" insert:"quest_id" exists:"quest_id"`
-	AchievementID string `json:"achievement_id" insert:"achievement_id" exists:"achievement_id"`
-	UserID        string `json:"user_id" insert:"user_id"`
+	QuestID       string `json:"quest_id"       validate:"uuid" insert:"quest_id"       exists:"quest_id"`
+	AchievementID string `json:"achievement_id" validate:"uuid" insert:"achievement_id" exists:"achievement_id"`
+	UserID        string `json:"user_id"        validate:"-"    insert:"user_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

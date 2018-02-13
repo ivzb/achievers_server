@@ -39,7 +39,7 @@ var questAchievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.QuestID),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.QuestID),
 		form:               mapWithout(questAchievementCreateForm(), consts.QuestID),
 	}),
 	constructQuestAchievementCreateTest(&testInput{
@@ -47,7 +47,7 @@ var questAchievementCreateTests = []*test{
 		requestMethod:      consts.POST,
 		responseType:       Core,
 		responseStatusCode: http.StatusBadRequest,
-		responseMessage:    fmt.Sprintf(consts.FormatMissing, consts.AchievementID),
+		responseMessage:    fmt.Sprintf(consts.FormatBlank, consts.AchievementID),
 		form:               mapWithout(questAchievementCreateForm(), consts.AchievementID),
 	}),
 	constructQuestAchievementCreateTest(&testInput{

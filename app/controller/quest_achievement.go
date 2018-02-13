@@ -9,6 +9,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
+	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
 func QuestAchievementCreate(env *env.Env) *response.Message {
@@ -23,12 +24,10 @@ func QuestAchievementCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if qstAch.QuestID == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestID))
-	}
+	err = validator.Validate(*qstAch)
 
-	if qstAch.AchievementID == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	qstExists, err := env.DB.Quest().Exists(qstAch.QuestID)

@@ -100,26 +100,6 @@ func EvidenceCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	//if evd.Title == "" {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
-	//}
-
-	//if evd.PictureURL == "" {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
-	//}
-
-	//if evd.URL == "" {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.URL))
-	//}
-
-	//if evd.MultimediaTypeID == 0 {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.MultimediaTypeID))
-	//}
-
-	//if evd.AchievementID == "" {
-	//return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.AchievementID))
-	//}
-
 	multimediaTypeExist, err := env.DB.MultimediaType().Exists(evd.MultimediaTypeID)
 
 	if err != nil {

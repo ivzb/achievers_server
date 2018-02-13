@@ -1,14 +1,13 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
 	"github.com/ivzb/achievers_server/app/shared/env"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
+	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
 func QuestsLast(env *env.Env) *response.Message {
@@ -96,20 +95,10 @@ func QuestCreate(env *env.Env) *response.Message {
 		return response.BadRequest(err.Error())
 	}
 
-	if qst.Title == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.Title))
-	}
+	err = validator.Validate(*qst)
 
-	if qst.PictureURL == "" {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.PictureURL))
-	}
-
-	if qst.InvolvementID == 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.InvolvementID))
-	}
-
-	if qst.QuestTypeID == 0 {
-		return response.BadRequest(fmt.Sprintf(consts.FormatMissing, consts.QuestTypeID))
+	if err != nil {
+		return response.BadRequest(err.Error())
 	}
 
 	involvementExists, err := env.DB.Involvement().Exists(qst.InvolvementID)

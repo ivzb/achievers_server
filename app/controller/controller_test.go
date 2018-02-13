@@ -29,7 +29,7 @@ const (
 )
 
 var (
-	mockID               = "mock id"
+	mockID               = "c85a9afc-8e44-4ac8-9b4e-f56608066d3f"
 	mockTitle            = "mock title"
 	mockDescription      = "mock description"
 	mockPictureURL       = "mock picture_url"
