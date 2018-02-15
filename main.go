@@ -11,7 +11,6 @@ import (
 	"github.com/ivzb/achievers_server/app/middleware/app"
 	"github.com/ivzb/achievers_server/app/middleware/auth"
 	"github.com/ivzb/achievers_server/app/middleware/logger"
-	"github.com/ivzb/achievers_server/app/reward"
 	"github.com/ivzb/achievers_server/app/shared/config"
 	"github.com/ivzb/achievers_server/app/shared/file"
 	l "github.com/ivzb/achievers_server/app/shared/logger"
@@ -86,10 +85,10 @@ func main() {
 	http.Handle("/"+conf.Server.Version+"/evidences/after", authChain(env, controller.EvidencesAfter))
 	http.Handle("/"+conf.Server.Version+"/evidence/create", authChain(env, controller.EvidenceCreate))
 
-	http.Handle("/"+conf.Server.Version+"/reward", authChain(env, reward.Single))
-	http.Handle("/"+conf.Server.Version+"/rewards/last", authChain(env, reward.Last))
-	http.Handle("/"+conf.Server.Version+"/rewards/after", authChain(env, reward.After))
-	http.Handle("/"+conf.Server.Version+"/reward/create", authChain(env, reward.Create))
+	http.Handle("/"+conf.Server.Version+"/reward", authChain(env, controller.RewardSingle))
+	http.Handle("/"+conf.Server.Version+"/rewards/last", authChain(env, controller.RewardsLast))
+	http.Handle("/"+conf.Server.Version+"/rewards/after", authChain(env, controller.RewardsAfter))
+	http.Handle("/"+conf.Server.Version+"/reward/create", authChain(env, controller.RewardCreate))
 
 	http.Handle("/"+conf.Server.Version+"/quest", authChain(env, controller.QuestSingle))
 	http.Handle("/"+conf.Server.Version+"/quests/last", authChain(env, controller.QuestsLast))

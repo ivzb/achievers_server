@@ -1,4 +1,4 @@
-package reward
+package controller
 
 import (
 	"github.com/ivzb/achievers_server/app"
@@ -11,7 +11,7 @@ import (
 	"github.com/ivzb/achievers_server/app/shared/validator"
 )
 
-func Last(env *app.Env) *response.Message {
+func RewardsLast(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -36,7 +36,7 @@ func Last(env *app.Env) *response.Message {
 		rwds)
 }
 
-func After(env *app.Env) *response.Message {
+func RewardsAfter(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -60,7 +60,7 @@ func After(env *app.Env) *response.Message {
 		rwds)
 }
 
-func Single(env *app.Env) *response.Message {
+func RewardSingle(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.GET) {
 		return response.MethodNotAllowed()
 	}
@@ -84,7 +84,7 @@ func Single(env *app.Env) *response.Message {
 		rwd)
 }
 
-func Create(env *app.Env) *response.Message {
+func RewardCreate(env *app.Env) *response.Message {
 	if !request.IsMethod(env.Request, consts.POST) {
 		return response.MethodNotAllowed()
 	}
