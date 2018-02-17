@@ -2,17 +2,23 @@
 -- // Clean up 
 -- ****************************************************************************/
 DROP FUNCTION IF EXISTS set_updated_at;
-
 DROP DATABASE IF EXISTS achievers;
+DROP ROLE IF EXISTS achievers;
+
+-- *****************************************************************************
+-- // Create new role
+-- ****************************************************************************/
+CREATE ROLE "achievers"
+    WITH LOGIN PASSWORD '123456' CREATEDB;
 
 -- *****************************************************************************
 -- // Create new database
 -- ****************************************************************************/
 CREATE DATABASE "achievers"
-    WITH OWNER "root"
-    ENCODING 'UTF8'
-    LC_COLLATE = 'en_US.UTF-8'
-    LC_CTYPE = 'en_US.UTF-8';
+    WITH OWNER "achievers"
+    ENCODING 'utf8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8';
 
 -- *****************************************************************************
 -- // Attach to db

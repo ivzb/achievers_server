@@ -2,8 +2,8 @@
 	"Database": {
 		"Type": "Postgre",
         "Postgre": {
-			"Username":  "Admin",
-			"Password":  "",
+			"Username":  "achievers",
+			"Password":  "123456",
 			"Name":      "achievers",
 			"HstDocker": "docker.for.mac.host.internal",
 			"Hostname":  "127.0.0.1",
