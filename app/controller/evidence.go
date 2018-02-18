@@ -4,6 +4,7 @@ import (
 	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/controller"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
@@ -40,7 +41,7 @@ func EvidencesAfter(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Evidence())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Evidence())
 
 	if respErr != nil {
 		return respErr
@@ -64,7 +65,7 @@ func EvidenceSingle(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Evidence())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Evidence())
 
 	if respErr != nil {
 		return respErr

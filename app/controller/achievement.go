@@ -4,6 +4,7 @@ import (
 	"github.com/ivzb/achievers_server/app"
 	"github.com/ivzb/achievers_server/app/model"
 	"github.com/ivzb/achievers_server/app/shared/consts"
+	"github.com/ivzb/achievers_server/app/shared/controller"
 	"github.com/ivzb/achievers_server/app/shared/form"
 	"github.com/ivzb/achievers_server/app/shared/request"
 	"github.com/ivzb/achievers_server/app/shared/response"
@@ -58,7 +59,7 @@ func AchievementSingle(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	achID, respErr := getFormString(env, consts.ID, env.DB.Achievement())
+	achID, respErr := controller.GetFormString(env, consts.ID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
@@ -107,7 +108,7 @@ func AchievementsAfter(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Achievement())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
@@ -131,7 +132,7 @@ func AchievementsByQuestIDLast(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, respErr := getFormString(env, consts.QuestID, env.DB.Quest())
+	qstID, respErr := controller.GetFormString(env, consts.QuestID, env.DB.Quest())
 
 	if respErr != nil {
 		return respErr
@@ -162,13 +163,13 @@ func AchievementsByQuestIDAfter(env *app.Env) *response.Message {
 		return response.MethodNotAllowed()
 	}
 
-	qstID, respErr := getFormString(env, consts.QuestID, env.DB.Quest())
+	qstID, respErr := controller.GetFormString(env, consts.QuestID, env.DB.Quest())
 
 	if respErr != nil {
 		return respErr
 	}
 
-	id, respErr := getFormString(env, consts.ID, env.DB.Achievement())
+	id, respErr := controller.GetFormString(env, consts.ID, env.DB.Achievement())
 
 	if respErr != nil {
 		return respErr
