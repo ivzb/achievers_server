@@ -1,8 +1,0 @@
-2018-01-26 11:15:03.437 EET [54692] LOG:  listening on IPv6 address "::1", port 5432
-2018-01-26 11:15:03.437 EET [54692] LOG:  listening on IPv6 address "fe80::1%lo0", port 5432
-2018-01-26 11:15:03.437 EET [54692] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-2018-01-26 11:15:03.438 EET [54692] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
-2018-01-26 11:15:03.464 EET [54707] LOG:  database system was shut down at 2018-01-26 09:01:26 EET
-2018-01-26 11:15:03.472 EET [54692] LOG:  database system is ready to accept connections
-2018-01-26 11:16:14.379 EET [54814] ERROR:  column "description" does not exist at character 19
-2018-01-26 11:16:14.379 EET [54814] STATEMENT:  SELECT id, title, description, picture_url, involvement_id, user_id, created_at, updated_at, deleted_at FROM quest WHERE created_at <=   (SELECT created_at    FROM quest    WHERE id = $1) ORDER BY created_at DESC LIMIT $2

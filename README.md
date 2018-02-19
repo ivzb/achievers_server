@@ -168,7 +168,7 @@ go tool cover -html=coverage.out
 5. improve context - replace model instance with model type
 6. improve code coverage
 7. consider unioning db_test's exists and existsMultiple functions (invent smart exister interface)
-8. consider modularizing the project or even better - implement microservices architecture
+8. implement microservices architecture
 
 ## Done :) // some tasks might not be written
 0. quest_achievement controller
